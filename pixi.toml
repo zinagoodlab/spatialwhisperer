@@ -1,0 +1,26 @@
+[project]
+name = "spatialwhisperer_paper"
+version = "0.1.0"
+description = "Analyses and experiments for the SpatialWhisperer ICML paper"
+channels = ["conda-forge", "bioconda"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = "3.11.*"
+pip = "*"
+snakemake = "7.*"
+pandas = "*"
+numpy = "<2"
+scipy = "*"
+scikit-learn = "*"
+matplotlib = "*"
+seaborn = "*"
+jupyter = "*"
+pyyaml = "*"
+tqdm = "*"
+
+[pypi-dependencies]
+spatialwhisperer = { git = "https://github.com/moritzschaefer/spatialwhisperer.git" }
+
+[tasks]
+snakemake-dryrun = "snakemake --dry-run -j1"

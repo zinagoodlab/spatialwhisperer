@@ -1,0 +1,27 @@
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pixi/
+.snakemake/
+.ipynb_checkpoints/
+.DS_Store
+.env
+.envrc
+
+# Pipeline outputs (regenerated from inputs)
+results/
+logs/
+scratch/
+
+# Local experiment artifacts that shouldn't be versioned
+*.ckpt
+*.pt
+*.bin
+*.h5ad
+*.zarr/
+
+# Editor
+.vscode/
+.idea/
+*.swp
