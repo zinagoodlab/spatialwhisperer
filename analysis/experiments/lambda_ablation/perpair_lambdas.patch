@@ -1,0 +1,138 @@
+diff --git a/src/cellwhisperer/jointemb/loss/config.py b/src/cellwhisperer/jointemb/loss/config.py
+index 4a8e185b..53ade091 100644
+--- a/src/cellwhisperer/jointemb/loss/config.py
++++ b/src/cellwhisperer/jointemb/loss/config.py
+@@ -16,6 +16,12 @@ class LossConfig:
+     """
+ 
+     clip_lambda: float = 1.0
++    # Per-modality-pair weights inside ClipLoss (applied to each pair's
++    # contrastive loss before the active-pair normalization). All default
++    # to 1.0, recovering the equal-weight mean used historically.
++    clip_lambda_transcriptome_text: float = 1.0
++    clip_lambda_transcriptome_image: float = 1.0
++    clip_lambda_text_image: float = 1.0
+     clip_lite_lambda: float = 0.0
+     clip_lite_type: str = "dot"  # NOTE we don't support others at the moment
+     clip_lite_prior_weight: float = 0.1
+@@ -30,7 +36,11 @@ class LossConfig:
+         loss_functions = [
+             {
+                 "name": "clip",
+-                "fn": ClipLoss(),
++                "fn": ClipLoss(
++                    lambda_transcriptome_text=float(self.clip_lambda_transcriptome_text),
++                    lambda_transcriptome_image=float(self.clip_lambda_transcriptome_image),
++                    lambda_text_image=float(self.clip_lambda_text_image),
++                ),
+                 "lambda": float(self.clip_lambda),
+             },
+             # { # TODO Not fully implemented for 3 modalities
+diff --git a/src/cellwhisperer/jointemb/loss/losses.py b/src/cellwhisperer/jointemb/loss/losses.py
+index 623fc722..cd3f89e1 100644
+--- a/src/cellwhisperer/jointemb/loss/losses.py
++++ b/src/cellwhisperer/jointemb/loss/losses.py
+@@ -52,8 +52,22 @@ def contrastive_loss(
+ 
+ 
+ class ClipLoss(nn.Module):
+-    def __init__(self):
++    def __init__(
++        self,
++        lambda_transcriptome_text: float = 1.0,
++        lambda_transcriptome_image: float = 1.0,
++        lambda_text_image: float = 1.0,
++    ):
+         super().__init__()
++        # Per-pair weights. Total returned loss is
++        #   (sum_p lambda_p * loss_p) / (sum_p lambda_p)
++        # over the *active* pairs (those with non-None logits and lambda>0).
++        # Dividing by the active-lambda sum keeps the gradient magnitude
++        # comparable to the previous equal-weight mean, so LR does not need
++        # to be retuned across sweep points.
++        self.lambda_transcriptome_text = lambda_transcriptome_text
++        self.lambda_transcriptome_image = lambda_transcriptome_image
++        self.lambda_text_image = lambda_text_image
+ 
+     def forward(
+         self,
+@@ -68,9 +82,9 @@ class ClipLoss(nn.Module):
+         """
+         Computes the CLIP loss given similarity matrices between different modalities.
+ 
+-        This function calculates the contrastive loss for available modality pairs.
+-        When multiple logits matrices are provided (multi-modal case), it computes
+-        the loss for each valid pair and returns their mean.
++        Each modality pair's contrastive loss is multiplied by its
++        configured lambda and divided by the sum of the active lambdas, so
++        the lambdas behave as a ratio (overall scale is invariant).
+ 
+         Args:
+             logits_transcriptome_text (torch.Tensor, optional): Similarity matrix between transcriptome and text.
+@@ -96,7 +110,7 @@ class ClipLoss(nn.Module):
+             device = torch.device("cpu")
+ 
+         total_loss = torch.tensor(0.0, device=device)
+-        num_valid_pairs = 0
++        lambda_sum = 0.0
+ 
+         # If multiple modality pairs are present, ignore weights for safety
+         num_pairs = sum(
+@@ -115,18 +129,18 @@ class ClipLoss(nn.Module):
+             transcriptome_weights = None
+             annotation_weights = None
+ 
+-        # Handle the new multi-modal logits
+-        if logits_transcriptome_text is not None:
++        if logits_transcriptome_text is not None and self.lambda_transcriptome_text > 0:
+             text_loss = contrastive_loss(
+                 logits_transcriptome_text, weight=annotation_weights
+             )
+             transcriptome_loss = contrastive_loss(
+                 logits_transcriptome_text.t(), weight=transcriptome_weights
+             )
+-            total_loss += (text_loss + transcriptome_loss) / 2.0
+-            num_valid_pairs += 1
++            pair_loss = (text_loss + transcriptome_loss) / 2.0
++            total_loss = total_loss + self.lambda_transcriptome_text * pair_loss
++            lambda_sum += self.lambda_transcriptome_text
+ 
+-        if logits_transcriptome_image is not None:
++        if logits_transcriptome_image is not None and self.lambda_transcriptome_image > 0:
+             # For transcriptome-image pairs, treat transcriptome as "text" and image as "transcriptome"
+             transcriptome_loss = contrastive_loss(
+                 logits_transcriptome_image, weight=transcriptome_weights
+@@ -134,23 +148,24 @@ class ClipLoss(nn.Module):
+             image_loss = contrastive_loss(
+                 logits_transcriptome_image.t(), weight=None
+             )  # No specific image weights
+-            total_loss += (transcriptome_loss + image_loss) / 2.0
+-            num_valid_pairs += 1
++            pair_loss = (transcriptome_loss + image_loss) / 2.0
++            total_loss = total_loss + self.lambda_transcriptome_image * pair_loss
++            lambda_sum += self.lambda_transcriptome_image
+ 
+-        if logits_text_image is not None:
++        if logits_text_image is not None and self.lambda_text_image > 0:
+             # For text-image pairs
+             text_loss = contrastive_loss(logits_text_image, weight=annotation_weights)
+             image_loss = contrastive_loss(
+                 logits_text_image.t(), weight=None
+             )  # No specific image weights
+-            total_loss += (text_loss + image_loss) / 2.0
+-            num_valid_pairs += 1
++            pair_loss = (text_loss + image_loss) / 2.0
++            total_loss = total_loss + self.lambda_text_image * pair_loss
++            lambda_sum += self.lambda_text_image
+ 
+-        # Return mean loss across all valid pairs
+-        if num_valid_pairs > 0:
+-            return total_loss / num_valid_pairs
++        if lambda_sum > 0:
++            return total_loss / lambda_sum
+         else:
+-            # No valid pairs found - this should not happen in practice
++            # No active pair (all lambdas zero or no logits supplied)
+             return torch.tensor(0.0, device=total_loss.device, requires_grad=True)
+ 
+ 

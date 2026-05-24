@@ -1,0 +1,5 @@
+# Image tower unfrozen, transcriptome and text locked. Tests whether
+# unfreezing the heavy vision backbone (UNI2) helps.
+model:
+  model_config:
+    locking_mode: LLU

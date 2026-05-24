@@ -1,0 +1,83 @@
+% =============================================================================
+% Appendix subsection for freezing + encoder ablation.
+% Append to SpatialWhisperer_ICML/appendix.tex as a new \section.
+% Numbers from results_crc_pathocell.csv (2026-05-14).
+% =============================================================================
+
+\section{Encoder choice and freezing configuration}\label{appendix:freezing_encoder}
+
+To understand performance of our method subject to established
+hyperparameters, we evaluated distinct freezing and encoder parameters.
+
+\paragraph{Freezing axis}
+Following the LiT~\citep{Zhai2021-ao} convention, the three-letter code
+$(\phi_{\mathcal{G}}, \phi_{\mathcal{T}}, \phi_{\mathcal{I}})$ specifies
+locked ($L$) versus unfrozen ($U$) towers. We evaluate $LUL$ (main paper),
+$LLL$ (only projection heads trained), and $LLU$ (image tower unfrozen).
+We attempted $ULL$ (transcriptome unfrozen), but the configuration did
+not fit in the available 80\,GB H100 memory at the batch sizes that
+produced stable training, so we omit it; the smaller-batch fallback
+diverged numerically.
+
+\paragraph{Encoder axis}
+We swap the bridge encoder Geneformer~\citep{Theodoris2023-nt} for an
+8-layer UCE~\citep{Rosen2023-uce}.\footnote{Checkpoint
+\texttt{KuanP/uce-cxg-2025-baseline-8l-512d} from
+\url{https://huggingface.co/KuanP/uce-cxg-2025-baseline-8l-512d}.}
+Image and text encoders are held at UNI2 and BioBERT.
+
+\paragraph{Results}
+Table~\ref{tab:freezing_encoder_appendix} reports macro AUROC on
+PathoCellBench (CRC; 13 classes; presence-based aggregation of
+App.~\ref{appendix:metric_discussion}).
+Freezing only the projection heads ($LLL$) costs 8.3 points absolute,
+confirming that text-encoder optimization is the dominant source of gain
+on this task, consistent with prior reports in CellWhisperer
+\citep{Schaefer2025} and LiT \citep{Zhai2021-ao}.
+Unfreezing the image tower ($LLU$) costs 5.4 points absolute relative to
+$LUL$: at one epoch the additional capacity does not offset the loss of
+the cached UNI2 representations.
+The Geneformer $\to$ UCE swap yields comparable performance to Geneformer
+at this scale (1.3 points absolute below $LUL$); the bridge encoder
+choice is not the bottleneck.
+
+\begin{table}[h]
+    \centering
+    \small
+    \caption{Hyperparameter ablation: effect of freezing configuration
+    and bridge-encoder choice on cell-type prediction (PathoCellBench
+    CRC; 13 classes; seed=0; one full epoch). \emph{Macro AUROC}
+    averages per-class presence-based AUROC across the 13 classes.
+    \emph{Macro F1} and \emph{Recall@5} are averaged across the 109
+    fields-of-view. Best per column \textbf{bold}.}
+    \label{tab:freezing_encoder_appendix}
+    \begin{tabular}{lccc}
+        \toprule
+        Configuration                       & Macro AUROC      & Macro F1 & Recall@5 \\
+        \midrule
+        $LUL$ Geneformer (main paper)       & \textbf{0.6259}  & \textbf{0.1061} & 0.5575 \\
+        $LLL$ (proj.\ heads only)           & 0.5428           & 0.0878 & 0.5350 \\
+        $LLU$ (image unfrozen)              & 0.5721           & 0.0967 & \textbf{0.5788} \\
+        $LUL$ UCE bridge                    & 0.6134           & 0.0615 & 0.5114 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+% =============================================================================
+% Forward references to insert into main.tex
+% =============================================================================
+%
+% main.tex line 274 (after the existing sentence ending "to the paired datasets."):
+%   APPEND " App.~\ref{appendix:freezing_encoder} ablates this choice and
+%           an alternative bridge encoder."
+%
+% main.tex line 289 (after "trained for 4 epochs."):
+%   APPEND " See App.~\ref{appendix:freezing_encoder} for sensitivity of
+%           this choice and an encoder-axis ablation."
+
+
+% =============================================================================
+% Email draft to Kuan (separate file: kuan_uce_email.txt — paste into mail
+% client when ready). Asks whether the 8-layer CELLxGENE 2025 checkpoint
+% is appropriate to cite in this context.
+% =============================================================================

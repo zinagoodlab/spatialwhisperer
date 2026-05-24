@@ -1,0 +1,4 @@
+config,macro_auroc_classwise_dataset_avg,macro_soft_auroc_classwise_dataset_avg,macro_auroc_datasetwise_class_avg,macro_f1_datasetwise_class_avg,macro_precision_datasetwise_class_avg,macro_recall_at_5_datasetwise_class_avg,mean_cross_entropy,mean_js_divergence
+baseline_1ep,0.623577,0.482361,0.638873,0.079515,0.151138,0.551594,2.738939,0.32013
+image_heavy,0.620423,0.490869,0.630006,0.104734,0.180076,0.57162,2.582775,0.30257
+text_heavy,0.605036,0.484784,0.613052,0.104798,0.1778,0.567051,2.63328,0.307849

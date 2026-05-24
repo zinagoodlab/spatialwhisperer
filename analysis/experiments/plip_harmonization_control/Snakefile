@@ -1,0 +1,55 @@
+"""
+PLIP control experiment for QUILT-1M caption harmonization specificity.
+
+Run on SNAP from within a SLURM job, for example:
+    uv run --no-progress snakemake --cores 1 -s src/spotwhisperer_eval/experiments/plip_harmonization_control/Snakefile
+"""
+
+from pathlib import Path
+import os
+import subprocess
+
+include: "../../../shared/config.smk"
+
+PROJECT_DIR = Path(
+    subprocess.check_output("git rev-parse --show-toplevel", shell=True)
+    .decode("utf-8")
+    .strip()
+)
+
+configfile: PROJECT_DIR / "config.yaml"
+
+PLIP_CONTROL_MODEL_NAME = "vinid/plip"
+PLIP_CONTROL_SAMPLE_SIZE = 20000
+PLIP_CONTROL_SEED = 0
+PLIP_CONTROL_BRIDGE_ORIGINAL = 0.645
+PLIP_CONTROL_BRIDGE_CURATED = 0.695
+
+PLIP_CONTROL_RESULTS_ROOT = Path(
+    os.environ.get("QUILT1M_CONTROL_DIR", "/dfs/user/moritzs/quilt1m_control")
+)
+PLIP_CONTROL_OUTPUT_DIR = (
+    PLIP_CONTROL_RESULTS_ROOT
+    / f"plip_harmonization_control/plip_sample{PLIP_CONTROL_SAMPLE_SIZE}_seed{PLIP_CONTROL_SEED}"
+)
+
+PLIP_CONTROL_ORIGINAL_METADATA = Path(
+    os.environ.get(
+        "PLIP_CONTROL_ORIGINAL_METADATA",
+        "/dfs/user/moritzs/quilt1m_control/inputs/quilt_1M_lookup.csv",
+    )
+).expanduser()
+PLIP_CONTROL_CURATED_METADATA = Path(
+    os.environ.get(
+        "PLIP_CONTROL_CURATED_METADATA",
+        "/dfs/user/moritzs/quilt1m_control/inputs/quilt_1M_lookup_curated.csv",
+    )
+).expanduser()
+PLIP_CONTROL_IMAGE_ZIP_ROOT = Path(
+    os.environ.get(
+        "PLIP_CONTROL_IMAGE_ZIP_ROOT",
+        "/dfs/user/moritzs/quilt1m_control/inputs/fullres",
+    )
+).expanduser()
+
+include: "../../rules/plip_harmonization_control.smk"

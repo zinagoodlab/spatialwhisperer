@@ -1,0 +1,5 @@
+# Image-heavy rerun: hest1k doubled, one full epoch over the duplicated mix
+trainer:
+  max_epochs: 1
+data:
+  dataset_names: archs4_geo,cellxgene_census,hest1k,hest1k

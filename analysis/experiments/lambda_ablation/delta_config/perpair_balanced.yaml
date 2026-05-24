@@ -1,0 +1,10 @@
+# Per-pair lambda sweep, balanced 1:1 (λ_TG : λ_IG)
+# Sanity-check baseline for the perpair sweep: matches the historical equal-weight setting.
+trainer:
+  max_epochs: 1
+data:
+  dataset_names: archs4_geo,cellxgene_census,hest1k
+model:
+  loss_config:
+    clip_lambda_transcriptome_text: 1.0
+    clip_lambda_transcriptome_image: 1.0

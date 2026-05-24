@@ -1,0 +1,13 @@
+# Encoder axis: swap the bridge encoder Geneformer -> UCE, freezing fixed
+# at LUL. Both model.transcriptome_model_type and data.transcriptome_processor
+# must be overridden — they pick up the cache hash and the model wiring
+# independently.
+#
+# Heads-up: hest1k and archs4_geo do NOT have UCE caches on Sherlock; only
+# cellxgene_census does (verified 2026-05-10). The first run of this config
+# will materialize those caches before training starts.
+model:
+  model_config:
+    transcriptome_model_type: uce
+data:
+  transcriptome_processor: uce

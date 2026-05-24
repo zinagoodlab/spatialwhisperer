@@ -1,0 +1,6 @@
+config,macro_auroc_classwise_dataset_avg,macro_soft_auroc_classwise_dataset_avg,macro_auroc_datasetwise_class_avg,macro_f1_datasetwise_class_avg,macro_precision_datasetwise_class_avg,macro_recall_at_5_datasetwise_class_avg,mean_cross_entropy,mean_js_divergence
+perpair_balanced,0.623432,0.488870,0.635437,0.103416,0.177505,0.562095,2.596388,0.306857
+perpair_image_heavy_2x,0.622237,0.489121,0.633836,0.102244,0.178592,0.565048,2.593998,0.306724
+perpair_image_heavy_4x,0.619864,0.488911,0.631532,0.105272,0.175275,0.567055,2.587735,0.305559
+perpair_text_heavy_2x,0.624136,0.487602,0.635624,0.103596,0.174957,0.565153,2.596664,0.306762
+perpair_text_heavy_4x,0.624016,0.485786,0.635138,0.106424,0.183006,0.574957,2.586815,0.304170

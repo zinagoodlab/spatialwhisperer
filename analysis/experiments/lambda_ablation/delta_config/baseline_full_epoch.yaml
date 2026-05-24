@@ -1,0 +1,3 @@
+# Baseline rerun: equal weight (~1:1 ratio T↔G : I↔G), one full epoch
+trainer:
+  max_epochs: 1

@@ -1,0 +1,6 @@
+# Image-heavy: hest1k doubled → ~1:2 ratio T↔G : I↔G
+trainer:
+  max_steps: 4000
+  max_epochs: -1
+data:
+  dataset_names: archs4_geo,cellxgene_census,hest1k,hest1k

@@ -1,0 +1,32 @@
+To: Kuan Pang <kuanpang@stanford.edu>
+Subject: Citing your uce-cxg-2025-baseline-8l-512d in the SpatialWhisperer revision
+
+Hi Kuan,
+
+For the ICML SpatialWhisperer revision we added an encoder-axis ablation
+to the freezing/encoder-choice appendix and used your 8-layer CELLxGENE
+2025 baseline UCE checkpoint as the alternative bridge encoder:
+
+  https://huggingface.co/KuanP/uce-cxg-2025-baseline-8l-512d
+
+Two questions:
+
+1. Is this the right checkpoint to cite for a "general-purpose" UCE
+   compared against Geneformer? We picked it over the CosMx-subset
+   variants because we train on archs4_geo + hest1k + cellxgene_census
+   and need a vocabulary that covers standard human gene symbols. The
+   model card on HF is the auto-generated template, so we'd appreciate
+   a sentence we can attribute to you on intended use / training data.
+
+2. Anything we should disclose about the checkpoint (training corpus,
+   release status, preferred citation key, paper-in-preparation) so we
+   can credit you correctly in the camera-ready?
+
+We report the result as "comparable performance to Geneformer" without
+drawing scFM-comparison conclusions; the appendix is just an ablation,
+not a benchmark.
+
+Happy to share the appendix draft if useful.
+
+Best,
+Moritz
