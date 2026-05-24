@@ -23,10 +23,6 @@ rule quilt_pathgen_paired_barplots:
         #     BENCHMARKS_DIR / "pathocell" / "{dataset}" / "performance_summary.json",
         #     dataset=COMPARISON_DATASETS
         # ),
-        musk_results=expand(
-            BENCHMARKS_DIR / "musk" / "{dataset}" / "performance_summary.json", 
-            dataset=COMPARISON_DATASETS
-        ),
         mpl_style=ancient(PROJECT_DIR / config["plot_style"])
     output:
         plots=COMPARISON_RESULTS / "paired_barplots.png",
@@ -34,7 +30,7 @@ rule quilt_pathgen_paired_barplots:
         summary_table=COMPARISON_RESULTS / "comparison_summary.csv"
     params:
         datasets=COMPARISON_DATASETS,
-        benchmarks=["lung", "musk"],  # "pathocell", 
+        benchmarks=["lung"],  # "pathocell", "musk"
         comparison_results_dir=COMPARISON_RESULTS
     conda: 
         "cellwhisperer"

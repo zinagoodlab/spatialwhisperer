@@ -10,11 +10,6 @@ rule create_analysis_plots:
             dataset_combo=[MODEL_MAPPINGS[wildcards.test_dataset][mt] for mt in ["naive_baseline", "bimodal_matching", "bimodal_bridge", "trimodal"]],
             test_dataset=wildcards.test_dataset,
         ),
-        musk_results=lambda wildcards: expand(
-            rules.aggregate_musk_results.output.aggregated_musk,
-            dataset_combo=[MODEL_MAPPINGS[wildcards.test_dataset][mt] for mt in ["naive_baseline", "bimodal_matching", "bimodal_bridge", "trimodal"]],
-            test_dataset=wildcards.test_dataset,
-        ),
         retrieval_results=lambda wildcards: expand(
             rules.aggregate_spotwhisperer_test.output.aggregated_retrieval,
             dataset_combo=[MODEL_MAPPINGS[wildcards.test_dataset][mt] for mt in ["naive_baseline", "bimodal_matching", "bimodal_bridge", "trimodal"]],
@@ -84,15 +79,6 @@ rule spider_performance_plot:
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
         hest_results=expand(
             rules.aggregate_hest_evaluation.output.aggregated_hest,
-            dataset_combo=[
-                MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"],
-                MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"],
-                MODEL_MAPPINGS["hest1k"]["bimodal_matching"],
-                MODEL_MAPPINGS["quilt1m"]["bimodal_matching"],
-            ],
-        ),
-        musk_results=expand(
-            rules.aggregate_musk_results.output.aggregated_musk,
             dataset_combo=[
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"],
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"],

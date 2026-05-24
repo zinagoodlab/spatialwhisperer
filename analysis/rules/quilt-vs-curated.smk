@@ -72,13 +72,6 @@ rule quilt_curated_trimodal_spider_plot:
                 MODEL_MAPPINGS_CURATED["cellxgene_census__archs4_geo"]["trimodal"],
             ],
         ),
-        musk_results=expand(
-            rules.aggregate_musk_results.output.aggregated_musk,
-            dataset_combo=[
-                MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"],
-                MODEL_MAPPINGS_CURATED["cellxgene_census__archs4_geo"]["trimodal"],
-            ],
-        ),
         cwevals_results=expand(
             rules.aggregate_spotwhisperer_test.output.aggregated_cwevals,
             dataset_combo=[

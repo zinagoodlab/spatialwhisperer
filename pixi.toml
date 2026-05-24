@@ -1,9 +1,9 @@
-[project]
+[workspace]
 name = "spatialwhisperer_paper"
 version = "0.1.0"
 description = "Analyses and experiments for the SpatialWhisperer ICML paper"
 channels = ["conda-forge", "bioconda"]
-platforms = ["linux-64"]
+platforms = ["linux-64", "linux-aarch64"]
 
 [dependencies]
 python = "3.11.*"
@@ -20,7 +20,10 @@ pyyaml = "*"
 tqdm = "*"
 
 [pypi-dependencies]
-spatialwhisperer = { git = "https://github.com/moritzschaefer/spatialwhisperer.git" }
+# Interim: install the existing cellwhisperer package editable from a sibling
+# checkout. To be replaced with `spatialwhisperer = { git = "...moritzschaefer/spatialwhisperer.git" }`
+# once the model code is split out and renamed (parent TODO "code & weights").
+cellwhisperer = { path = "../cellwhisperer", editable = true }
 
 [tasks]
 snakemake-dryrun = "snakemake --dry-run -j1"
