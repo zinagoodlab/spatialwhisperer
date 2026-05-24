@@ -21,8 +21,8 @@ cd "$PROJECT_DIR"
 # Run HEST benchmark for the curated bridge model (no hest1k training data)
 # The uncurated version results already exist.
 # Target: metrics.csv for all 10 HEST datasets
-snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm --unlock
-snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm \
+snakemake --snakefile analysis/Snakefile --profile sm7_slurm --unlock
+snakemake --snakefile analysis/Snakefile --profile sm7_slurm \
     ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___IDC/metrics.csv \
     ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___PRAD/metrics.csv \
     ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___PAAD/metrics.csv \

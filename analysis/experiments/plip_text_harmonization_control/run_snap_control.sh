@@ -31,12 +31,12 @@ UV_PY=(uv run --no-progress \
   --with torchmetrics \
   python)
 
-"${UV_PY[@]}" src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/build_subset_manifest.py \
+"${UV_PY[@]}" analysis/experiments/plip_text_harmonization_control/scripts/build_subset_manifest.py \
   --source-csv "$SOURCE_SUBSET_CSV" \
   --output-csv "$MANIFEST"
 
 for CONDITION in original curated; do
-  "${UV_PY[@]}" src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/run_quilt_retrieval_control.py \
+  "${UV_PY[@]}" analysis/experiments/plip_text_harmonization_control/scripts/run_quilt_retrieval_control.py \
     --model "$MODEL" \
     --caption-condition "$CONDITION" \
     --subset-manifest "$MANIFEST" \
@@ -46,7 +46,7 @@ for CONDITION in original curated; do
     --output-dir "$CONTROL_ROOT/results/$MODEL/$CONDITION"
 done
 
-"${UV_PY[@]}" src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/summarize_control_results.py \
+"${UV_PY[@]}" analysis/experiments/plip_text_harmonization_control/scripts/summarize_control_results.py \
   --results-root "$CONTROL_ROOT/results" \
   --output-csv "$CONTROL_ROOT/results/control_summary.csv" \
   --output-md "$CONTROL_ROOT/results/control_summary.md"

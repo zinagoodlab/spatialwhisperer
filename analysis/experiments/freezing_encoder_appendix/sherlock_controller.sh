@@ -35,5 +35,5 @@ conda activate cellwhisperer
 
 cd "$PROJECT_DIR"
 
-snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm --unlock
-snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm "$SNAKE_TARGET"
+snakemake --snakefile analysis/Snakefile --profile sm7_slurm --unlock
+snakemake --snakefile analysis/Snakefile --profile sm7_slurm "$SNAKE_TARGET"

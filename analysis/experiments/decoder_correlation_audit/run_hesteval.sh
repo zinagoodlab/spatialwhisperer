@@ -2,7 +2,7 @@
 # DeepSpot-comparable held-out eval on the 10 HEST-bench organs.
 #
 # Submit with:
-#   ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spotwhisperer_eval/experiments/decoder_correlation_audit/run_hesteval.sh'
+#   ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/analysis/experiments/decoder_correlation_audit/run_hesteval.sh'
 
 #SBATCH --account=zinaida
 #SBATCH --partition=cmackall
@@ -30,7 +30,7 @@ OUT_DIR="${PD}/results/decoder_correlation_audit"
 
 mkdir -p "${OUT_DIR}"
 
-python -u src/spotwhisperer_eval/experiments/decoder_correlation_audit/scripts/eval_decoder_hesteval.py \
+python -u analysis/experiments/decoder_correlation_audit/scripts/eval_decoder_hesteval.py \
     --decoder-ckpt "${PD}/results/two_stage_baseline/decoder/decoder.ckpt" \
     --gene-list "${GENE_LIST}" \
     --uni2-weights-dir "${UNI2_DIR}" \

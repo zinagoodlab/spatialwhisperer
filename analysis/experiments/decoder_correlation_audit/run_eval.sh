@@ -4,7 +4,7 @@
 # comparable metrics (per-gene + per-organ + per-slide + train-mean baseline).
 #
 # Submit with:
-#   ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spotwhisperer_eval/experiments/decoder_correlation_audit/run_eval.sh'
+#   ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/analysis/experiments/decoder_correlation_audit/run_eval.sh'
 
 #SBATCH --account=zinaida
 #SBATCH --partition=cmackall
@@ -32,7 +32,7 @@ OUT_DIR="${PD}/results/decoder_correlation_audit"
 
 mkdir -p "${OUT_DIR}"
 
-python -u src/spotwhisperer_eval/experiments/decoder_correlation_audit/scripts/eval_decoder_correlations.py \
+python -u analysis/experiments/decoder_correlation_audit/scripts/eval_decoder_correlations.py \
     --decoder-ckpt "${PD}/results/two_stage_baseline/decoder/decoder.ckpt" \
     --gene-list "${GENE_LIST}" \
     --uni2-weights-dir "${UNI2_DIR}" \

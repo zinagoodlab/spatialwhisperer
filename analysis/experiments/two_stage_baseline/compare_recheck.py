@@ -10,7 +10,7 @@ Run on Sherlock after the recheck controller (sbatch 24043918) completes.
 Usage:
     cd /home/groups/zinaida/moritzs/cellwhisperer_private
     conda run -n cellwhisperer python \
-        src/spotwhisperer_eval/experiments/two_stage_baseline/compare_recheck.py
+        analysis/experiments/two_stage_baseline/compare_recheck.py
 """
 
 from pathlib import Path

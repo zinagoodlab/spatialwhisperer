@@ -8,7 +8,7 @@
 
 from pathlib import Path as _Path
 
-LAMBDA_ABLATION_DIR = PROJECT_DIR / "src/spotwhisperer_eval/experiments/lambda_ablation"
+LAMBDA_ABLATION_DIR = PROJECT_DIR / "analysis/experiments/lambda_ablation"
 LAMBDA_DELTA_DIR = LAMBDA_ABLATION_DIR / "delta_config"
 LAMBDA_CONFIGS = sorted(p.stem for p in LAMBDA_DELTA_DIR.glob("*.yaml"))
 LAMBDA_FIXED_STEP_CONFIGS = sorted(
@@ -22,7 +22,7 @@ LAMBDA_PERPAIR_CONFIGS = sorted(
     p.stem for p in LAMBDA_DELTA_DIR.glob("perpair_*.yaml")
 )
 LAMBDA_RESULTS = PATHOCELL_RESULTS  # reuse existing pathocell results structure
-LAMBDA_BASE_CONFIG = PROJECT_DIR / "src/spotwhisperer_eval/lambda_training_config.yaml"
+LAMBDA_BASE_CONFIG = PROJECT_DIR / "analysis/lambda_training_config.yaml"
 
 
 rule train_spotwhisperer_lambda:

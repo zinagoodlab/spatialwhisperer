@@ -12,7 +12,7 @@ rule plip_harmonization_control:
         results_table_md=PLIP_CONTROL_OUTPUT_DIR / "results_table.md",
         manifest=PLIP_CONTROL_OUTPUT_DIR / "run_manifest.json",
     params:
-        script=PROJECT_DIR / "src/spotwhisperer_eval/scripts/plip_quilt1m_harmonization_control.py",
+        script=PROJECT_DIR / "analysis/scripts/plip_quilt1m_harmonization_control.py",
         original_metadata=PLIP_CONTROL_ORIGINAL_METADATA,
         curated_metadata=PLIP_CONTROL_CURATED_METADATA,
         image_zip_root=PLIP_CONTROL_IMAGE_ZIP_ROOT,

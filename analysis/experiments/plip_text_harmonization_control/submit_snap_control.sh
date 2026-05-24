@@ -21,4 +21,4 @@ sbatch \
   --time="$TIME" \
   --output="/dfs/user/$USER/quilt1m_control/logs/${MODEL}_%j.out" \
   --error="/dfs/user/$USER/quilt1m_control/logs/${MODEL}_%j.err" \
-  --wrap="bash $HOME/cellwhisperer_private/src/spotwhisperer_eval/experiments/plip_text_harmonization_control/run_snap_control.sh $PARTITION $MODEL"
+  --wrap="bash $HOME/cellwhisperer_private/analysis/experiments/plip_text_harmonization_control/run_snap_control.sh $PARTITION $MODEL"

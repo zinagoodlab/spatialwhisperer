@@ -8,7 +8,7 @@ Run on Sherlock (so it can read the full results tree):
 
     cd /home/groups/zinaida/moritzs/cellwhisperer_private
     conda run -n cellwhisperer python \
-        src/spotwhisperer_eval/experiments/freezing_encoder_appendix/aggregate_results.py
+        analysis/experiments/freezing_encoder_appendix/aggregate_results.py
 """
 
 import logging
@@ -22,7 +22,7 @@ PROJECT_DIR = Path("/home/groups/zinaida/moritzs/cellwhisperer_private")
 RESULTS_DIR = PROJECT_DIR / "results/pathocell_evaluation"
 OUT_PATH = (
     PROJECT_DIR
-    / "src/spotwhisperer_eval/experiments/freezing_encoder_appendix/results_crc_pathocell.csv"
+    / "analysis/experiments/freezing_encoder_appendix/results_crc_pathocell.csv"
 )
 
 # Configs we actually trained. `ull` is reported as N/A in the appendix table

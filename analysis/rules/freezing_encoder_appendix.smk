@@ -12,7 +12,7 @@
 
 from pathlib import Path as _Path
 
-FE_ABLATION_DIR = PROJECT_DIR / "src/spotwhisperer_eval/experiments/freezing_encoder_appendix"
+FE_ABLATION_DIR = PROJECT_DIR / "analysis/experiments/freezing_encoder_appendix"
 FE_DELTA_DIR = FE_ABLATION_DIR / "delta_config"
 # Production configs evaluated on PathoCellBench. Excludes smoke configs.
 FE_CONFIGS = sorted(
@@ -22,7 +22,7 @@ FE_SMOKE_CONFIGS = sorted(
     p.stem for p in FE_DELTA_DIR.glob("*_smoke.yaml")
 )
 FE_RESULTS = PATHOCELL_RESULTS  # reuse existing pathocell results structure
-FE_BASE_CONFIG = PROJECT_DIR / "src/spotwhisperer_eval/freezing_encoder_training_config.yaml"
+FE_BASE_CONFIG = PROJECT_DIR / "analysis/freezing_encoder_training_config.yaml"
 
 
 rule train_spotwhisperer_fe:

@@ -1,7 +1,7 @@
 # Disease-stratified evaluation of PanNuke cell type prediction, and
 # zero-shot tissue type (organ) prediction on PanNuke.
 #
-# See: src/spotwhisperer_eval/experiments/disease_stratification/SUMMARY.md
+# See: analysis/experiments/disease_stratification/SUMMARY.md
 
 # ── Disease-stratified cell type prediction ──────────────────────────────────
 

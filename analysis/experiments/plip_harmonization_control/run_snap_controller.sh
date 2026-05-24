@@ -26,7 +26,7 @@ uv run --no-progress \
   --with transformers \
   --with pillow \
   --with tabulate \
-  python src/spotwhisperer_eval/scripts/plip_quilt1m_harmonization_control.py \
+  python analysis/scripts/plip_quilt1m_harmonization_control.py \
     --original-metadata /dfs/user/$USER/quilt1m_control/inputs/quilt_1M_lookup.csv \
     --curated-metadata /dfs/user/$USER/quilt1m_control/inputs/quilt_1M_lookup_curated.csv \
     --image-zip-root /lfs/local/0/$USER/quilt1m_control/inputs/fullres \

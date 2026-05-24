@@ -15,7 +15,7 @@ MODALITY_COLORS = {
     "trimodal": "#f39c12",
 }
 
-BASE_CONFIG = PROJECT_DIR / "src/spotwhisperer_eval/base_config.yaml"
+BASE_CONFIG = PROJECT_DIR / "analysis/base_config.yaml"
 
 # Seeds for reproducibility
 SEEDS = [0]

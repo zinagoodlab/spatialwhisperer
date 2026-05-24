@@ -2,7 +2,7 @@
 PLIP control experiment for QUILT-1M caption harmonization specificity.
 
 Run on SNAP from within a SLURM job, for example:
-    uv run --no-progress snakemake --cores 1 -s src/spotwhisperer_eval/experiments/plip_harmonization_control/Snakefile
+    uv run --no-progress snakemake --cores 1 -s analysis/experiments/plip_harmonization_control/Snakefile
 """
 
 from pathlib import Path

@@ -11,7 +11,7 @@ and metrics script.
 Usage (on Sherlock, from within a SLURM job):
     conda activate cellwhisperer
     snakemake --profile sm7_slurm --cores 4 \
-        -s src/spotwhisperer_eval/experiments/prompt_engineering/Snakefile
+        -s analysis/experiments/prompt_engineering/Snakefile
 """
 
 from pathlib import Path

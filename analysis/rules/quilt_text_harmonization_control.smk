@@ -25,7 +25,7 @@ rule quilt_text_harmonization_subset_manifest:
         export XDG_BIN_HOME=/lfs/local/0/$USER/.local/bin
         export XDG_DATA_HOME=/lfs/local/0/$USER/.local/share
         cd {params.project_dir}
-        uv run --no-progress python src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/build_subset_manifest.py \
+        uv run --no-progress python analysis/experiments/plip_text_harmonization_control/scripts/build_subset_manifest.py \
             --source-csv {input.source_csv} \
             --output-csv {output.manifest}
     """
@@ -52,7 +52,7 @@ rule quilt_text_harmonization_model_condition:
         export XDG_BIN_HOME=/lfs/local/0/$USER/.local/bin
         export XDG_DATA_HOME=/lfs/local/0/$USER/.local/share
         cd {params.project_dir}
-        uv run --no-progress python src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/run_quilt_retrieval_control.py \
+        uv run --no-progress python analysis/experiments/plip_text_harmonization_control/scripts/run_quilt_retrieval_control.py \
             --model {wildcards.model} \
             --caption-condition {wildcards.caption_condition} \
             --subset-manifest {input.manifest} \
@@ -85,7 +85,7 @@ rule quilt_text_harmonization_summary:
         export XDG_BIN_HOME=/lfs/local/0/$USER/.local/bin
         export XDG_DATA_HOME=/lfs/local/0/$USER/.local/share
         cd {params.project_dir}
-        uv run --no-progress python src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/summarize_control_results.py \
+        uv run --no-progress python analysis/experiments/plip_text_harmonization_control/scripts/summarize_control_results.py \
             --results-root {params.results_root} \
             --output-csv {output.csv} \
             --output-md {output.md}

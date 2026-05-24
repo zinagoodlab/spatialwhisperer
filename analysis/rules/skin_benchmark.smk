@@ -16,7 +16,7 @@
 # to that. Mirror that path here so we hit the same files.
 SKIN_DATASET_ROOT = PROJECT_DIR / config["paths"]["musk"]["datasets"] / "skincancer"
 SKIN_RESULTS = PROJECT_DIR / "results/skin_benchmark"
-SKIN_SCRIPTS = PROJECT_DIR / "src/spotwhisperer_eval/scripts"
+SKIN_SCRIPTS = PROJECT_DIR / "analysis/scripts"
 
 # Each labels file is a declared input → edit auto-invalidates scores.
 # clinical: Kriegsmann et al. 2022 strings (the relabel we want to ship).

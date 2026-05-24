@@ -3,7 +3,7 @@ Compare HEST benchmark results: bridge (quilt1m) vs bridge (quilt1m_curated).
 Both models trained on G<->T + T<->I only (no hest1k), evaluated on G<->I retrieval.
 
 Run locally after results are available:
-    pixi run python src/spotwhisperer_eval/experiments/curated_bridge_hest/compare_results.py
+    pixi run python analysis/experiments/curated_bridge_hest/compare_results.py
 """
 
 import pandas as pd

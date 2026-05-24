@@ -7,7 +7,7 @@
 # Submits child SLURM jobs via the sm7_slurm profile (max 20 parallel).
 #
 # Submit with:
-#   ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spotwhisperer_eval/experiments/two_stage_baseline/run_secondary_benchmarks.sh'
+#   ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/analysis/experiments/two_stage_baseline/run_secondary_benchmarks.sh'
 
 #SBATCH --account=zinaida
 #SBATCH --partition=cmackall
@@ -48,6 +48,6 @@ TARGETS=(
 )
 
 snakemake \
-    --snakefile src/spotwhisperer_eval/Snakefile \
+    --snakefile analysis/Snakefile \
     --profile sm7_slurm \
     "${TARGETS[@]}"

@@ -31,6 +31,6 @@ TARGETS=(
 )
 
 snakemake \
-    --snakefile src/spotwhisperer_eval/Snakefile \
+    --snakefile analysis/Snakefile \
     --profile sm7_slurm \
     "${TARGETS[@]}"
