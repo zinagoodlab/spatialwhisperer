@@ -2,6 +2,9 @@ __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+
+# lsyncd config (machine-local, not portable)
+lsyncd*.conf
 .pixi/
 .snakemake/
 .ipynb_checkpoints/
@@ -10,9 +13,13 @@ __pycache__/
 .envrc
 
 # Pipeline outputs (regenerated from inputs)
+results
 results/
 logs/
+scratch
 scratch/
+resources
+resources/
 
 # Local experiment artifacts that shouldn't be versioned
 *.ckpt

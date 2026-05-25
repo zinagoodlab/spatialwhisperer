@@ -17,7 +17,7 @@ rule prepare_hest_data:
     Download and prepare HEST dataset assets (patches, splits) for a dataset.
     """
     input:
-        config_file=PROJECT_DIR / "src/figures/config/bench_config.yaml"
+        config_file=PROJECT_DIR / "analysis/figures/config/bench_config.yaml"
     output:
         dataset_dir=directory(HEST_DATA_ROOT / "{dataset}")
     wildcard_constraints:
