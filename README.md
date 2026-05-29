@@ -99,19 +99,28 @@ sim_ig = torch.nn.functional.cosine_similarity(image_emb, gene_emb).item()
 ## Reproduce paper analyses
 
 The pipeline lives in `analysis/` (Snakemake 7.x). Outputs go to
-`<repo>/results/`. Snakemake is invoked from inside `analysis/`. E.g.
+`<repo>/results/`. From a fresh clone (after `pixi install` + the HF
+login below), one command reproduces every table and figure in the
+paper:
 
 ```bash
 cd analysis
-pixi run snakemake -j 4 pathocell_all                                # tab:method_baselines_benchmark (PathoCell column)
+pixi run snakemake -j 4 paper_all
 ```
 
-Standalone Python script for the multi-seed table 2 numbers:
+`paper_all` composes the per-benchmark aggregates listed below. To
+reproduce only one benchmark, target the corresponding subtarget:
 
-```bash
-cd <repo-root>
-BASELINE_TERMS=terms1 pixi run python analysis/scripts/compute_baselines_table2_style.py
-```
+| Target | Produces |
+|---|---|
+| `pathocell_all` | PathoCell CRC + Lizard + PanNuke per-class metrics, plots, model comparisons |
+| `seed_analysis_all` | Multi-seed Table 2 (our model, all seeds) + PLIP/CONCH baselines, both `terms1` and `terms2` prompt sets |
+| `hest_benchmark_all` | HEST regression + retrieval benchmarks |
+| `spatialwhisperer_all` | Lung tissue zero-shot predictions |
+| `cellwhisperer_benchmark_all` | CellWhisperer benchmark summary + per-class analysis |
+| `lambda_ablation_all` | λ ablation appendix table |
+| `freezing_encoder_appendix_all` | Encoder-freezing appendix table |
+| `model_interpretation_all` | LLM-based interpretation + correlation + disease-detectability plots |
 
 ### Eval data — auto-downloaded
 
@@ -140,7 +149,7 @@ spatialwhisperer/
 ├── analysis/              # paper pipeline (Snakemake)
 │   ├── Snakefile          # entry point
 │   ├── rules/             # 24 modular rule files
-│   ├── scripts/           # standalone Python tools (table builders, etc.)
+│   ├── scripts/           # rule bodies (table builders, score splitters, etc.)
 │   ├── notebooks/         # plotting / per-class analysis notebooks
 │   ├── experiments/       # per-ablation working dirs (lambda, freezing,
 │   │                      #   seed-variance, ...)
