@@ -14,14 +14,14 @@ liz_gt = load_gt_for_dir(H5AD_BASE / "lizard")
 pan_gt = load_gt_for_dir(H5AD_BASE / "pannuke")
 
 PAIRS = [
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k",           "crc",     crc_gt, auroc_crc),
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",  "crc",     crc_gt, auroc_crc),
-    ("spotwhisperer_quilt1m",                                        "crc",     crc_gt, auroc_crc),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k",           "crc",     crc_gt, auroc_crc),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",  "crc",     crc_gt, auroc_crc),
+    ("spatialwhisperer_quilt1m",                                        "crc",     crc_gt, auroc_crc),
     ("two_stage_baseline",                                           "crc",     crc_gt, auroc_crc),
     ("omiclip",                                                      "crc",     crc_gt, auroc_crc),
     ("omiclip_pseudobulk",                                           "crc",     crc_gt, auroc_crc),
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k",           "lizard",  liz_gt, auroc_lizard),
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k",           "pannuke", pan_gt, auroc_pannuke),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k",           "lizard",  liz_gt, auroc_lizard),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k",           "pannuke", pan_gt, auroc_pannuke),
 ]
 
 print(f"{'model':60s}  {'bench':7s}  {'canonical':>10s}  {'recheck':>10s}  {'|Δ|':>10s}")

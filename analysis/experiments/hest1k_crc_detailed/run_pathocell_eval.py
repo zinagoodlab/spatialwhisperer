@@ -181,8 +181,8 @@ def main():
     )
     args = parser.parse_args()
 
-    from cellwhisperer.utils.model_io import load_cellwhisperer_model
-    from cellwhisperer.utils.inference import score_left_vs_right
+    from spatialwhisperer.utils.model_io import load_cellwhisperer_model
+    from spatialwhisperer.utils.inference import score_left_vs_right
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

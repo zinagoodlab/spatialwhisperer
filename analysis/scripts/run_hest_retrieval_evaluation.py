@@ -16,10 +16,10 @@ from tqdm import tqdm
 import logging
 
 # Import CellWhisperer retrieval evaluation functions
-from cellwhisperer.validation.zero_shot.functions import (
+from spatialwhisperer.validation.zero_shot.functions import (
     get_performance_metrics_left_vs_right,
 )
-from cellwhisperer.utils.model_io import load_cellwhisperer_model
+from spatialwhisperer.utils.model_io import load_cellwhisperer_model
 from hest.bench.utils.file_utils import read_assets_from_h5
 
 
@@ -266,10 +266,10 @@ if __name__ == "__main__":
     logger.info(f"Model path: {model_path}")
 
     # Use the output directory directly from snakemake
-    spotwhisperer_results_dir = Path(snakemake.output.results_dir)
-    spotwhisperer_results_dir.mkdir(parents=True, exist_ok=True)
+    spatialwhisperer_results_dir = Path(snakemake.output.results_dir)
+    spatialwhisperer_results_dir.mkdir(parents=True, exist_ok=True)
 
-    logger.info(f"Results will be saved to: {spotwhisperer_results_dir}")
+    logger.info(f"Results will be saved to: {spatialwhisperer_results_dir}")
 
     # Load SpotWhisperer model
     logger.info("Loading SpotWhisperer model...")
@@ -283,7 +283,7 @@ if __name__ == "__main__":
 
     # Run evaluation
     dataset_results = evaluate_dataset_folds(
-        dataset_bench_path, embeddings_dir, spotwhisperer_results_dir, model
+        dataset_bench_path, embeddings_dir, spatialwhisperer_results_dir, model
     )
 
     # Create dataset performance summary
@@ -310,7 +310,7 @@ if __name__ == "__main__":
     }
 
     # Save dataset-specific summary
-    with open(spotwhisperer_results_dir / "dataset_summary.json", "w") as f:
+    with open(spatialwhisperer_results_dir / "dataset_summary.json", "w") as f:
         json.dump(dataset_performance_summary, f, sort_keys=True, indent=4)
 
     img_to_transcriptome_recall1_mean = dataset_results.get(

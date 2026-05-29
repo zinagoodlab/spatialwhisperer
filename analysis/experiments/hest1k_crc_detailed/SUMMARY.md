@@ -38,7 +38,7 @@ No cell-type labels deposited (only QC obs columns); Oliveira identified 9 cell 
 
 ## Training
 
-### Config: src/spotwhisperer_eval/experiments/hest1k_crc_detailed/train_config.yaml
+### Config: src/spatialwhisperer_eval/experiments/hest1k_crc_detailed/train_config.yaml
 - Datasets: `hest1k_crc_detailed, cellxgene_census`
 - Resolution: `detailed_resolution` (0.25 um/px, 224px patches, `cell_level_model: true`)
 - Model: UNI2 image + MLP transcriptome + BERT text, locking mode `LUL` (UNI2 frozen)
@@ -53,7 +53,7 @@ No cell-type labels deposited (only QC obs columns); Oliveira identified 9 cell 
 
 ### Setup
 - Model: `crc_visiumhd_4gpu` (TENX156 + TENX128, 427K cells, 1 epoch)
-- Eval script: `src/spotwhisperer_eval/experiments/hest1k_crc_detailed/run_pathocell_eval.py`
+- Eval script: `src/spatialwhisperer_eval/experiments/hest1k_crc_detailed/run_pathocell_eval.py`
 - 109 CRC TMA datasets from Schuerch et al. 2020 (CODEX-derived ground truth)
 - Zero-shot: image -> text similarity scoring per cell
 

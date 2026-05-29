@@ -33,7 +33,7 @@ CONFIGS = ["baseline", "lll", "llu", "uce"]
 
 def aggregate_one(config: str) -> dict:
     """Aggregate a single config's metrics into one row."""
-    summary_dir = RESULTS_DIR / f"spotwhisperer_fe_{config}" / "summary"
+    summary_dir = RESULTS_DIR / f"spatialwhisperer_fe_{config}" / "summary"
 
     per_class = pd.read_csv(summary_dir / "patch_per_class_metrics_from_scores.csv")
     per_dataset = pd.read_csv(summary_dir / "patch_per_dataset_metrics_from_scores.csv")

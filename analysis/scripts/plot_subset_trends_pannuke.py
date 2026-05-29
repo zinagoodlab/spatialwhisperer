@@ -128,7 +128,7 @@ def extract_metrics_for_combo(modality_pair: str, combo: str) -> dict:
     elif modality_pair == "image-text":
         summary_path = (
             pathocell_eval_dir
-            / f"spotwhisperer_{combo}"
+            / f"spatialwhisperer_{combo}"
             / "pannuke_summary"
             / "tissue_type_all_summary.csv"
         )

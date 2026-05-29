@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project]
+name = "spatialwhisperer"
+version = "0.1.0"
+description = "SpatialWhisperer: trimodal image-gene-text alignment for histology"
+readme = "README.md"
+authors = [{name = "Moritz Schaefer", email = "mail@moritzs.de"}]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+]
+
+[project.scripts]
+spatialwhisperer = "spatialwhisperer.jointemb.training:cli_main"
+spatialwhisperer_sweeping = "spatialwhisperer.jointemb.sweeping:main"
+
+[tool.setuptools.packages.find]
+where = ["src", "modules/Geneformer"]
+namespaces = false
+
+[tool.setuptools.package-dir]
+"spatialwhisperer" = "src/spatialwhisperer"
+"geneformer" = "modules/Geneformer/geneformer"

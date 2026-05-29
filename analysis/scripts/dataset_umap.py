@@ -25,18 +25,18 @@ from tqdm import tqdm
 import umap
 import glob
 
-from cellwhisperer.utils.model_io import load_cellwhisperer_model
-from cellwhisperer.jointemb.dataset.inference import CellxGenePreparationLoader
+from spatialwhisperer.utils.model_io import load_cellwhisperer_model
+from spatialwhisperer.jointemb.dataset.inference import CellxGenePreparationLoader
 
-PROJECT_DIR = Path(__file__).resolve().parents[3]  # cellwhisperer root
+PROJECT_DIR = Path(__file__).resolve().parents[2]  # spatialwhisperer_paper root
 matplotlib.style.use(str(PROJECT_DIR / "src/plot_style/main.style"))
 
-OUTPUT_DIR = PROJECT_DIR / "results/spotwhisperer_eval/dataset_umap"
+OUTPUT_DIR = PROJECT_DIR / "results/spatialwhisperer_eval/dataset_umap"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 MODEL_CKPT = (
     PROJECT_DIR
-    / "results/models/jointemb/spotwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt"
+    / "results/models/jointemb/spatialwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt"
 )
 CELLXGENE_PATH = PROJECT_DIR / "results/cellxgene_census/full_data.h5ad"
 HEST1K_GLOB = str(PROJECT_DIR / "results/hest1k/h5ads/full_data_*.h5ad")

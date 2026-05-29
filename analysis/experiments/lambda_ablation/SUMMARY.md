@@ -39,13 +39,13 @@ the same number of optimizer steps — the only variable is batch composition.
 - Snakefile: `include: "rules/lambda_ablation.smk"` (line 29)
 
 ### Output paths
-- Models: `results/models/jointemb/spotwhisperer_lambda_{baseline_1ep,image_heavy,text_heavy}.ckpt`
-- Eval: `results/pathocell_evaluation/spotwhisperer_lambda_{config}/summary/patch_per_class_metrics_from_scores.csv`
+- Models: `results/models/jointemb/spatialwhisperer_lambda_{baseline_1ep,image_heavy,text_heavy}.ckpt`
+- Eval: `results/pathocell_evaluation/spatialwhisperer_lambda_{config}/summary/patch_per_class_metrics_from_scores.csv`
 - WandB: project `SpatialWhisperer`, entity `single-cellm`, run names `lambda_ablation_{baseline_1ep,image_heavy,text_heavy}`
 
 ## How to run
 ```bash
-snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm lambda_ablation_all
+snakemake --snakefile src/spatialwhisperer_eval/Snakefile --profile sm7_slurm lambda_ablation_all
 ```
 
 ## Progress Log
@@ -67,9 +67,9 @@ snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm lambd
 
 ### 2026-03-27: Training completed, first eval attempt failed
 - All three trainings completed successfully and produced checkpoints:
-  - `spotwhisperer_lambda_baseline_1ep.ckpt`
-  - `spotwhisperer_lambda_image_heavy.ckpt`
-  - `spotwhisperer_lambda_text_heavy.ckpt`
+  - `spatialwhisperer_lambda_baseline_1ep.ckpt`
+  - `spatialwhisperer_lambda_image_heavy.ckpt`
+  - `spatialwhisperer_lambda_text_heavy.ckpt`
 - Partial CRC eval progress before failure:
   - `text_heavy`: 12 score files
   - `image_heavy`: 2 score files
@@ -86,7 +86,7 @@ snakemake --snakefile src/spotwhisperer_eval/Snakefile --profile sm7_slurm lambd
 
 ### 2026-03-28: Switched from tmux controller to SLURM conductor job
 - The tmux-based controller failed again after progressing to ~53% because the Snakemake SLURM helper crashed while polling job status (`BlockingIOError: [Errno 11] Resource temporarily unavailable`)
-- Added `src/spotwhisperer_eval/experiments/lambda_ablation/sherlock_controller.sh`, a long-running `sbatch` conductor job that:
+- Added `src/spatialwhisperer_eval/experiments/lambda_ablation/sherlock_controller.sh`, a long-running `sbatch` conductor job that:
   - activates the `cellwhisperer` conda environment
   - uses `XDG_CACHE_HOME=/scratch/users/moritzs/.cache`
   - runs `snakemake --unlock`
@@ -119,7 +119,7 @@ This is reported below as `macro_auroc_classwise_dataset_avg` and matches the me
 average across classes). It is **not** the pooled/global AUROC, and it is also distinct
 from averaging per-dataset macro AUROCs (`macro_auroc_datasetwise_class_avg`).
 
-Saved table: `src/spotwhisperer_eval/experiments/lambda_ablation/results_crc_pathocell.csv`
+Saved table: `src/spatialwhisperer_eval/experiments/lambda_ablation/results_crc_pathocell.csv`
 
 | config | macro_auroc_classwise_dataset_avg | macro_soft_auroc_classwise_dataset_avg | macro_auroc_datasetwise_class_avg | macro_f1_datasetwise_class_avg | macro_precision_datasetwise_class_avg | macro_recall_at_5_datasetwise_class_avg |
 |--------|-----------------------------------|----------------------------------------|-----------------------------------|--------------------------------|----------------------------------------|------------------------------------------|
@@ -149,10 +149,10 @@ original fixed-step outputs remain intact:
 These use one full epoch per configuration (`max_epochs: 1`) rather than `max_steps: 4000`.
 
 ### Added files
-- `src/spotwhisperer_eval/experiments/lambda_ablation/delta_config/baseline_full_epoch.yaml`
-- `src/spotwhisperer_eval/experiments/lambda_ablation/delta_config/image_heavy_full_epoch.yaml`
-- `src/spotwhisperer_eval/experiments/lambda_ablation/delta_config/text_heavy_full_epoch.yaml`
-- `src/spotwhisperer_eval/experiments/lambda_ablation/sherlock_controller_full_epoch.sh`
+- `src/spatialwhisperer_eval/experiments/lambda_ablation/delta_config/baseline_full_epoch.yaml`
+- `src/spatialwhisperer_eval/experiments/lambda_ablation/delta_config/image_heavy_full_epoch.yaml`
+- `src/spatialwhisperer_eval/experiments/lambda_ablation/delta_config/text_heavy_full_epoch.yaml`
+- `src/spatialwhisperer_eval/experiments/lambda_ablation/sherlock_controller_full_epoch.sh`
 
 ### Snakemake target
 - `lambda_ablation_full_epoch_all`
@@ -160,8 +160,8 @@ These use one full epoch per configuration (`max_epochs: 1`) rather than `max_st
 This target retrains the three full-epoch models and runs the full CRC PathoCellBench
 evaluation again, writing to new model/result paths such as:
 
-- `results/models/jointemb/spotwhisperer_lambda_baseline_full_epoch.ckpt`
-- `results/pathocell_evaluation/spotwhisperer_lambda_baseline_full_epoch/...`
+- `results/models/jointemb/spatialwhisperer_lambda_baseline_full_epoch.ckpt`
+- `results/pathocell_evaluation/spatialwhisperer_lambda_baseline_full_epoch/...`
 
 ### Full-epoch progress log
 
@@ -175,7 +175,7 @@ evaluation again, writing to new model/result paths such as:
 
 ### Full-epoch results (2026-03-30)
 
-Saved table: `src/spotwhisperer_eval/experiments/lambda_ablation/results_crc_pathocell_full_epoch.csv`
+Saved table: `src/spatialwhisperer_eval/experiments/lambda_ablation/results_crc_pathocell_full_epoch.csv`
 
 | config | macro_auroc (class→dataset avg) | macro_soft_auroc | macro_auroc (dataset→class avg) | macro_f1 | macro_precision | macro_recall@5 | cross_entropy | JS_divergence |
 |--------|--------------------------------|-----------------|-------------------------------|----------|----------------|---------------|--------------|--------------|
@@ -227,7 +227,7 @@ Chosen approach for the appendix.
 > appendix-only. Apply with:
 >
 > ```bash
-> git apply src/spotwhisperer_eval/experiments/lambda_ablation/perpair_lambdas.patch
+> git apply src/spatialwhisperer_eval/experiments/lambda_ablation/perpair_lambdas.patch
 > ```
 >
 > Revert with `git checkout HEAD -- src/cellwhisperer/jointemb/loss/` after
@@ -248,7 +248,7 @@ Implementation:
   `dataset_names: archs4_geo,cellxgene_census,hest1k` (same as main-text Trimodal),
   `max_epochs: 1`, identical step budget. Only the per-pair lambdas vary.
 - Snakemake target `lambda_ablation_perpair_all` (uses the existing
-  `train_spotwhisperer_lambda` and `pathocell_cell_type_prediction` rules).
+  `train_spatialwhisperer_lambda` and `pathocell_cell_type_prediction` rules).
 - Controller script `sherlock_controller_perpair.sh`. Job 25029903 ran 1d 15h 11m on
   Sherlock cmackall; completed cleanly (exit 0:0). No job failures during the sweep.
 

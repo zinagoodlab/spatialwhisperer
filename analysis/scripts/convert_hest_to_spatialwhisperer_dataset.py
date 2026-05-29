@@ -115,7 +115,7 @@ def reconstruct_image_from_patches(patches_h5_path, target_image_size=None):
     )  # Return offset for coordinate adjustment
 
 
-def convert_hest_sample_to_spotwhisperer(sample_row, dataset_bench_path, output_path):
+def convert_hest_sample_to_spatialwhisperer(sample_row, dataset_bench_path, output_path):
     """
     Convert a single HEST sample to SpotWhisperer format.
 
@@ -262,7 +262,7 @@ df["relative_path"] = df["sample_id"].apply(
 # Convert each unique sample
 
 for _, sample_row in tqdm(df.iterrows(), total=len(df)):
-    convert_hest_sample_to_spotwhisperer(
+    convert_hest_sample_to_spatialwhisperer(
         sample_row,
         dataset_bench_path,
         output_path=Path(snakemake.output.converted_dataset).parent

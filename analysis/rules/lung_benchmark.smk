@@ -1,6 +1,6 @@
 # SpotWhisperer evaluation pipeline for lung tissue datasets
-SPOTWHISPERER_RESULTS = PROJECT_DIR / "results/spotwhisperer_eval/lung"
-SPOTWHISPERER_MODEL_RESULTS = SPOTWHISPERER_RESULTS / "{model}"
+SPATIALWHISPERER_RESULTS = PROJECT_DIR / "results/spatialwhisperer_eval/lung"
+SPATIALWHISPERER_MODEL_RESULTS = SPATIALWHISPERER_RESULTS / "{model}"
 
 # Lung tissue data paths
 LUNG_DATA = PROJECT_DIR / "resources/lung_tissue"
@@ -22,7 +22,7 @@ rule zero_shot_lung_prediction:
         raw_read_count_table=PROJECT_DIR / config["paths"]["read_count_table"],
         model=PROJECT_DIR / config["paths"]["jointemb_models"] / "{model}.ckpt",
     output:
-        predictions=SPOTWHISPERER_MODEL_RESULTS / "datasets" / "{dataset,[^/]+}" / "predictions" / "{metadata_col}.{grouping,by_cell|by_class}.csv",
+        predictions=SPATIALWHISPERER_MODEL_RESULTS / "datasets" / "{dataset,[^/]+}" / "predictions" / "{metadata_col}.{grouping,by_cell|by_class}.csv",
     params:
         use_prefix_suffix_version=True,
         average_by_class=lambda wildcards: wildcards.grouping == "by_class",
@@ -36,12 +36,12 @@ rule zero_shot_lung_prediction:
         mem_mb=35000,
         slurm=slurm_gres("small"),
     log:
-        notebook="../logs/zero_shot_spotwhisperer_prediction_{model}_{dataset}_{metadata_col}_{grouping}.ipynb"
+        notebook="../logs/zero_shot_spatialwhisperer_prediction_{model}_{dataset}_{metadata_col}_{grouping}.ipynb"
     notebook:
-        "../notebooks/zero_shot_spotwhisperer_prediction.py.ipynb"
+        "../notebooks/zero_shot_spatialwhisperer_prediction.py.ipynb"
 
 
-rule plot_spotwhisperer_confusion_matrix:
+rule plot_spatialwhisperer_confusion_matrix:
     """
     Plot confusion matrices and compute performance metrics for lung tissue predictions.
     """
@@ -50,8 +50,8 @@ rule plot_spotwhisperer_confusion_matrix:
         raw_read_count_table=PROJECT_DIR / config["paths"]["read_count_table"],
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
     output:
-        confusion_matrix=SPOTWHISPERER_MODEL_RESULTS / "plots" / "{dataset}" / "confusion_matrix_{metadata_col}_{grouping}.png",
-        performance_metrics=SPOTWHISPERER_MODEL_RESULTS / "performance" / "{dataset}" / "{metadata_col}_{grouping}_metrics.json",
+        confusion_matrix=SPATIALWHISPERER_MODEL_RESULTS / "plots" / "{dataset}" / "confusion_matrix_{metadata_col}_{grouping}.png",
+        performance_metrics=SPATIALWHISPERER_MODEL_RESULTS / "performance" / "{dataset}" / "{metadata_col}_{grouping}_metrics.json",
     wildcard_constraints:
         metadata_col=".*annotations?"
     conda:
@@ -60,12 +60,12 @@ rule plot_spotwhisperer_confusion_matrix:
         mem_mb=100000,
         slurm="cpus-per-task=2"
     log:
-        notebook="../logs/plot_spotwhisperer_confusion_matrix_{model}_{dataset}_{metadata_col}_{grouping}.ipynb"
+        notebook="../logs/plot_spatialwhisperer_confusion_matrix_{model}_{dataset}_{metadata_col}_{grouping}.ipynb"
     notebook:
-        "../notebooks/plot_spotwhisperer_confusion_matrix.py.ipynb"
+        "../notebooks/plot_spatialwhisperer_confusion_matrix.py.ipynb"
 
 
-# rule compute_spotwhisperer_umap:
+# rule compute_spatialwhisperer_umap:
 #     """
 #     Compute UMAP embedding for SpotWhisperer datasets
 #     TODO tbd, if needed
@@ -74,19 +74,19 @@ rule plot_spotwhisperer_confusion_matrix:
 #         processed_dataset=rules.process_full_dataset.output.model_outputs,
 #         raw_read_count_table=PROJECT_DIR / config["paths"]["read_count_table"]
 #     output:
-#         umap=SPOTWHISPERER_MODEL_RESULTS / "datasets" / "{dataset}" / "X_umap_on_neighbors_{model}.npz"
+#         umap=SPATIALWHISPERER_MODEL_RESULTS / "datasets" / "{dataset}" / "X_umap_on_neighbors_{model}.npz"
 #     conda:
 #         "cellwhisperer"
 #     resources:
 #         mem_mb=400000,
 #         slurm="cpus-per-task=2"
 #     log:
-#         notebook="../logs/compute_spotwhisperer_umap_{dataset}_{model}.ipynb"
+#         notebook="../logs/compute_spatialwhisperer_umap_{dataset}_{model}.ipynb"
 #     notebook:
-#         "../notebooks/compute_spotwhisperer_umap.py.ipynb"
+#         "../notebooks/compute_spatialwhisperer_umap.py.ipynb"
 
 
-# rule plot_spotwhisperer_spatial:
+# rule plot_spatialwhisperer_spatial:
 #     """
 #     Plot spatial distribution of predictions on tissue sections
 #     TODO tbd, if needed
@@ -94,19 +94,19 @@ rule plot_spotwhisperer_confusion_matrix:
 #     input:
 #         predictions=rules.zero_shot_lung_prediction.output.predictions,
 #         raw_read_count_table=PROJECT_DIR / config["paths"]["read_count_table"],
-#         umap=rules.compute_spotwhisperer_umap.output.umap,
+#         umap=rules.compute_spatialwhisperer_umap.output.umap,
 #         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
 #     output:
-#         spatial_plot=SPOTWHISPERER_MODEL_RESULTS / "plots" / "{dataset}" / "spatial_{metadata_col}_{grouping}.png",
+#         spatial_plot=SPATIALWHISPERER_MODEL_RESULTS / "plots" / "{dataset}" / "spatial_{metadata_col}_{grouping}.png",
 #     conda:
 #         "cellwhisperer"
 #     resources:
 #         mem_mb=200000,
 #         slurm="cpus-per-task=2"
 #     log:
-#         notebook="../logs/plot_spotwhisperer_spatial_{model}_{dataset}_{metadata_col}_{grouping}.ipynb"
+#         notebook="../logs/plot_spatialwhisperer_spatial_{model}_{dataset}_{metadata_col}_{grouping}.ipynb"
 #     notebook:
-#         "../notebooks/plot_spotwhisperer_spatial.py.ipynb"
+#         "../notebooks/plot_spatialwhisperer_spatial.py.ipynb"
 
 
 # Performance summary across all lung tissue datasets
@@ -116,35 +116,35 @@ rule lung_performance_summary:
     """
     input:
         performance_files=ancient(expand(  # I've put this on ancient so that it doesn't recompute the quilt1m evaluations (which would need model retraining)
-            SPOTWHISPERER_MODEL_RESULTS / "performance" / "{dataset}" / "{metadata_col}_{grouping}_metrics.json",
+            SPATIALWHISPERER_MODEL_RESULTS / "performance" / "{dataset}" / "{metadata_col}_{grouping}_metrics.json",
             dataset=["lung_tissue"],
             metadata_col=LUNG_TISSUE_METADATA_COLS,
             grouping=["by_cell"],
             allow_missing=True
         ))
     output:
-        summary=SPOTWHISPERER_RESULTS / "performance_summary_{model}.csv",
-        plot=SPOTWHISPERER_RESULTS / "performance_summary_{model}.png",
+        summary=SPATIALWHISPERER_RESULTS / "performance_summary_{model}.csv",
+        plot=SPATIALWHISPERER_RESULTS / "performance_summary_{model}.png",
     conda:
         "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=1"
     log:
-        notebook="../logs/spotwhisperer_performance_summary_{model}.ipynb"
+        notebook="../logs/spatialwhisperer_performance_summary_{model}.ipynb"
     notebook:
-        "../notebooks/spotwhisperer_performance_summary.py.ipynb"
+        "../notebooks/spatialwhisperer_performance_summary.py.ipynb"
 
 
 # Main rule to generate all SpotWhisperer results
-rule spotwhisperer_all:
+rule spatialwhisperer_all:
     input:
         # Basic predictions
         expand(
             rules.zero_shot_lung_prediction.output.predictions,
             model=[
-                "spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",
-                "spotwhisperer_cellxgene_census__archs4_geo__hest1k",
+                "spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",
+                "spatialwhisperer_cellxgene_census__archs4_geo__hest1k",
             ],
             dataset=["lung_tissue"],
             metadata_col=LUNG_TISSUE_METADATA_COLS,
@@ -152,16 +152,16 @@ rule spotwhisperer_all:
         ),
         # # Confusion matrices and performance metrics
         # expand(
-        #     rules.plot_spotwhisperer_confusion_matrix.output.confusion_matrix,
-        #     model=[config["model_name_path_map"]["spotwhisperer"]],
+        #     rules.plot_spatialwhisperer_confusion_matrix.output.confusion_matrix,
+        #     model=[config["model_name_path_map"]["spatialwhisperer"]],
         #     dataset=LUNG_TISSUE_DATASETS,
         #     metadata_col=LUNG_TISSUE_METADATA_COLS,
         #     grouping=["by_cell", "by_class"]
         # ),
         # # Spatial plots
         # expand(
-        #     rules.plot_spotwhisperer_spatial.output.spatial_plot,
-        #     model=[config["model_name_path_map"]["spotwhisperer"]],
+        #     rules.plot_spatialwhisperer_spatial.output.spatial_plot,
+        #     model=[config["model_name_path_map"]["spatialwhisperer"]],
         #     dataset=LUNG_TISSUE_DATASETS,
         #     metadata_col=LUNG_TISSUE_METADATA_COLS,
         #     grouping=["by_cell", "by_class"]
@@ -170,8 +170,8 @@ rule spotwhisperer_all:
         expand(
             rules.lung_performance_summary.output.summary,
             model=[
-                "spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",
-                "spotwhisperer_cellxgene_census__archs4_geo__hest1k",
+                "spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",
+                "spatialwhisperer_cellxgene_census__archs4_geo__hest1k",
             ]
         )
     default_target: True  # TODO delete
@@ -186,7 +186,7 @@ rule lung_download_sample:
     output:
         adata=LUNG_DATA / "per_sample" / "LC{sample_n}.h5ad",
     params:
-        url="https://medical-epigenomics.org/papers/spotwhisperer/data/LC{sample_n}.h5ad.gz",
+        url="https://medical-epigenomics.org/papers/spatialwhisperer/data/LC{sample_n}.h5ad.gz",
     wildcard_constraints:
         sample_n="[1-5]"
     conda:
@@ -261,7 +261,7 @@ rule lung_split_baseline_scores:
 ruleorder: lung_split_baseline_scores > zero_shot_lung_prediction
 
 
-rule lung_baselines_vs_spotwhisperer:
+rule lung_baselines_vs_spatialwhisperer:
     """
     Per-class metrics comparison: SpotWhisperer models vs PLIP/CONCH baselines on lung tissue.
     Analogous to pathocell_baselines_vs_trimodal.
@@ -272,14 +272,14 @@ rule lung_baselines_vs_spotwhisperer:
     input:
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
         # SpotWhisperer prediction CSVs (region_type_expert_annotation.by_cell.csv)
-        sw_bibridge=SPOTWHISPERER_RESULTS / "spotwhisperer_cellxgene_census__archs4_geo__hest1k" / "datasets" / "lung_tissue" / "predictions" / "region_type_expert_annotation.by_cell.csv",
-        sw_trimodal=SPOTWHISPERER_RESULTS / "spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m" / "datasets" / "lung_tissue" / "predictions" / "region_type_expert_annotation.by_cell.csv",
+        sw_bibridge=SPATIALWHISPERER_RESULTS / "spatialwhisperer_cellxgene_census__archs4_geo__hest1k" / "datasets" / "lung_tissue" / "predictions" / "region_type_expert_annotation.by_cell.csv",
+        sw_trimodal=SPATIALWHISPERER_RESULTS / "spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m" / "datasets" / "lung_tissue" / "predictions" / "region_type_expert_annotation.by_cell.csv",
         # Baseline per-class summary CSVs from lung_metrics_from_scores
         baseline_conch_terms1=LUNG_RESULTS / "conch_terms1" / "summary" / "per_class_metrics.csv",
         baseline_plip_terms1=LUNG_RESULTS / "plip_terms1" / "summary" / "per_class_metrics.csv",
     output:
-        plot=LUNG_RESULTS / "comparison" / "plots" / "per_class__{metric}__baselines_vs_spotwhisperer.svg",
-        csv_table=LUNG_RESULTS / "comparison" / "tables" / "per_class_{metric}__baselines_vs_spotwhisperer.csv",
+        plot=LUNG_RESULTS / "comparison" / "plots" / "per_class__{metric}__baselines_vs_spatialwhisperer.svg",
+        csv_table=LUNG_RESULTS / "comparison" / "tables" / "per_class_{metric}__baselines_vs_spatialwhisperer.csv",
     params:
         metric="{metric}",
     wildcard_constraints:
@@ -290,7 +290,7 @@ rule lung_baselines_vs_spotwhisperer:
         mem_mb=8000,
         slurm="cpus-per-task=1 partition=cmackall"
     script:
-        "../scripts/plot_lung_baselines_vs_spotwhisperer.py"
+        "../scripts/plot_lung_baselines_vs_spatialwhisperer.py"
 
 
 # NOTE: These rules are great, but not debugged yet :). Animesh ran them manually

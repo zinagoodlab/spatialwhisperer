@@ -363,7 +363,7 @@ rule aggregate_pathocell_results:
     input:
         performance_summary=lambda wildcards: expand(
             rules.pathocell_aggregate_results.output.summary,
-            model="spotwhisperer_{}".format(wildcards.dataset_combo),
+            model="spatialwhisperer_{}".format(wildcards.dataset_combo),
             prediction_level="cell",  # Default to cell-level for backwards compatibility
             allow_missing=True,
         )
@@ -874,8 +874,8 @@ rule pathocell_baselines_vs_trimodal:
     input:
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
         # Use per-class metrics (seed/dataset aggregated) from metrics_from_scores
-        bibridge_per_class=PATHOCELL_RESULTS / "spotwhisperer_cellxgene_census__archs4_geo__hest1k/summary/patch_per_class_metrics_from_scores.csv",
-        quilt_per_class=PATHOCELL_RESULTS / "spotwhisperer_quilt1m/summary/patch_per_class_metrics_from_scores.csv",
+        bibridge_per_class=PATHOCELL_RESULTS / "spatialwhisperer_cellxgene_census__archs4_geo__hest1k/summary/patch_per_class_metrics_from_scores.csv",
+        quilt_per_class=PATHOCELL_RESULTS / "spatialwhisperer_quilt1m/summary/patch_per_class_metrics_from_scores.csv",
         conch_LLL_per_class=PATHOCELL_RESULTS / "conch_LLL/summary/patch_per_class_metrics_from_scores.csv",
         conch_LUL_per_class=PATHOCELL_RESULTS / "conch_LUL_identity/summary/patch_per_class_metrics_from_scores.csv",
         conch_frozen_per_class=PATHOCELL_RESULTS / "conch_frozen/summary/patch_per_class_metrics_from_scores.csv",
@@ -1005,9 +1005,9 @@ rule pathocell_violin_deltas:
 
 
 TRIMODAL_ABLATION_MODELS = {
-    "Bimodal bridge": "spotwhisperer_cellxgene_census__archs4_geo__hest1k",
-    "Trimodal": "spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",
-    "Trimodal (curated)": "spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated",
+    "Bimodal bridge": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k",
+    "Trimodal": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m",
+    "Trimodal (curated)": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated",
 }
 
 rule pathocell_trimodal_comparison_table:
@@ -1043,15 +1043,15 @@ rule pathocell_all:
         # Per-class delta plots (core comparisons)
         expand(
             rules.pathocell_per_class.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
-            model_b=["spotwhisperer_quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
+            model_b=["spatialwhisperer_quilt1m"],
             prediction_level=["patch"],
             metric=["auroc", "f1"],
         ),
         expand(
             rules.pathocell_per_class.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k"],
-            model_b=["spotwhisperer_quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k"],
+            model_b=["spatialwhisperer_quilt1m"],
             prediction_level=["patch"],
             metric=["auroc", "f1"],
         ),
@@ -1064,7 +1064,7 @@ rule pathocell_all:
         ),
         expand(
             rules.pathocell_per_class.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
             model_b=["conch_frozen"],
             prediction_level=["patch"],
             metric=["auroc", "f1"],
@@ -1079,14 +1079,14 @@ rule pathocell_all:
         ),
         expand(
             rules.pathocell_per_class.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k"],
-            model_b=["spotwhisperer_quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k"],
+            model_b=["spatialwhisperer_quilt1m"],
             prediction_level=["patch"],
             metric=["auroc", "f1", "soft_rocauc"],
         ),
         expand(
             rules.pathocell_per_class.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k"],
             model_b=["conch_frozen"],
             prediction_level=["patch"],
             metric=["f1", "auroc", "soft_rocauc"],
@@ -1094,8 +1094,8 @@ rule pathocell_all:
         # Per-class F1 scatter
         # expand(
         #     rules.pathocell_performance_overview.output.plot,
-        #     model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
-        #     model_b=["spotwhisperer_quilt1m"],
+        #     model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
+        #     model_b=["spatialwhisperer_quilt1m"],
         #     prediction_level=["patch"],
         # ),
         # Baselines vs Trimodal bar plots (single-metric axes)
@@ -1121,20 +1121,20 @@ rule pathocell_all:
         ),
         expand(
             rules.pathocell_violin_deltas.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
             model_b=["conch_frozen"],
             prediction_level=["patch"],
         ),
         expand(
             rules.pathocell_violin_deltas.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
-            model_b=["spotwhisperer_quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
+            model_b=["spatialwhisperer_quilt1m"],
             prediction_level=["patch"],
         ),
         # Requested KL divergence scatter (trimodal vs PLIP/CONCH terms1)
         expand(
             rules.pathocell_performance_overview.output.plot,
-            model_a=["spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
+            model_a=["spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"],
             model_b=["plip_terms1", "conch_terms1"],
             prediction_level=["patch"],
             metric=["mean_kl_divergence"],

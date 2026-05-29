@@ -12,12 +12,12 @@ CELLWHISPERER_BENCHMARK_DATASETS = [
 ]
 
 # Results paths
-CELLWHISPERER_BENCHMARK_RESULTS = PROJECT_DIR / "results/spotwhisperer_eval/benchmarks/cellwhisperer"
+CELLWHISPERER_BENCHMARK_RESULTS = PROJECT_DIR / "results/spatialwhisperer_eval/benchmarks/cellwhisperer"
 CELLWHISPERER_MODEL_RESULTS = CELLWHISPERER_BENCHMARK_RESULTS / "{model}"
 
 rule cellwhisperer_zero_shot_prediction:
     """
-    NOTE: This might be obsolete due to `cellwhisperer test` command (in main Snakefile)
+    NOTE: This might be obsolete due to `spatialwhisperer test` command (in main Snakefile)
     Zero-shot cell type prediction on benchmark datasets using a trained model.
     """
     input:
@@ -48,7 +48,7 @@ rule cellwhisperer_zero_shot_prediction:
 
 rule cellwhisperer_benchmark_summary:
     """
-    NOTE: This might be obsolete due to `cellwhisperer test` command (in main Snakefile)
+    NOTE: This might be obsolete due to `spatialwhisperer test` command (in main Snakefile)
     Summarize zero-shot benchmark performance across all datasets for a model.
     """
     input:
@@ -79,7 +79,7 @@ rule cellwhisperer_per_class_analysis:
     input:
         # Results from trimodal and bimodal_matching models
         lambda wildcards: [
-            CELLWHISPERER_BENCHMARK_RESULTS / "spotwhisperer_{}".format(combo) / "datasets" / dataset / metadata_col / "performance_metrics_permetadata{}.csv".format(normed)
+            CELLWHISPERER_BENCHMARK_RESULTS / "spatialwhisperer_{}".format(combo) / "datasets" / dataset / metadata_col / "performance_metrics_permetadata{}.csv".format(normed)
             for combo in ["cellxgene_census__archs4_geo__hest1k__quilt1m",  # trimodal
                           "hest1k", "quilt1m", "cellxgene_census__archs4_geo"]  # bimodal matching options
             for dataset in CELLWHISPERER_BENCHMARK_DATASETS
@@ -109,6 +109,6 @@ rule cellwhisperer_benchmark_all:
     input:
         # Summary results
         expand(CELLWHISPERER_MODEL_RESULTS / "benchmark_summary.csv",
-               model="spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"),
+               model="spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"),
         # Per-class analysis
         rules.cellwhisperer_per_class_analysis.output.analysis

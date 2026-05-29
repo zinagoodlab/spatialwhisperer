@@ -66,18 +66,18 @@ on both grounds.
 
 ## Implementation
 
-- `src/spotwhisperer_eval/freezing_encoder_training_config.yaml`
+- `src/spatialwhisperer_eval/freezing_encoder_training_config.yaml`
   — 1-epoch base config, no Quilt-1M, `ModelCheckpoint(save_last=true)`,
   `use_cache: true`.
-- `src/spotwhisperer_eval/experiments/freezing_encoder_appendix/delta_config/`
+- `src/spatialwhisperer_eval/experiments/freezing_encoder_appendix/delta_config/`
   — `baseline.yaml`, `lll.yaml`, `llu.yaml`, `ull.yaml`, `uce.yaml`,
   `uce_smoke.yaml` (smoke uses `immgen,hest1k_8thsub` and `max_steps: 20`).
-- `src/spotwhisperer_eval/rules/freezing_encoder_appendix.smk`
-  — `train_spotwhisperer_fe` rule with `mem_mb=900000`,
+- `src/spatialwhisperer_eval/rules/freezing_encoder_appendix.smk`
+  — `train_spatialwhisperer_fe` rule with `mem_mb=900000`,
   `slurm_gres("large", num_cpus=60, time="12:00:00", num_gpus=1)`.
   Targets: `freezing_encoder_appendix_smoke`,
   `freezing_encoder_appendix_all`.
-- `src/spotwhisperer_eval/Snakefile`: `include: "rules/freezing_encoder_appendix.smk"`.
+- `src/spatialwhisperer_eval/Snakefile`: `include: "rules/freezing_encoder_appendix.smk"`.
 - `experiments/freezing_encoder_appendix/sherlock_controller.sh {smoke|full|baseline}`:
   SBATCH wrapper. The `baseline` option targets just the baseline ckpt for
   the controlled single-config production run.
@@ -159,7 +159,7 @@ reversible (the wrap-up will need to do this).
 From a Sherlock login node (after lsync has propagated the code):
 
 ```bash
-cd ~/cellwhisperer_private/src/spotwhisperer_eval/experiments/freezing_encoder_appendix
+cd ~/cellwhisperer_private/src/spatialwhisperer_eval/experiments/freezing_encoder_appendix
 
 sbatch sherlock_controller.sh smoke     # UCE prep + 20-step train, no eval
 sbatch sherlock_controller.sh baseline  # train baseline ckpt only (no eval)
@@ -181,7 +181,7 @@ Following the `lambda_ablation` convention:
    default on compute grounds.
 
 Aggregated CSV path:
-`src/spotwhisperer_eval/experiments/freezing_encoder_appendix/results_crc_pathocell.csv`
+`src/spatialwhisperer_eval/experiments/freezing_encoder_appendix/results_crc_pathocell.csv`
 
 ## Progress Log
 
@@ -276,11 +276,11 @@ preserved in the canonical config; the deviation is documented here.
 - [x] Experiment scaffolded (configs + rule + controller).
 - [x] UCE model + vocab decided
   (`KuanP/uce-cxg-2025-baseline-8l-512d` + 19,656-gene `gene_names_full.txt`).
-- [x] Smoke test passed (`spotwhisperer_fe_uce_smoke.ckpt`).
+- [x] Smoke test passed (`spatialwhisperer_fe_uce_smoke.ckpt`).
 - [x] Geneformer caches symlinked from GROUP_SCRATCH; chmod read-only.
-- [x] Baseline production ckpt saved (`spotwhisperer_fe_baseline.ckpt`).
-- [x] `lll` ckpt saved (`spotwhisperer_fe_lll.ckpt`, 107 MB).
-- [x] `llu` ckpt saved (`spotwhisperer_fe_llu.ckpt`, 8.28 GB — bs=64\*).
+- [x] Baseline production ckpt saved (`spatialwhisperer_fe_baseline.ckpt`).
+- [x] `lll` ckpt saved (`spatialwhisperer_fe_lll.ckpt`, 107 MB).
+- [x] `llu` ckpt saved (`spatialwhisperer_fe_llu.ckpt`, 8.28 GB — bs=64\*).
 - [ ] `ull` — **not trained**; H100 80 GB insufficient for Geneformer
       unfrozen; report as N/A with asterisk.
 - [ ] `uce` ckpt trained (in progress, expected ~16:00 PDT 2026-05-13).

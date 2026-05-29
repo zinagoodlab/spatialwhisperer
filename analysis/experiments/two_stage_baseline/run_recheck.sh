@@ -31,15 +31,15 @@ source /home/groups/zinaida/moritzs/miniforge3/etc/profile.d/conda.sh 2>/dev/nul
 conda activate cellwhisperer
 set -u
 
-# Spotwhisperer rechecks rely on _recheck.ckpt symlinks under
+# Spatialwhisperer rechecks rely on _recheck.ckpt symlinks under
 # results/models/jointemb/. The lizard_/pannuke_/pathocell_metrics_from_scores
 # rules use a {model} wildcard, so passing <model>_recheck as model
 # automatically routes both inputs (per-dataset scores) and the aggregate
 # JSON output under <model>_recheck/.
 
-SW_TRI=spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_recheck
-SW_BRI=spotwhisperer_cellxgene_census__archs4_geo__hest1k_recheck
-SW_QLT=spotwhisperer_quilt1m_recheck
+SW_TRI=spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_recheck
+SW_BRI=spatialwhisperer_cellxgene_census__archs4_geo__hest1k_recheck
+SW_QLT=spatialwhisperer_quilt1m_recheck
 
 # 6 PathoCell aggregates + 2 bridge-on-Lizard/PanNuke aggregates = 8 targets.
 # These naturally pull in all per-dataset score recomputations.

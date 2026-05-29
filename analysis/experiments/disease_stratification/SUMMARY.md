@@ -34,7 +34,7 @@ Per-class AUROCs: Neoplastic 0.820, Inflammatory 0.804, Connective 0.747, Epithe
 | PLIP             | 0.072 | 0.759 | 0.121    |
 | MUSK             | 0.072 | 0.654 | 0.121    |
 
-### Trimodal ablation on CRC (from `src/spotwhisperer_eval/experiments/trimodal_ablation/SUMMARY.md`)
+### Trimodal ablation on CRC (from `src/spatialwhisperer_eval/experiments/trimodal_ablation/SUMMARY.md`)
 
 | Model                   | Mean AUROC (CRC, 13 cell types) |
 |-------------------------|---------------------------------|
@@ -48,7 +48,7 @@ comparison in tissue type prediction below.
 
 ## Implementation
 
-All code lives in `src/spotwhisperer_eval/`:
+All code lives in `src/spatialwhisperer_eval/`:
 
 | File | Purpose |
 |------|---------|
@@ -69,7 +69,7 @@ Output pattern: `results/pathocell_evaluation/{model}/pannuke_summary/`
 All runs on Sherlock via:
 
 ```bash
-cd /home/groups/zinaida/moritzs/cellwhisperer_private/src/spotwhisperer_eval
+cd /home/groups/zinaida/moritzs/cellwhisperer_private/src/spatialwhisperer_eval
 conda run -n cellwhisperer snakemake --profile sm7_slurm --cores 4 -p \
     results/pathocell_evaluation/{model}/pannuke_summary/<target>.csv
 ```
@@ -109,7 +109,7 @@ Stratify cell type AUROC by malignant vs benign patches (PLIP strategy).
 | Malignant  | 715       | 8.5%  |
 | Ambiguous  | 3,259     | 38.9% |
 
-### Results (model: `spotwhisperer_cellxgene_census__archs4_geo__hest1k`, seed 0)
+### Results (model: `spatialwhisperer_cellxgene_census__archs4_geo__hest1k`, seed 0)
 
 | Class                        | Benign AUROC | Malignant AUROC | Delta  |
 |------------------------------|--------------|-----------------|--------|
@@ -174,12 +174,12 @@ chance is 5.3% for 19 classes; AUROC is the primary metric.
 
 | Short name           | Full checkpoint | Type |
 |----------------------|-----------------|------|
-| **quilt1m (bimodal)**| `spotwhisperer_quilt1m` | Image-text only (no transcriptome) |
-| **base (trimodal)**  | `spotwhisperer_cellxgene_census__archs4_geo__hest1k` | Trimodal (transcriptome + image + text) |
+| **quilt1m (bimodal)**| `spatialwhisperer_quilt1m` | Image-text only (no transcriptome) |
+| **base (trimodal)**  | `spatialwhisperer_cellxgene_census__archs4_geo__hest1k` | Trimodal (transcriptome + image + text) |
 | **+quilt1m**         | `...hest1k__quilt1m` | Trimodal + quilt1m |
 | **+quilt1m_curated** | `...hest1k__quilt1m_curated` | Trimodal + quilt1m curated |
 
-Note: A bimodal `spotwhisperer_quilt1m_curated` checkpoint does not exist.
+Note: A bimodal `spatialwhisperer_quilt1m_curated` checkpoint does not exist.
 
 ## Results
 
@@ -269,7 +269,7 @@ Note: A bimodal `spotwhisperer_quilt1m_curated` checkpoint does not exist.
 - [x] Part 1: Disease stratification (2026-03-25)
 - [x] Part 2: Tissue type prediction — base model (2026-03-25)
 - [x] Part 3: Trimodal comparison — base, +quilt1m, +quilt1m_curated (2026-03-25/26)
-- [x] Part 3: Bimodal baseline — `spotwhisperer_quilt1m` (2026-03-26)
+- [x] Part 3: Bimodal baseline — `spatialwhisperer_quilt1m` (2026-03-26)
 - [x] Manuscript integration of 19-tissue result (2026-05-09; revision item ZBSb-Q2|L1)
 
 # Next Steps

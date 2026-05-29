@@ -57,8 +57,8 @@ rule all:
         # expand(
         #     rules.aggregate_comprehensive_benchmarks.output.aggregated_comprehensive,
         #     model=[
-        #         "spotwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"]),
-        #         "spotwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"]),
+        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"]),
+        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"]),
         #     ],
         #     allow_missing=True,
         # ),

@@ -18,14 +18,11 @@ import anndata
 from pathlib import Path
 from sklearn.metrics import roc_auc_score
 
-# Paths
+# Paths — relative to the project root (analysis/scripts/<file> → parents[2])
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 STATIC_DIR = Path(__file__).parent.parent / "static" / "baselines_animesh"
-H5AD_BASE = Path(
-    "/home/groups/zinaida/moritzs/cellwhisperer_private/resources/pathocell/processed"
-)
-OUT_DIR = Path(
-    "/home/groups/zinaida/moritzs/cellwhisperer_private/results/pathocell_evaluation/seed_variance"
-)
+H5AD_BASE = PROJECT_ROOT / "resources/pathocell/processed"
+OUT_DIR = PROJECT_ROOT / "results/pathocell_evaluation/seed_variance"
 
 # Column name mappings from baseline CSVs to h5ad class names
 LIZARD_COL_TO_CLASS = {
@@ -72,7 +69,7 @@ CRC_EXCLUDE = {
     "A sample of Background cells",
 }
 
-BASELINES = ["conch", "plip", "musk"]
+BASELINES = ["conch", "plip"]  # MUSK dropped (not part of the published paper)
 TERMS = os.environ.get("BASELINE_TERMS", "terms2")  # override via env: BASELINE_TERMS=terms1
 
 

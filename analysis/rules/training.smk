@@ -52,7 +52,7 @@ def _dataset_requirements(wildcards):
             deps.append(PROJECT_DIR / f"results/{base}_{ratio}thsub/h5ads")
     return deps
 
-rule train_spotwhisperer:
+rule train_spatialwhisperer:
     """
     Train a SpotWhisperer model for a dataset_combo.
     Uses the base config and overrides dataset names; outputs a checkpoint.
@@ -62,11 +62,11 @@ rule train_spotwhisperer:
         base_config=ancient(BASE_CONFIG),
         subsamples=_dataset_requirements
     output:
-        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_{dataset_combo}.ckpt")
+        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_{dataset_combo}.ckpt")
     params:
         dataset_names=lambda wildcards: wildcards.dataset_combo.replace("__", ","),
         test_run_config="--trainer.limit_train_batches 500 --trainer.max_epochs 2" if config.get("fast", False) else "",
-        tmpmodel=PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_clip_v1.ckpt",
+        tmpmodel=PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_clip_v1.ckpt",
         seed=SEEDS[0],
         project_dir=PROJECT_DIR
     conda:
@@ -83,5 +83,5 @@ rule train_spotwhisperer:
             --seed_everything {params.seed} \
             --last_model_path {output.model} \
             --omit_validation_functions \
-            --wandb spotwhisperer_eval_{wildcards.dataset_combo}
+            --wandb spatialwhisperer_eval_{wildcards.dataset_combo}
     """

@@ -38,7 +38,7 @@ batch_size = 64
 # ── Stage 0: Extract UNI2 embeddings from image patches ─────────────────────
 logger.info("Extracting UNI2 embeddings from image patches...")
 
-from cellwhisperer.jointemb.uni_model import UNIModel, UNIConfig, UNIProcessor
+from spatialwhisperer.jointemb.uni_model import UNIModel, UNIConfig, UNIProcessor
 
 uni_config = UNIConfig(cell_level_model=False, context_model=True)
 uni_model = UNIModel.from_pretrained(
@@ -70,7 +70,7 @@ logger.info(f"UNI2 embeddings shape: {image_embeds.shape}")
 # ── Stage 1: Decode expression from UNI2 embeddings ─────────────────────────
 logger.info("Decoding gene expression from UNI2 embeddings...")
 
-from cellwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
+from spatialwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
     RawUNI2DecoderLightning,
 )
 
@@ -118,7 +118,7 @@ num_training_classes = len(label_mapping)
 import sys
 
 # finetuning_eval is a local module under src/figures/notebooks/
-_project_dir = Path(__file__).resolve().parents[3]
+_project_dir = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_project_dir / "src" / "figures" / "notebooks"))
 from finetuning_eval.models.geneformer import GeneformerCelltypeModel, GeneformerConfig
 
@@ -131,7 +131,7 @@ geneformer_model.load_state_dict(torch.load(classifier_weights, map_location="cp
 geneformer_model = geneformer_model.to(device).eval()
 
 # Tokenize predicted expression using Geneformer processor
-from cellwhisperer.jointemb.geneformer_model import GeneformerTranscriptomeProcessor
+from spatialwhisperer.jointemb.geneformer_model import GeneformerTranscriptomeProcessor
 
 geneformer_processor = GeneformerTranscriptomeProcessor(
     nproc=1,

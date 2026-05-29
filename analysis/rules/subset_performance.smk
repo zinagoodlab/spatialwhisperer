@@ -169,7 +169,7 @@ rule subset_performance_trend_grid_pannuke:
             allow_missing=True,
         ),
         pannuke_tissue_files=lambda wildcards: expand(
-            PROJECT_DIR / "results/pathocell_evaluation" / "spotwhisperer_{combo}" / "pannuke_summary/tissue_type_all_summary.csv",
+            PROJECT_DIR / "results/pathocell_evaluation" / "spatialwhisperer_{combo}" / "pannuke_summary/tissue_type_all_summary.csv",
             combo=[
                 ("cellxgene_census__archs4_geo__hest1k__quilt1m" if r == 1 else f"cellxgene_census__archs4_geo__hest1k__quilt1m_{r}thsub")
                 for r in SUBSAMPLING_RATIOS
@@ -258,7 +258,7 @@ rule subset_performance_trend_grid:
         ),
         # PathoCellBench inputs intentionally excluded from the trend grid
         pathocell_files=lambda wildcards: expand(
-            PROJECT_DIR / "results/pathocell_evaluation" / "spotwhisperer_{combo}" / "summary/patch_metrics_from_scores_aggregated.json",
+            PROJECT_DIR / "results/pathocell_evaluation" / "spatialwhisperer_{combo}" / "summary/patch_metrics_from_scores_aggregated.json",
             combo=[
                 # image-text: pair-only
                 ("quilt1m" if r == 1 else f"quilt1m_{r}thsub")
@@ -279,8 +279,8 @@ rule subset_performance_trend_grid:
             ],
             allow_missing=True,
         ),
-        musk_files=lambda wildcards: expand(
-            BENCHMARKS_DIR / "musk" / "{combo}" / "performance_summary.json",
+        skin_native_files=lambda wildcards: expand(
+            PROJECT_DIR / "results/skin_benchmark/spatialwhisperer_{combo}/clinical/resize_crop/skin_summary.csv",
             combo=[
                 ("cellxgene_census__archs4_geo__hest1k__quilt1m" if r == 1 else f"cellxgene_census__archs4_geo__hest1k__quilt1m_{r}thsub")
                 for r in SUBSAMPLING_RATIOS
@@ -295,7 +295,6 @@ rule subset_performance_trend_grid:
             ) + [
                 # Bimodal bridge baseline for image-text column
                 "cellxgene_census__archs4_geo__hest1k",
-                # "random",
             ],
             allow_missing=True,
         )

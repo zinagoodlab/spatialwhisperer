@@ -25,8 +25,8 @@ through the bridge to improve cross-modal retrieval.
 
 | Label               | Dataset combo                               | Checkpoint                                                           | Description                         |
 |---------------------|---------------------------------------------|----------------------------------------------------------------------|-------------------------------------|
-| Bridge (uncurated)  | `cellxgene_census__archs4_geo__quilt1m`     | `spotwhisperer_cellxgene_census__archs4_geo__quilt1m.ckpt`           | G<->T + T<->I (uncurated QUILT-1M) |
-| Bridge (curated)    | `cellxgene_census__archs4_geo__quilt1m_curated` | `spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated.ckpt` | G<->T + T<->I (curated QUILT-1M)   |
+| Bridge (uncurated)  | `cellxgene_census__archs4_geo__quilt1m`     | `spatialwhisperer_cellxgene_census__archs4_geo__quilt1m.ckpt`           | G<->T + T<->I (uncurated QUILT-1M) |
+| Bridge (curated)    | `cellxgene_census__archs4_geo__quilt1m_curated` | `spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated.ckpt` | G<->T + T<->I (curated QUILT-1M)   |
 
 Checkpoints at: `results/models/jointemb/` on Sherlock.
 
@@ -47,7 +47,7 @@ Metric: `test_retrieval/transcriptome_image/rocauc_macroAvg` (and f1)
 
 ## Code
 
-- **Snakemake rule**: `hest_spotwhisperer_test` in `src/spotwhisperer_eval/rules/hest_benchmark.smk`
+- **Snakemake rule**: `hest_spatialwhisperer_test` in `src/spatialwhisperer_eval/rules/hest_benchmark.smk`
 - **Controller script**: `sherlock_controller.sh` (this directory)
 - **Comparison script**: `compare_results.py` (this directory)
 
@@ -55,7 +55,7 @@ Metric: `test_retrieval/transcriptome_image/rocauc_macroAvg` (and f1)
 
 ```bash
 # From local machine:
-ssh sherlock "sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spotwhisperer_eval/experiments/curated_bridge_hest/sherlock_controller.sh"
+ssh sherlock "sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spatialwhisperer_eval/experiments/curated_bridge_hest/sherlock_controller.sh"
 ```
 
 ## Execution History

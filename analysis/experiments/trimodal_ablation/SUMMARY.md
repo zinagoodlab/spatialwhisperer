@@ -6,15 +6,15 @@ Compare three model variants on the CRC PathoCellBench (zero-shot cell type pred
 ## Models
 | Label              | Dataset combo                                           | Checkpoint (on Sherlock)                                                   | Description                    |
 |--------------------|---------------------------------------------------------|----------------------------------------------------------------------------|--------------------------------|
-| Bimodal bridge     | `cellxgene_census__archs4_geo__hest1k`                  | `spotwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt`                  | I↔G + G↔T only (no direct I↔T) |
-| Trimodal           | `cellxgene_census__archs4_geo__hest1k__quilt1m`         | `spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m.ckpt`         | All 3 modality pairs           |
-| Trimodal (curated) | `cellxgene_census__archs4_geo__hest1k__quilt1m_curated` | `spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated.ckpt` | All 3 pairs, curated QUILT-1M  |
+| Bimodal bridge     | `cellxgene_census__archs4_geo__hest1k`                  | `spatialwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt`                  | I↔G + G↔T only (no direct I↔T) |
+| Trimodal           | `cellxgene_census__archs4_geo__hest1k__quilt1m`         | `spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m.ckpt`         | All 3 modality pairs           |
+| Trimodal (curated) | `cellxgene_census__archs4_geo__hest1k__quilt1m_curated` | `spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated.ckpt` | All 3 pairs, curated QUILT-1M  |
 
 Checkpoints at: `results/models/jointemb/` on Sherlock.
 
 ## Code
-- **Snakemake rule**: `pathocell_trimodal_comparison_table` in `src/spotwhisperer_eval/rules/pathocell_benchmark.smk` (line ~1006)
-- **Comparison script**: `src/spotwhisperer_eval/scripts/pathocell_trimodal_comparison_table.py`
+- **Snakemake rule**: `pathocell_trimodal_comparison_table` in `src/spatialwhisperer_eval/rules/pathocell_benchmark.smk` (line ~1006)
+- **Comparison script**: `src/spatialwhisperer_eval/scripts/pathocell_trimodal_comparison_table.py`
 - **Model dict**: `TRIMODAL_ABLATION_MODELS` in `rules/pathocell_benchmark.smk`
 - **Upstream dependencies** (all pre-existing, wildcarded on `{model}`):
   - `pathocell_cell_type_prediction` → per-dataset score CSVs (109 per model)
@@ -24,7 +24,7 @@ Checkpoints at: `results/models/jointemb/` on Sherlock.
 ```
 results/pathocell_evaluation/comparison/patch/tables/trimodal_ablation_rocauc.csv   # CSV table
 results/pathocell_evaluation/comparison/patch/tables/trimodal_ablation_rocauc.tex   # LaTeX snippet
-results/pathocell_evaluation/spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated/
+results/pathocell_evaluation/spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated/
     summary/patch_per_class_metrics_from_scores.csv                                 # Curated model aggregated metrics
     summary/patch_per_dataset_metrics_from_scores.csv
     summary/patch_metrics_from_scores_aggregated.json
@@ -33,7 +33,7 @@ results/pathocell_evaluation/spotwhisperer_cellxgene_census__archs4_geo__hest1k_
 
 ## How to run
 ```bash
-# From src/spotwhisperer_eval/ on Sherlock (within SLURM job):
+# From src/spatialwhisperer_eval/ on Sherlock (within SLURM job):
 # Use absolute path (git rev-parse resolves through symlink)
 conda run -n cellwhisperer snakemake --profile sm7_slurm \
     /home/groups/zinaida/moritzs/cellwhisperer_private/results/pathocell_evaluation/comparison/patch/tables/trimodal_ablation_rocauc.csv
@@ -101,12 +101,12 @@ Reviewer request: provide zero-shot classification results for a strictly bimoda
 ### Baseline models
 | Label | Checkpoint | Description | Results |
 |---|---|---|---|
-| Bimodal I↔T (QUILT-1M) | `spotwhisperer_quilt1m.ckpt` | I↔T only, full QUILT-1M | **Already computed** |
+| Bimodal I↔T (QUILT-1M) | `spatialwhisperer_quilt1m.ckpt` | I↔T only, full QUILT-1M | **Already computed** |
 
-Note: `spotwhisperer_quilt1m_curated` was never trained as a standalone model — curated QUILT-1M was only used in combination with other datasets. So `spotwhisperer_quilt1m` is the only available pure I↔T baseline matching the reviewer's request.
+Note: `spatialwhisperer_quilt1m_curated` was never trained as a standalone model — curated QUILT-1M was only used in combination with other datasets. So `spatialwhisperer_quilt1m` is the only available pure I↔T baseline matching the reviewer's request.
 
 ### Execution
-- `spotwhisperer_quilt1m` results were pre-existing from earlier experiments — no new jobs needed.
+- `spatialwhisperer_quilt1m` results were pre-existing from earlier experiments — no new jobs needed.
 - Job 19722016 (which would have run `hest1k__quilt1m` variants) was submitted then immediately cancelled — those models are irrelevant since HEST1k is an image-gene dataset, not image-text.
 
 ### Results
@@ -129,14 +129,14 @@ Note: `spotwhisperer_quilt1m_curated` was never trained as a standalone model �
 | **Mean** | 0.566 | 0.630 | 0.609 | **0.645** |
 
 ### Interpretation (response to reviewer)
-- The bimodal I↔T baseline (`spotwhisperer_quilt1m`, 0.566) is substantially worse than the bimodal bridge (0.630) and trimodal curated (0.645), **despite having direct I↔T supervision on the same QUILT-1M data**.
+- The bimodal I↔T baseline (`spatialwhisperer_quilt1m`, 0.566) is substantially worse than the bimodal bridge (0.630) and trimodal curated (0.645), **despite having direct I↔T supervision on the same QUILT-1M data**.
 - This isolates the contribution of gene expression grounding: the G↔T bridge (CellxGene + ARCHS4) provides semantically rich cell type information that image-text alignment on QUILT-1M alone cannot recover.
 - The trimodal curated model's +0.079 mean AUROC advantage over the I↔T baseline is therefore not explained by simply having more image-text data — it reflects the architectural benefit of transitive multimodal alignment through gene expression.
 - Notably, the uncurated trimodal (0.609) is also still better than the pure I↔T baseline (0.566), reinforcing that the G↔T bridge is the key driver.
 
 ### Status
-- [x] `spotwhisperer_quilt1m`: results available (pre-existing)
-- [x] No other pure I↔T baselines exist (`spotwhisperer_quilt1m_curated` was never trained standalone)
+- [x] `spatialwhisperer_quilt1m`: results available (pre-existing)
+- [x] No other pure I↔T baselines exist (`spatialwhisperer_quilt1m_curated` was never trained standalone)
 
 ---
 

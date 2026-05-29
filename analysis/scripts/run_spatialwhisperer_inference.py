@@ -5,7 +5,7 @@ Run SpotWhisperer inference on HEST benchmark patches.
 This script creates a CustomInferenceEncoder wrapper for SpotWhisperer and runs
 inference on HEST patches, saving embeddings in HEST's expected format.
 
-NOTE: This file could be drastically refactored to use spotwhisperer-style code. Or better, the hest benchmark could be transformed to a separate dataset so that we could run `cellwhisperer test` directly
+NOTE: This file could be drastically refactored to use spatialwhisperer-style code. Or better, the hest benchmark could be transformed to a separate dataset so that we could run `cellwhisperer test` directly
 """
 import pyarrow  # to prevent weird library loading issues
 import os
@@ -18,7 +18,7 @@ from tqdm import tqdm
 import h5py
 from PIL import Image
 
-from cellwhisperer.utils.model_io import load_cellwhisperer_model
+from spatialwhisperer.utils.model_io import load_cellwhisperer_model
 from torch.utils.data import Dataset
 import scanpy as sc
 
@@ -195,7 +195,7 @@ def save_hdf5(
     return output_fpath
 
 
-logger = logging.getLogger("run_spotwhisperer_inference")
+logger = logging.getLogger("run_spatialwhisperer_inference")
 
 
 class SpotWhispererInferenceEncoder:
@@ -317,7 +317,7 @@ def post_collate_fn(batch):
     return batch
 
 
-def embed_tiles_spotwhisperer(
+def embed_tiles_spatialwhisperer(
     dataloader,
     encoder,
     embedding_save_path: str,
@@ -455,7 +455,7 @@ def process_dataset_splits(dataset_bench_path, embedding_dir, encoder, device):
             )
 
             # Extract embeddings
-            embed_tiles_spotwhisperer(tile_dataloader, encoder, str(embed_path), device)
+            embed_tiles_spatialwhisperer(tile_dataloader, encoder, str(embed_path), device)
             processed_samples.add(sample_id)
 
             logger.info(f"Completed embeddings for {sample_id}")

@@ -38,7 +38,7 @@ import torch
 from PIL import Image
 from torchvision import transforms
 
-from cellwhisperer.utils.model_io import load_cellwhisperer_model
+from spatialwhisperer.utils.model_io import load_cellwhisperer_model
 
 Image.MAX_IMAGE_PIXELS = None
 

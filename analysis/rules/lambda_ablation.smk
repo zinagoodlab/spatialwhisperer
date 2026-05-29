@@ -25,13 +25,13 @@ LAMBDA_RESULTS = PATHOCELL_RESULTS  # reuse existing pathocell results structure
 LAMBDA_BASE_CONFIG = PROJECT_DIR / "analysis/lambda_training_config.yaml"
 
 
-rule train_spotwhisperer_lambda:
+rule train_spatialwhisperer_lambda:
     """Train a SpotWhisperer model with a lambda ablation delta config."""
     input:
         base_config=ancient(LAMBDA_BASE_CONFIG),
         delta_config=ancient(LAMBDA_DELTA_DIR / "{lambda_config}.yaml"),
     output:
-        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_lambda_{lambda_config}.ckpt"),
+        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_lambda_{lambda_config}.ckpt"),
     params:
         seed=SEEDS[0],
         project_dir=PROJECT_DIR,
@@ -53,7 +53,7 @@ rule train_spotwhisperer_lambda:
             --wandb lambda_ablation_{wildcards.lambda_config}
     """
 
-ruleorder: train_spotwhisperer_lambda > train_spotwhisperer
+ruleorder: train_spatialwhisperer_lambda > train_spatialwhisperer
 
 
 rule lambda_ablation_all:
@@ -61,7 +61,7 @@ rule lambda_ablation_all:
     input:
         # CRC per-class metrics for each lambda config
         expand(
-            LAMBDA_RESULTS / "spotwhisperer_lambda_{lc}/summary/patch_per_class_metrics_from_scores.csv",
+            LAMBDA_RESULTS / "spatialwhisperer_lambda_{lc}/summary/patch_per_class_metrics_from_scores.csv",
             lc=LAMBDA_FIXED_STEP_CONFIGS,
         ),
 
@@ -70,7 +70,7 @@ rule lambda_ablation_full_epoch_all:
     """Target: train the full-epoch lambda rerun configs and run CRC PathoCellBench eval."""
     input:
         expand(
-            LAMBDA_RESULTS / "spotwhisperer_lambda_{lc}/summary/patch_per_class_metrics_from_scores.csv",
+            LAMBDA_RESULTS / "spatialwhisperer_lambda_{lc}/summary/patch_per_class_metrics_from_scores.csv",
             lc=LAMBDA_FULL_EPOCH_CONFIGS,
         ),
 
@@ -85,6 +85,6 @@ rule lambda_ablation_perpair_all:
     """
     input:
         expand(
-            LAMBDA_RESULTS / "spotwhisperer_lambda_{lc}/summary/patch_per_class_metrics_from_scores.csv",
+            LAMBDA_RESULTS / "spatialwhisperer_lambda_{lc}/summary/patch_per_class_metrics_from_scores.csv",
             lc=LAMBDA_PERPAIR_CONFIGS,
         ),

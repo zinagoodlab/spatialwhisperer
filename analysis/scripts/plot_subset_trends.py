@@ -144,23 +144,30 @@ def extract_metrics_for_combo(modality_pair: str, combo: str) -> dict:
             hest_json["overall_performance"]
         )  # matches metrics_by_pair key
     elif modality_pair == "image-text":
-        musk_path = benchmarks_dir / "musk" / combo / "performance_summary.json"
-        with open(musk_path, "r") as f:
-            musk_json = json.load(f)
-        cls = musk_json["task_summaries"]["zeroshot_classification"]
-
+        # Skin source switched 2026-05-25 from MUSK harness to native pipeline
+        # (raw cosine, clinical labels, resize_crop). See analysis
+        # aa62832c-5780-4b51-b7ce-75aac1e3a2de for the rationale: MUSK applied
+        # softmax(100*L) before AUROC, inflating macro by ~0.03 vs honest
+        # cosine-similarity scoring claimed in App. B.4.
+        skin_path = (
+            Path(__file__).resolve().parents[2]
+            / "results/skin_benchmark"
+            / f"spatialwhisperer_{combo}"
+            / "clinical/resize_crop/skin_summary.csv"
+        )
+        skin_df = pd.read_csv(skin_path)
         out["musk/skin_macro_avg_rocauc"] = float(
-            cls["macro_avg_rocauc"]["skin"]
-        )  # AUROC (macro)
+            skin_df.loc[skin_df["metric"] == "macro_avg_rocauc", "value"].iloc[0]
+        )
 
         # PathoCellBench AUROC from metrics_from_scores aggregated JSON (commented out)
         # Use the exact combo to locate the corresponding model directory
         patho_key = "rocauc_macroAvg"
         patho_val = float("nan")
         candidates = [  # TODO make a single path
-            Path(__file__).resolve().parents[3]
+            Path(__file__).resolve().parents[2]
             / "results/pathocell_evaluation"
-            / f"spotwhisperer_{combo}"
+            / f"spatialwhisperer_{combo}"
             / "summary/patch_metrics_from_scores_aggregated.json",
         ]
         for cand in candidates:  # TODO no need for this loop. single file only

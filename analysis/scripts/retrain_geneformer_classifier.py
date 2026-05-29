@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 # finetuning_eval is a local module under src/figures/notebooks/
-_project_dir = Path(__file__).resolve().parents[3]
+_project_dir = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_project_dir / "src" / "figures" / "notebooks"))
 
 import torch
@@ -20,7 +20,7 @@ import logging
 import os
 
 from lightning.pytorch import Trainer
-from cellwhisperer.jointemb.dataset.jointemb import JointEmbedDataModule
+from spatialwhisperer.jointemb.dataset.jointemb import JointEmbedDataModule
 from finetuning_eval.models.geneformer import GeneformerCelltypeModel, GeneformerConfig
 
 logging.basicConfig(level=logging.INFO)

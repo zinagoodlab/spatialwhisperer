@@ -47,14 +47,14 @@ We train 4 models (0%, 1%, 2%, 5% noise) on `cellxgene_census + hest1k` for 1 ep
     - `cellxgene_census_1pct_noise__hest1k` (1% noise)
     - `cellxgene_census_2pct_noise__hest1k` (2% noise)
     - `cellxgene_census_5pct_noise__hest1k` (5% noise)
-  - Output: `results/models/jointemb/spotwhisperer_annotation_noise_{noise_pct}pct.ckpt`
-  - Resources: same as `train_spotwhisperer` but with `--trainer.max_epochs 1`
-  - The 0% baseline model name: `spotwhisperer_annotation_noise_0pct.ckpt`
+  - Output: `results/models/jointemb/spatialwhisperer_annotation_noise_{noise_pct}pct.ckpt`
+  - Resources: same as `train_spatialwhisperer` but with `--trainer.max_epochs 1`
+  - The 0% baseline model name: `spatialwhisperer_annotation_noise_0pct.ckpt`
 
 ### Step 3: Evaluate all 4 models on PathoCellBench (CRC)
 
 - [ ] Reuse the existing `pathocell_cell_type_prediction` and `pathocell_metrics_from_scores` rules
-  - Model wildcards: `spotwhisperer_annotation_noise_{0,1,2,5}pct`
+  - Model wildcards: `spatialwhisperer_annotation_noise_{0,1,2,5}pct`
   - Prediction level: `patch`
   - Produces per-class AUROC across 109 CRC samples
 

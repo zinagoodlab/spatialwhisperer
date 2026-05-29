@@ -24,15 +24,15 @@ RESULTS = PD / "results" / "pathocell_evaluation"
 # Map: (model_canonical_dir, benchmark, score_subdir-relative-to-model)
 PAIRS = [
     # PathoCell CRC for all 6 models
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m", "PathoCell_CRC", ""),
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k", "PathoCell_CRC", ""),
-    ("spotwhisperer_quilt1m", "PathoCell_CRC", ""),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m", "PathoCell_CRC", ""),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k", "PathoCell_CRC", ""),
+    ("spatialwhisperer_quilt1m", "PathoCell_CRC", ""),
     ("two_stage_baseline", "PathoCell_CRC", ""),
     ("omiclip", "PathoCell_CRC", ""),
     ("omiclip_pseudobulk", "PathoCell_CRC", ""),
     # Bimodal bridge on Lizard / PanNuke
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k", "Lizard", "lizard"),
-    ("spotwhisperer_cellxgene_census__archs4_geo__hest1k", "PanNuke", "pannuke"),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k", "Lizard", "lizard"),
+    ("spatialwhisperer_cellxgene_census__archs4_geo__hest1k", "PanNuke", "pannuke"),
 ]
 
 

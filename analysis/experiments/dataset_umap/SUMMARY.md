@@ -5,7 +5,7 @@ Reviewer concern: The transitive transfer relies on Geneformer producing a consi
 
 ## Design
 - **Datasets**: `cellxgene_census` (scRNA-seq) vs `hest1k` (Visium spatial transcriptomics)
-- **Model**: `spotwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt` (trimodal, no quilt1m)
+- **Model**: `spatialwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt` (trimodal, no quilt1m)
 - **Embeddings extracted** (simultaneously from single forward pass):
   1. **Geneformer embeddings** (`transcriptome_features`): raw frozen Geneformer pooled hidden states, before projection
   2. **Trimodal projected embeddings** (`transcriptome_embeds`): after the learned projection head in shared CLIP space
@@ -23,7 +23,7 @@ sbatch --partition=cmackall -G 1 --cpus-per-task=8 --mem=128G --time=04:00:00 \
   --output=/scratch/users/moritzs/dataset_umap_%j.out \
   --error=/scratch/users/moritzs/dataset_umap_%j.err \
   --job-name=dataset_umap \
-  --wrap='cd ~/cellwhisperer_private && conda run -n cellwhisperer python src/spotwhisperer_eval/scripts/dataset_umap.py'
+  --wrap='cd ~/cellwhisperer_private && conda run -n cellwhisperer python src/spatialwhisperer_eval/scripts/dataset_umap.py'
 ```
 
 ## Results
@@ -44,7 +44,7 @@ This should be addressed honestly in the paper, e.g. in a limitations section or
 ### 2026-03-26: Completed
 - Submitted SLURM job **19680187** on Sherlock (cmackall, 1 GPU, 128G, 4h)
 - **Completed successfully**
-- Output: `results/spotwhisperer_eval/dataset_umap/umap_{geneformer,trimodal_projected}.{pdf,png,csv}`
+- Output: `results/spatialwhisperer_eval/dataset_umap/umap_{geneformer,trimodal_projected}.{pdf,png,csv}`
 - **Finding**: clusters highly disjoint in both embedding spaces
 
 ## Status

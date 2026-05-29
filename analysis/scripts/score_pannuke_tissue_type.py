@@ -24,8 +24,8 @@ import pandas as pd
 import anndata as ad
 import torch
 
-from cellwhisperer.utils.inference import score_left_vs_right
-from cellwhisperer.utils.model_io import load_cellwhisperer_model
+from spatialwhisperer.utils.inference import score_left_vs_right
+from spatialwhisperer.utils.model_io import load_cellwhisperer_model
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

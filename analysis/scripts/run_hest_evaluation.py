@@ -386,13 +386,13 @@ logger.info(f"Dataset bench path: {dataset_bench_path}")
 logger.info(f"Embeddings dir: {embeddings_dir}")
 
 # Use the output directory directly from snakemake
-spotwhisperer_results_dir = Path(snakemake.output.results_dir)
-spotwhisperer_results_dir.mkdir(parents=True, exist_ok=True)
+spatialwhisperer_results_dir = Path(snakemake.output.results_dir)
+spatialwhisperer_results_dir.mkdir(parents=True, exist_ok=True)
 
-logger.info(f"Results will be saved to: {spotwhisperer_results_dir}")
+logger.info(f"Results will be saved to: {spatialwhisperer_results_dir}")
 
 dataset_results = evaluate_dataset_folds(
-    dataset_bench_path, embeddings_dir, spotwhisperer_results_dir
+    dataset_bench_path, embeddings_dir, spatialwhisperer_results_dir
 )
 
 dataset_performance_summary = {
@@ -418,7 +418,7 @@ dataset_performance_summary = {
 }
 
 # Save dataset-specific summary
-with open(spotwhisperer_results_dir / "dataset_summary.json", "w") as f:
+with open(spatialwhisperer_results_dir / "dataset_summary.json", "w") as f:
     json.dump(dataset_performance_summary, f, sort_keys=True, indent=4)
 
 img_to_transcriptome_recall1_mean = dataset_results.get(

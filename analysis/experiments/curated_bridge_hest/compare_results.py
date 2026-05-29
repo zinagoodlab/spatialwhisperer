@@ -24,8 +24,8 @@ DATASETS = [
     "LYMPH_IDC",
 ]
 MODELS = {
-    "Bridge (uncurated)": "spotwhisperer_cellxgene_census__archs4_geo__quilt1m",
-    "Bridge (curated)": "spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated",
+    "Bridge (uncurated)": "spatialwhisperer_cellxgene_census__archs4_geo__quilt1m",
+    "Bridge (curated)": "spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated",
 }
 METRICS = [
     "test_retrieval/transcriptome_image/rocauc_macroAvg",
@@ -33,7 +33,7 @@ METRICS = [
     "test_retrieval/image_transcriptome/rocauc_macroAvg",
     "test_retrieval/image_transcriptome/f1_macroAvg",
 ]
-CSV_LOGS = PROJECT_DIR / "results/spotwhisperer_eval/csv_logging"
+CSV_LOGS = PROJECT_DIR / "results/spatialwhisperer_eval/csv_logging"
 
 rows = []
 for model_label, model_name in MODELS.items():

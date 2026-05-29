@@ -2,7 +2,7 @@ from hest.bench import benchmark
 import torch
 import torch.nn as nn
 import os
-from cellwhisperer.utils.model_io import load_cellwhisperer_model
+from spatialwhisperer.utils.model_io import load_cellwhisperer_model
 
 
 class HESTCompatibleUNIWrapper(nn.Module):

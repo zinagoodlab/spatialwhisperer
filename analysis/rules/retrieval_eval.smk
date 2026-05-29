@@ -1,12 +1,12 @@
 # Retrieval and zero-shot evaluation rules
 
-rule spotwhisperer_test:
+rule spatialwhisperer_test:
     """
-    Evaluate a trained model on test_dataset via `cellwhisperer test`.
+    Evaluate a trained model on test_dataset via `spatialwhisperer test`.
     Writes retrieval and zero-shot metrics to CSV logs.
     """
     input:
-        model=rules.train_spotwhisperer.output.model,
+        model=rules.train_spatialwhisperer.output.model,
         base_config=ancient(BASE_CONFIG)
     output:
         retrieval_and_cwevals=PROJECT_DIR / config["paths"]["csv_logs"] / "sweval___{dataset_combo}___{test_dataset}" / "metrics.csv",
@@ -24,7 +24,7 @@ rule spotwhisperer_test:
         slurm=slurm_gres("small", num_cpus=4),
     shell: """
         cd {params.project_dir}
-        cellwhisperer test \
+        spatialwhisperer test \
             --config {input.base_config} \
             --model_ckpt {input.model} \
             --data.dataset_names {params.test_dataset} \
@@ -36,13 +36,13 @@ rule spotwhisperer_test:
             --wandb ''
     """
 
-rule aggregate_spotwhisperer_test:
+rule aggregate_spatialwhisperer_test:
     """
     Aggregate retrieval and zero-shot metrics across test datasets for a model.
     """
     input:
         retrieval_results=lambda wildcards: expand(
-            rules.spotwhisperer_test.output.retrieval_and_cwevals,
+            rules.spatialwhisperer_test.output.retrieval_and_cwevals,
             dataset_combo=wildcards.dataset_combo,
             test_dataset=BASE_DATASETS,
         )

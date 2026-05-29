@@ -24,7 +24,7 @@ rule quilt_curated_bimodal_bridge_plot:
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
         # Original bimodal bridge model results (with quilt1m)
         original_retrieval_results=[
-            rules.spotwhisperer_test.output.retrieval_and_cwevals.format(
+            rules.spatialwhisperer_test.output.retrieval_and_cwevals.format(
                 dataset_combo=MODEL_MAPPINGS[dataset]["bimodal_bridge"],
                 test_dataset=dataset,
             )
@@ -32,7 +32,7 @@ rule quilt_curated_bimodal_bridge_plot:
         ],
         # Curated bimodal bridge model results (with quilt1m_curated)
         curated_retrieval_results=[
-            rules.spotwhisperer_test.output.retrieval_and_cwevals.format(
+            rules.spatialwhisperer_test.output.retrieval_and_cwevals.format(
                 dataset_combo=MODEL_MAPPINGS_CURATED[dataset]["bimodal_bridge"],
                 test_dataset=dataset.replace("quilt1m", "quilt1m_curated"),
             )
@@ -73,7 +73,7 @@ rule quilt_curated_trimodal_spider_plot:
             ],
         ),
         cwevals_results=expand(
-            rules.aggregate_spotwhisperer_test.output.aggregated_cwevals,
+            rules.aggregate_spatialwhisperer_test.output.aggregated_cwevals,
             dataset_combo=[
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"],
                 MODEL_MAPPINGS_CURATED["cellxgene_census__archs4_geo"]["trimodal"],
@@ -122,7 +122,7 @@ rule quilt_curated_trimodal_spider_plot:
 rule quilt_curated_individual_score_violins:
     """
     Violin plots of individual CLIP scores for quilt1m vs quilt1m_curated.
-    Loads two CSVs written by spotwhisperer_test and compares distributions.
+    Loads two CSVs written by spatialwhisperer_test and compares distributions.
     """
     input:
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),

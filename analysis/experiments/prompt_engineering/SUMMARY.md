@@ -35,7 +35,7 @@ We address this in two parts:
 
 | Parameter | Value |
 |---|---|
-| Model | `spotwhisperer_cellxgene_census__archs4_geo__hest1k` (bimodal bridge) |
+| Model | `spatialwhisperer_cellxgene_census__archs4_geo__hest1k` (bimodal bridge) |
 | Benchmark | CRC (PathoCellBench, 109 datasets, 15 cell types) |
 | Seeds | 1 (seed 0; consistent with baseline) |
 | Prediction level | Patch |
@@ -61,13 +61,13 @@ muscle, Stroma, T cells, Tumor cells, Vasculature/Lymphatics
 
 ## Implementation
 
-Self-contained experiment under `src/spotwhisperer_eval/experiments/prompt_engineering/`.
+Self-contained experiment under `src/spatialwhisperer_eval/experiments/prompt_engineering/`.
 Does **not** modify the main pipeline.
 
 ### File layout
 
 ```
-src/spotwhisperer_eval/experiments/prompt_engineering/
+src/spatialwhisperer_eval/experiments/prompt_engineering/
 ├── SUMMARY.md                           # This file
 ├── Snakefile                            # Self-contained; invoked independently
 └── scripts/
@@ -92,7 +92,7 @@ src/spotwhisperer_eval/experiments/prompt_engineering/
 From Sherlock, within a SLURM job:
 
 ```bash
-cd ~/cellwhisperer_private/src/spotwhisperer_eval/experiments/prompt_engineering
+cd ~/cellwhisperer_private/src/spatialwhisperer_eval/experiments/prompt_engineering
 conda activate cellwhisperer
 snakemake --profile sm7_slurm --cores 4
 ```
@@ -100,7 +100,7 @@ snakemake --profile sm7_slurm --cores 4
 ### Output paths (on Sherlock)
 
 ```
-results/pathocell_evaluation/spotwhisperer_cellxgene_census__archs4_geo__hest1k/
+results/pathocell_evaluation/spatialwhisperer_cellxgene_census__archs4_geo__hest1k/
 ├── prompt_hne_tissue_image/              # Per-dataset predictions
 ├── prompt_histopath_image_of/
 ├── prompt_tissue_sample_containing/
@@ -159,7 +159,7 @@ Results across all 109 CRC datasets (sorted by AUROC, 13 classes):
 ### Part 3: Best template on trimodal curated model
 
 Ran `tissue_sample_containing` (best template from Part 2) on
-`spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated`.
+`spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated`.
 Controller job 19747145, completed 2026-03-28.
 
 | Model | AUROC (raw labels) | AUROC (best template) | Delta |

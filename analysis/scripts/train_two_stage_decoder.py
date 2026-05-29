@@ -40,8 +40,8 @@ n_target_genes = len(target_genes)
 logger.info(f"Target gene list: {n_target_genes} genes")
 
 # ── Set up datamodule ────────────────────────────────────────────────────────
-from cellwhisperer.jointemb.dataset import JointEmbedDataModule
-from cellwhisperer.jointemb.mlp_model import MLPTranscriptomeProcessor
+from spatialwhisperer.jointemb.dataset import JointEmbedDataModule
+from spatialwhisperer.jointemb.mlp_model import MLPTranscriptomeProcessor
 
 # Create a custom MLP processor with our gene list BEFORE constructing the datamodule.
 # We'll inject it by subclassing.
@@ -91,7 +91,7 @@ assert expr_dim == n_target_genes, (
 )
 
 # ── Initialize decoder ───────────────────────────────────────────────────────
-from cellwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
+from spatialwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
     RawUNI2DecoderLightning,
 )
 

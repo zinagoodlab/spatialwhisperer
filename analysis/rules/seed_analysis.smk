@@ -1,24 +1,24 @@
 # Seed variance analysis for reviewer response (Table 2)
 #
-# Reuses existing seed-0 model (spotwhisperer_cellxgene_census__archs4_geo__hest1k)
+# Reuses existing seed-0 model (spatialwhisperer_cellxgene_census__archs4_geo__hest1k)
 # and trains two additional seeds (1, 42). Runs CRC pathocell eval for each seeded
 # model, then aggregates per-class metrics into a mean +/- std table.
 
 VARIANCE_SEEDS = [1, 2]  # seeds to train; seed 0 = existing model
 VARIANCE_DATASET_COMBO = "cellxgene_census__archs4_geo__hest1k"
-VARIANCE_MODEL_BASE = f"spotwhisperer_{VARIANCE_DATASET_COMBO}"
+VARIANCE_MODEL_BASE = f"spatialwhisperer_{VARIANCE_DATASET_COMBO}"
 
 SEED_TRAINING_CONFIG = srcdir("../seed_training_config.yaml")
 
-ruleorder: train_spotwhisperer_seeded > train_spotwhisperer
+ruleorder: train_spatialwhisperer_seeded > train_spatialwhisperer
 
-rule train_spotwhisperer_seeded:
+rule train_spatialwhisperer_seeded:
     """Train SpotWhisperer with an explicit seed encoded in filename."""
     input:
         base_config=ancient(SEED_TRAINING_CONFIG),
         subsamples=_dataset_requirements,
     output:
-        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_{dataset_combo}_seed{seed}.ckpt"),
+        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_{dataset_combo}_seed{seed}.ckpt"),
     params:
         dataset_names=lambda wildcards: wildcards.dataset_combo.replace("__", ","),
         test_run_config="--trainer.limit_train_batches 500 --trainer.max_epochs 2" if config.get("fast", False) else "",
@@ -39,7 +39,7 @@ rule train_spotwhisperer_seeded:
             --seed_everything {wildcards.seed} \
             --last_model_path {output.model} \
             --omit_validation_functions \
-            --wandb spotwhisperer_seed{wildcards.seed}_{wildcards.dataset_combo}
+            --wandb spatialwhisperer_seed{wildcards.seed}_{wildcards.dataset_combo}
     """
 
 rule seed_variance_table:

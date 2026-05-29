@@ -25,13 +25,13 @@ FE_RESULTS = PATHOCELL_RESULTS  # reuse existing pathocell results structure
 FE_BASE_CONFIG = PROJECT_DIR / "analysis/freezing_encoder_training_config.yaml"
 
 
-rule train_spotwhisperer_fe:
+rule train_spatialwhisperer_fe:
     """Train a SpotWhisperer model with a freezing/encoder delta config."""
     input:
         base_config=ancient(FE_BASE_CONFIG),
         delta_config=ancient(FE_DELTA_DIR / "{fe_config}.yaml"),
     output:
-        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_fe_{fe_config}.ckpt"),
+        model=protected(PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_fe_{fe_config}.ckpt"),
     params:
         seed=SEEDS[0],
         project_dir=PROJECT_DIR,
@@ -58,7 +58,7 @@ rule train_spotwhisperer_fe:
             --wandb fe_appendix_{wildcards.fe_config}
     """
 
-ruleorder: train_spotwhisperer_fe > train_spotwhisperer
+ruleorder: train_spatialwhisperer_fe > train_spatialwhisperer
 
 
 rule freezing_encoder_appendix_smoke:
@@ -67,7 +67,7 @@ rule freezing_encoder_appendix_smoke:
     full sweep is launched."""
     input:
         expand(
-            PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_fe_{fc}.ckpt",
+            PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_fe_{fc}.ckpt",
             fc=FE_SMOKE_CONFIGS,
         ),
 
@@ -76,7 +76,7 @@ rule freezing_encoder_appendix_all:
     """Full sweep: train + CRC PathoCellBench eval for each production config."""
     input:
         expand(
-            FE_RESULTS / "spotwhisperer_fe_{fc}/summary/patch_per_class_metrics_from_scores.csv",
+            FE_RESULTS / "spatialwhisperer_fe_{fc}/summary/patch_per_class_metrics_from_scores.csv",
             fc=FE_CONFIGS,
         ),
 
@@ -92,7 +92,7 @@ rule freezing_encoder_appendix_eval_trained:
     ULL ckpt so the eval phase can launch without that dependency."""
     input:
         expand(
-            FE_RESULTS / "spotwhisperer_fe_{fc}/summary/patch_per_class_metrics_from_scores.csv",
+            FE_RESULTS / "spatialwhisperer_fe_{fc}/summary/patch_per_class_metrics_from_scores.csv",
             fc=FE_TRAINED_CONFIGS,
         ),
 
@@ -103,6 +103,6 @@ rule freezing_encoder_appendix_train_remaining:
     priority before kicking off the ~545-job pathocell eval fan-out."""
     input:
         expand(
-            PROJECT_DIR / config["paths"]["jointemb_models"] / "spotwhisperer_fe_{fc}.ckpt",
+            PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_fe_{fc}.ckpt",
             fc=[c for c in FE_CONFIGS if c != "baseline"],
         ),

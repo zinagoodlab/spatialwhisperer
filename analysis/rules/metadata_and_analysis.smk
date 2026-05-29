@@ -56,7 +56,7 @@ rule retrieval_per_class_analysis:
     Collect per-class retrieval scores for the bimodal_bridge model into report and plot.
     """
     input:
-        model_results=lambda wildcards: rules.spotwhisperer_test.output.individual_clip_scores.format(
+        model_results=lambda wildcards: rules.spatialwhisperer_test.output.individual_clip_scores.format(
             dataset_combo=MODEL_MAPPINGS[wildcards.dataset]["bimodal_bridge"],
             test_dataset=wildcards.dataset,
         )

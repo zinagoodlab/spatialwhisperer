@@ -1,6 +1,6 @@
 # CellWhisperer comprehensive benchmark evaluation using the centralized registry
 # This provides the same comprehensive evaluation as fig2_embedding_validations 
-# but integrates with the spotwhisperer_eval pipeline
+# but integrates with the spatialwhisperer_eval pipeline
 
 # Import the registry at the top level for Snakemake
 import sys
@@ -8,7 +8,7 @@ sys.path.append(str(PROJECT_DIR / "src"))
 
 # Lazy import to avoid issues if the module isn't available
 try:
-    from cellwhisperer.validation.registry import ValidationRegistry
+    from spatialwhisperer.validation.registry import ValidationRegistry
     COMPREHENSIVE_BENCHMARKS = ValidationRegistry.get_cellwhisperer_benchmarks()
     BENCHMARK_NAMES = ValidationRegistry.get_benchmark_names()
     DATASET_METADATA_PAIRS = ValidationRegistry.get_dataset_metadata_pairs()
@@ -25,7 +25,7 @@ COMPREHENSIVE_MODEL_RESULTS = COMPREHENSIVE_BENCHMARK_RESULTS / "{model}"
 rule cellwhisperer_comprehensive_zero_shot:
     """
     Comprehensive zero-shot evaluation using the centralized benchmark registry.
-    This mirrors fig2_embedding_validations but integrates with spotwhisperer_eval.
+    This mirrors fig2_embedding_validations but integrates with spatialwhisperer_eval.
     """
     input:
         processed_dataset=PROJECT_DIR / config["paths"]["model_processed_dataset"],
@@ -78,7 +78,7 @@ rule aggregate_comprehensive_benchmarks:
 rule cellwhisperer_comprehensive_benchmark_all:
     """
     Run the comprehensive CellWhisperer benchmark end-to-end for all models.
-    This provides the same evaluation as fig2 but integrated into spotwhisperer_eval.
+    This provides the same evaluation as fig2 but integrated into spatialwhisperer_eval.
     """
     input:
         # Summary results for trimodal and bimodal models

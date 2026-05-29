@@ -3,7 +3,7 @@ import numpy as np
 from scipy import sparse
 import pickle
 from tqdm import tqdm
-from cellwhisperer.utils.processing import ensure_raw_counts_adata
+from spatialwhisperer.utils.processing import ensure_raw_counts_adata
 from joblib import Parallel, delayed
 
 

@@ -32,8 +32,8 @@ PLIP benefits *more* from curation than the bridge model (+0.079 vs +0.050). The
 
 ## Implementation
 
-- Inference script: `src/spotwhisperer_eval/scripts/plip_quilt1m_harmonization_control.py`
-- SNAP controller: `src/spotwhisperer_eval/experiments/plip_harmonization_control/run_snap_controller.sh`
+- Inference script: `src/spatialwhisperer_eval/scripts/plip_quilt1m_harmonization_control.py`
+- SNAP controller: `src/spatialwhisperer_eval/experiments/plip_harmonization_control/run_snap_controller.sh`
 
 The script merges the two CSV lookup tables by `image_path`, samples 20k pairs, loads images from zip archives on local SSD, encodes with PLIP, computes torchmetrics multiclass retrieval metrics, and writes results.
 
@@ -51,7 +51,7 @@ Both runs produced identical results (differences only in 6th decimal place from
 
 ```bash
 cd /sailhome/$USER/cellwhisperer_private
-sbatch src/spotwhisperer_eval/experiments/plip_harmonization_control/run_snap_controller.sh
+sbatch src/spatialwhisperer_eval/experiments/plip_harmonization_control/run_snap_controller.sh
 ```
 
 ## Notes

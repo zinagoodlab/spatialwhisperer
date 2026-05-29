@@ -48,7 +48,7 @@ trainer:
       settings: null
   - class_path: lightning.pytorch.loggers.CSVLogger
     init_args:
-      save_dir: results/spotwhisperer_eval/csv_logging
+      save_dir: results/spatialwhisperer_eval/csv_logging
       name: csv_logs
       version: null
       prefix: ''
@@ -132,6 +132,6 @@ log_level: INFO
 dap_debug: false
 batch_size: 512
 nproc: 0
-wandb: 'spotwhisperer_eval_base'
+wandb: 'spatialwhisperer_eval_base'
 ckpt_path: null
 omit_validation_functions: false

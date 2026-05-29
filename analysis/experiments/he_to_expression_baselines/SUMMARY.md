@@ -236,7 +236,7 @@ Draft a ~300-word paragraph for the paper discussion/rebuttal covering:
 PD=/home/groups/zinaida/moritzs/cellwhisperer_private
 
 # Full pipeline (download + score + split + aggregate metrics):
-conda run -n cellwhisperer snakemake --snakefile src/spotwhisperer_eval/Snakefile \
+conda run -n cellwhisperer snakemake --snakefile src/spatialwhisperer_eval/Snakefile \
     --profile sm7_slurm \
     ${PD}/results/pathocell_evaluation/omiclip/summary/patch_metrics_from_scores_aggregated.json
 ```

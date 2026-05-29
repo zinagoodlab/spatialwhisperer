@@ -26,7 +26,7 @@ def load_original_evaluation_results():
 
     # Load trimodal results
     trimodal_path = Path(
-        "/oak/stanford/groups/zinaida/moritzs/cellwhisperer/results/spotwhisperer_eval/benchmarks/cellwhisperer/spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m/datasets/human_disease/celltype/performance_metrics_permetadataraw.csv"
+        "/oak/stanford/groups/zinaida/moritzs/cellwhisperer/results/spatialwhisperer_eval/benchmarks/cellwhisperer/spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m/datasets/human_disease/celltype/performance_metrics_permetadataraw.csv"
     )
 
     if not trimodal_path.exists():
@@ -37,7 +37,7 @@ def load_original_evaluation_results():
 
     # Load bimodal matching results
     bimodal_path = Path(
-        "/oak/stanford/groups/zinaida/moritzs/cellwhisperer/results/spotwhisperer_eval/benchmarks/cellwhisperer/spotwhisperer_cellxgene_census__archs4_geo/datasets/human_disease/celltype/performance_metrics_permetadataraw.csv"
+        "/oak/stanford/groups/zinaida/moritzs/cellwhisperer/results/spatialwhisperer_eval/benchmarks/cellwhisperer/spatialwhisperer_cellxgene_census__archs4_geo/datasets/human_disease/celltype/performance_metrics_permetadataraw.csv"
     )
 
     if not bimodal_path.exists():

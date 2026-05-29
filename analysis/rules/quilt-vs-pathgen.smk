@@ -16,7 +16,7 @@ rule quilt_pathgen_paired_barplots:
     input:
         # Actual result files for plotting
         lung_results=expand(
-            SPOTWHISPERER_EVAL_RESULTS / "lung/performance_summary_spotwhisperer_{dataset}.csv",
+            SPATIALWHISPERER_EVAL_RESULTS / "lung/performance_summary_spatialwhisperer_{dataset}.csv",
             dataset=COMPARISON_DATASETS
         ),
         # pathocell_results=expand(

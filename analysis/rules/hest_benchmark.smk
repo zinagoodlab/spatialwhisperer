@@ -21,7 +21,7 @@ rule prepare_hest_data:
     output:
         dataset_dir=directory(HEST_DATA_ROOT / "{dataset}")
     wildcard_constraints:
-        dataset="(?!.*_spotwhisperer$).*"  # Don't match names ending with _spotwhisperer
+        dataset="(?!.*_spatialwhisperer$).*"  # Don't match names ending with _spatialwhisperer
     conda:
         "hest"
     resources:
@@ -31,9 +31,9 @@ rule prepare_hest_data:
     script:
         "../scripts/prepare_hest_data.py"
 
-rule convert_hest_to_spotwhisperer:
+rule convert_hest_to_spatialwhisperer:
     """
-    Convert a HEST dataset to SpotWhisperer H5AD format compatible with `cellwhisperer test`.
+    Convert a HEST dataset to SpotWhisperer H5AD format compatible with `spatialwhisperer test`.
     """
     input:
         dataset_dir=HEST_DATA_ROOT / "{dataset}"
@@ -51,18 +51,18 @@ rule convert_hest_to_spotwhisperer:
         slurm="cpus-per-task=4",
         runtime=180  # 3 hours for conversion
     script:
-        "../scripts/convert_hest_to_spotwhisperer_dataset.py"
+        "../scripts/convert_hest_to_spatialwhisperer_dataset.py"
 
-rule hest_spotwhisperer_test:
+rule hest_spatialwhisperer_test:
     """
-    Evaluate the converted HEST dataset using `cellwhisperer test`; writes metrics.
+    Evaluate the converted HEST dataset using `spatialwhisperer test`; writes metrics.
     """
     input:
-        converted_dataset=rules.convert_hest_to_spotwhisperer.output.converted_dataset,
+        converted_dataset=rules.convert_hest_to_spatialwhisperer.output.converted_dataset,
         model=PROJECT_DIR / config["paths"]["jointemb_models"] / "{model}.ckpt",
         base_config=ancient(BASE_CONFIG)
     output:
-        # Follow same pattern as spotwhisperer_test rule
+        # Follow same pattern as spatialwhisperer_test rule
         results_csv=PROJECT_DIR / config["paths"]["csv_logs"] / "hest_eval___{model}___{dataset}" / "metrics.csv"
     params:
         test_dataset="hesteval_{dataset}",
@@ -78,7 +78,7 @@ rule hest_spotwhisperer_test:
     shell:
         """
         cd {params.project_dir}
-        cellwhisperer test \
+        spatialwhisperer test \
             --config {input.base_config} \
             --model_ckpt {input.model} \
             --data.dataset_names {params.test_dataset} \
@@ -96,7 +96,7 @@ rule aggregate_hest_results:
     Aggregate HEST evaluation metrics across all datasets into a single summary.
     """
     input:
-        results_csvs=expand(rules.hest_spotwhisperer_test.output.results_csv,
+        results_csvs=expand(rules.hest_spatialwhisperer_test.output.results_csv,
                dataset=HEST_DATASETS,
                allow_missing=True
         )
@@ -125,7 +125,7 @@ rule hest_per_class_analysis:
     input:
         # Results from trimodal and bimodal_matching models for HEST datasets
         lambda wildcards: [
-            PROJECT_DIR / config["paths"]["csv_logs"] / "hest_eval___spotwhisperer_{}___{}".format(combo, dataset) / "metrics.csv"
+            PROJECT_DIR / config["paths"]["csv_logs"] / "hest_eval___spatialwhisperer_{}___{}".format(combo, dataset) / "metrics.csv"
             for combo in ["cellxgene_census__archs4_geo__hest1k__quilt1m",  # trimodal
                          "cellxgene_census__archs4_geo", "hest1k", "quilt1m"]  # bimodal matching options
             for dataset in HEST_DATASETS
@@ -155,7 +155,7 @@ rule hest_benchmark_all:
     input:
         expand(
             rules.aggregate_hest_results.output.aggregated_summary,
-            model=config["model_name_path_map"]["spotwhisperer3"]
+            model=config["model_name_path_map"]["spatialwhisperer3"]
         ),
         rules.hest_per_class_analysis.output.analysis
     default_target: True
@@ -168,7 +168,7 @@ rule aggregate_hest_evaluation:
     input:
         lambda wildcards: expand(
             rules.aggregate_hest_results.output.aggregated_summary,
-            model="spotwhisperer_{}".format(wildcards.dataset_combo),
+            model="spatialwhisperer_{}".format(wildcards.dataset_combo),
             allow_missing=True,
         )
     output:

@@ -11,12 +11,12 @@ rule create_analysis_plots:
             test_dataset=wildcards.test_dataset,
         ),
         retrieval_results=lambda wildcards: expand(
-            rules.aggregate_spotwhisperer_test.output.aggregated_retrieval,
+            rules.aggregate_spatialwhisperer_test.output.aggregated_retrieval,
             dataset_combo=[MODEL_MAPPINGS[wildcards.test_dataset][mt] for mt in ["naive_baseline", "bimodal_matching", "bimodal_bridge", "trimodal"]],
             test_dataset=wildcards.test_dataset,
         ),
         cwevals_results=lambda wildcards: expand(
-            rules.aggregate_spotwhisperer_test.output.aggregated_cwevals,
+            rules.aggregate_spatialwhisperer_test.output.aggregated_cwevals,
             dataset_combo=[MODEL_MAPPINGS[wildcards.test_dataset][mt] for mt in ["naive_baseline", "bimodal_matching", "bimodal_bridge", "trimodal"]],
             test_dataset=wildcards.test_dataset,
         )
@@ -47,7 +47,7 @@ rule create_retrieval_plots:
     """
     input:
         retrieval_results=lambda wildcards: expand(
-            rules.aggregate_spotwhisperer_test.output.aggregated_retrieval,
+            rules.aggregate_spatialwhisperer_test.output.aggregated_retrieval,
             dataset_combo=[MODEL_MAPPINGS[wildcards.test_dataset][mt] for mt in ["naive_baseline", "bimodal_bridge"]],
             test_dataset=wildcards.test_dataset,
         )
@@ -87,7 +87,7 @@ rule spider_performance_plot:
             ],
         ),
         retrieval_results=expand(
-            rules.aggregate_spotwhisperer_test.output.aggregated_retrieval,
+            rules.aggregate_spatialwhisperer_test.output.aggregated_retrieval,
             dataset_combo=[
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"],
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"],
@@ -96,7 +96,7 @@ rule spider_performance_plot:
             ],
         ),
         cwevals_results=expand(
-            rules.aggregate_spotwhisperer_test.output.aggregated_cwevals,
+            rules.aggregate_spatialwhisperer_test.output.aggregated_cwevals,
             dataset_combo=[
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"],
                 MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"],
@@ -108,10 +108,10 @@ rule spider_performance_plot:
         # expand(
         #     rules.aggregate_comprehensive_benchmarks.output.aggregated_comprehensive,
         #     model=[
-        #         "spotwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"]),
-        #         "spotwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"]),
-        #         "spotwhisperer_{}".format(MODEL_MAPPINGS["hest1k"]["bimodal_matching"]),
-        #         "spotwhisperer_{}".format(MODEL_MAPPINGS["quilt1m"]["bimodal_matching"]),
+        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"]),
+        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"]),
+        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["hest1k"]["bimodal_matching"]),
+        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["quilt1m"]["bimodal_matching"]),
         #     ],
         # ),
         # lung_results=expand(
@@ -174,7 +174,7 @@ rule bimodal_bridge_plot:
     input:
         mpl_style=ancient(PROJECT_DIR / config["plot_style"]),
         retrieval_results=[
-            rules.spotwhisperer_test.output.retrieval_and_cwevals.format(
+            rules.spatialwhisperer_test.output.retrieval_and_cwevals.format(
                 dataset_combo=MODEL_MAPPINGS[dataset]["bimodal_bridge"],
                 test_dataset=dataset,
             )

@@ -24,10 +24,10 @@ conda activate cellwhisperer
 set -u
 
 TARGETS=(
-    "$PD/results/pathocell_evaluation/spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m/lizard/glas_4_patch_scores_seed0.csv"
-    "$PD/results/pathocell_evaluation/spotwhisperer_quilt1m/lizard/dpath_69_patch_scores_seed0.csv"
-    "$PD/results/pathocell_evaluation/spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m/lizard_summary/patch_metrics_from_scores_aggregated.json"
-    "$PD/results/pathocell_evaluation/spotwhisperer_quilt1m/lizard_summary/patch_metrics_from_scores_aggregated.json"
+    "$PD/results/pathocell_evaluation/spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m/lizard/glas_4_patch_scores_seed0.csv"
+    "$PD/results/pathocell_evaluation/spatialwhisperer_quilt1m/lizard/dpath_69_patch_scores_seed0.csv"
+    "$PD/results/pathocell_evaluation/spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m/lizard_summary/patch_metrics_from_scores_aggregated.json"
+    "$PD/results/pathocell_evaluation/spatialwhisperer_quilt1m/lizard_summary/patch_metrics_from_scores_aggregated.json"
 )
 
 snakemake \

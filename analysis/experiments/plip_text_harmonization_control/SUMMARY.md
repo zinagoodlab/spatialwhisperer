@@ -23,18 +23,18 @@ This directly addresses the Section 4.3 interpretation: if the bridge model bene
 - Curated captions: `~/oak/moritzs/cellwhisperer/results/quilt1m_curated/quilt_1M_lookup_curated.csv`
 - Original crop h5ads: `~/oak/moritzs/cellwhisperer/results/quilt1m/h5ads`
 - Curated crop h5ads: `~/oak/moritzs/cellwhisperer/results/quilt1m_curated/h5ads`
-- Section 4.3 subset source: `~/oak/moritzs/cellwhisperer/results/spotwhisperer_eval/csv_logging/sweval___cellxgene_census__archs4_geo__hest1k___quilt1m_curated/test_individual_clip_scores.csv`
+- Section 4.3 subset source: `~/oak/moritzs/cellwhisperer/results/spatialwhisperer_eval/csv_logging/sweval___cellxgene_census__archs4_geo__hest1k___quilt1m_curated/test_individual_clip_scores.csv`
 - Control output root: `/dfs/user/moritzs/quilt1m_control`
 
 ## What was added
 
-- Rule file: `src/spotwhisperer_eval/rules/quilt_text_harmonization_control.smk`
-- Subset manifest builder: `src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/build_subset_manifest.py`
-- Control inference script: `src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/run_quilt_retrieval_control.py`
-- Result aggregator: `src/spotwhisperer_eval/experiments/plip_text_harmonization_control/scripts/summarize_control_results.py`
+- Rule file: `src/spatialwhisperer_eval/rules/quilt_text_harmonization_control.smk`
+- Subset manifest builder: `src/spatialwhisperer_eval/experiments/plip_text_harmonization_control/scripts/build_subset_manifest.py`
+- Control inference script: `src/spatialwhisperer_eval/experiments/plip_text_harmonization_control/scripts/run_quilt_retrieval_control.py`
+- Result aggregator: `src/spatialwhisperer_eval/experiments/plip_text_harmonization_control/scripts/summarize_control_results.py`
 - SNAP batch helpers:
-  - `src/spotwhisperer_eval/experiments/plip_text_harmonization_control/run_snap_control.sh`
-  - `src/spotwhisperer_eval/experiments/plip_text_harmonization_control/submit_snap_control.sh`
+  - `src/spatialwhisperer_eval/experiments/plip_text_harmonization_control/run_snap_control.sh`
+  - `src/spatialwhisperer_eval/experiments/plip_text_harmonization_control/submit_snap_control.sh`
 
 ## Evaluation design
 
@@ -66,14 +66,14 @@ The SNAP run writes to `/dfs/user/moritzs/quilt1m_control/`:
 Testing:
 
 ```bash
-cd ~/cellwhisperer_private/src/spotwhisperer_eval/experiments/plip_text_harmonization_control
+cd ~/cellwhisperer_private/src/spatialwhisperer_eval/experiments/plip_text_harmonization_control
 bash submit_snap_control.sh il-interactive plip
 ```
 
 Production:
 
 ```bash
-cd ~/cellwhisperer_private/src/spotwhisperer_eval/experiments/plip_text_harmonization_control
+cd ~/cellwhisperer_private/src/spatialwhisperer_eval/experiments/plip_text_harmonization_control
 bash submit_snap_control.sh il plip
 ```
 

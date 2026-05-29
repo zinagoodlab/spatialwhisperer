@@ -3,7 +3,7 @@
 # Outputs are redirected under <model>_recheck/<...> directories so the
 # existing scores stay untouched. After a recheck run, comparing the
 # recheck CSVs to the originals gives a determinism / pipeline-consistency
-# check. Spotwhisperer models (which use the {model} wildcard) are handled
+# check. Spatialwhisperer models (which use the {model} wildcard) are handled
 # without code changes via _recheck.ckpt symlinks; this file adds clones
 # only for the rules whose output paths are otherwise hard-coded
 # (two-stage and OmiCLIP CRC variants).
@@ -130,7 +130,7 @@ rule omiclip_pseudobulk_pathocell_score_recheck:
     input:
         checkpoint=OMICLIP_CHECKPOINT,
         gene_script=OMICLIP_PSEUDOBULK_GENES,
-        score_script=PROJECT_DIR / "src" / "spotwhisperer_eval" / "scripts" / "run_omiclip_baseline.py",
+        score_script=PROJECT_DIR / "src" / "spatialwhisperer_eval" / "scripts" / "run_omiclip_baseline.py",
         adatas=expand(
             PATHOCELL_DATA / "processed/{dataset}_patch.h5ad",
             dataset=DATASETS,

@@ -23,13 +23,13 @@ cd "$PROJECT_DIR"
 # Target: metrics.csv for all 10 HEST datasets
 snakemake --snakefile analysis/Snakefile --profile sm7_slurm --unlock
 snakemake --snakefile analysis/Snakefile --profile sm7_slurm \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___IDC/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___PRAD/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___PAAD/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___SKCM/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___COAD/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___READ/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___CCRCC/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___HCC/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___LUNG/metrics.csv \
-    ${PROJECT_DIR}/results/spotwhisperer_eval/csv_logging/hest_eval___spotwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___LYMPH_IDC/metrics.csv
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___IDC/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___PRAD/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___PAAD/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___SKCM/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___COAD/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___READ/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___CCRCC/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___HCC/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___LUNG/metrics.csv \
+    ${PROJECT_DIR}/results/spatialwhisperer_eval/csv_logging/hest_eval___spatialwhisperer_cellxgene_census__archs4_geo__quilt1m_curated___LYMPH_IDC/metrics.csv

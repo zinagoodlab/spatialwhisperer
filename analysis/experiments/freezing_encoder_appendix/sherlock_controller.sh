@@ -23,7 +23,7 @@ case "$TARGET" in
     full)                        SNAKE_TARGET=freezing_encoder_appendix_all ;;
     eval_trained)                SNAKE_TARGET=freezing_encoder_appendix_eval_trained ;;
     train_remaining)             SNAKE_TARGET=freezing_encoder_appendix_train_remaining ;;
-    baseline|lll|llu|ull|uce)    SNAKE_TARGET="$PROJECT_DIR/results/models/jointemb/spotwhisperer_fe_${TARGET}.ckpt" ;;
+    baseline|lll|llu|ull|uce)    SNAKE_TARGET="$PROJECT_DIR/results/models/jointemb/spatialwhisperer_fe_${TARGET}.ckpt" ;;
     *)                           echo "Unknown target: $TARGET (expected smoke|full|train_remaining|baseline|lll|llu|ull|uce)" >&2; exit 2 ;;
 esac
 

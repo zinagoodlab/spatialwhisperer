@@ -47,13 +47,13 @@ Each trained model is evaluated using three benchmarks:
 
 ### Run full experiment:
 ```bash
-cd src/spotwhisperer_eval
+cd src/spatialwhisperer_eval
 snakemake --cores 16 -j 8 all
 ```
 
 ### Run with fast development mode:
 ```bash
-cd src/spotwhisperer_eval
+cd src/spatialwhisperer_eval
 snakemake --cores 16 -j 8 all --config fast=true
 ```
 
@@ -65,7 +65,7 @@ snakemake --dry-run -j1 all
 ## Configuration
 
 The pipeline uses:
-- **Base config**: `src/spotwhisperer_v2.yaml`
+- **Base config**: `src/spatialwhisperer_v2.yaml`
 - **Dataset override**: `--data.dataset_names` parameter is dynamically set for each combination
 - **Seeds**: Currently using seed 0 for efficiency
 - **Fast training**: Set `fast=true` in config to enable `--trainer.fast_dev_run` for quick development
@@ -76,7 +76,7 @@ The pipeline uses:
 Results are organized as follows:
 
 ```
-results/spotwhisperer_eval/
+results/spatialwhisperer_eval/
 ├── models/                      # Trained models
 │   ├── {dataset_combo}/
 │   │   └── seed_{seed}.ckpt

@@ -43,12 +43,12 @@ H&E patch → UNI2 (frozen, 1536-dim) → MILinearBlock decoder → predicted ex
 | File | Purpose |
 |------|---------|
 | `src/cellwhisperer/expression_decoder/raw_uni2_decoder_lightning.py` | Lightning module: frozen UNI2 → MILinearBlock → Linear → gene expression |
-| `src/spotwhisperer_eval/rules/two_stage_baseline.smk` | Snakemake rules (6 rules) |
-| `src/spotwhisperer_eval/scripts/train_two_stage_decoder.py` | Decoder training script (monkey-patches MLP processor for custom gene list) |
-| `src/spotwhisperer_eval/scripts/retrain_geneformer_classifier.py` | Geneformer classifier retraining script |
-| `src/spotwhisperer_eval/scripts/create_hest_geneformer_genelist.py` | Gene list: HEST ∩ Geneformer vocabulary |
-| `src/spotwhisperer_eval/scripts/create_pathocell_label_mapping.py` | Regex word-boundary label mapping |
-| `src/spotwhisperer_eval/scripts/two_stage_predict.py` | End-to-end prediction: patches → UNI2 → decoder → Geneformer → scores |
+| `src/spatialwhisperer_eval/rules/two_stage_baseline.smk` | Snakemake rules (6 rules) |
+| `src/spatialwhisperer_eval/scripts/train_two_stage_decoder.py` | Decoder training script (monkey-patches MLP processor for custom gene list) |
+| `src/spatialwhisperer_eval/scripts/retrain_geneformer_classifier.py` | Geneformer classifier retraining script |
+| `src/spatialwhisperer_eval/scripts/create_hest_geneformer_genelist.py` | Gene list: HEST ∩ Geneformer vocabulary |
+| `src/spatialwhisperer_eval/scripts/create_pathocell_label_mapping.py` | Regex word-boundary label mapping |
+| `src/spatialwhisperer_eval/scripts/two_stage_predict.py` | End-to-end prediction: patches → UNI2 → decoder → Geneformer → scores |
 
 ## Snakemake Rules (in `two_stage_baseline.smk`)
 
@@ -83,7 +83,7 @@ results/pathocell_evaluation/two_stage_baseline/
 PD=/home/groups/zinaida/moritzs/cellwhisperer_private
 
 # Full pipeline for all CRC datasets:
-conda run -n cellwhisperer snakemake --snakefile src/spotwhisperer_eval/Snakefile \
+conda run -n cellwhisperer snakemake --snakefile src/spatialwhisperer_eval/Snakefile \
     --profile sm7_slurm \
     ${PD}/results/pathocell_evaluation/two_stage_baseline/summary/patch_metrics_from_scores_aggregated.json
 
@@ -182,7 +182,7 @@ The two-stage baseline performed worse than our trimodal approach due to:
 4. **Gene space limitation**: not all discriminative genes may be predictable from H&E morphology
 # Two-Stage Baseline: extension to Lizard and PanNuke (revisions)
 
-To be appended to `src/spotwhisperer_eval/experiments/two_stage_baseline/SUMMARY.md` once
+To be appended to `src/spatialwhisperer_eval/experiments/two_stage_baseline/SUMMARY.md` once
 the controller job (`tsb_secondary`, sbatch 23985697) finishes.
 
 ## Motivation (from rebuttal review of revisions)
@@ -203,7 +203,7 @@ Added, in addition to the existing CRC pipeline:
 | OmiCLIP, short markers | `omiclip_secondary_score` + `omiclip_secondary_split_scores` with `omiclip_model=omiclip` (in `omiclip_baseline.smk`) | `omiclip_generate_marker_genes` → `<benchmark>_short.json` (8–12 genes/class, curated from PanglaoDB / Human Protein Atlas / CRC scRNA-seq references) |
 | OmiCLIP, extended markers | same rule with `omiclip_model=omiclip_pseudobulk` | `<benchmark>_pseudobulk.json` (25–30 genes/class, OmiCLIP Visium-pseudobulk style) |
 | Trimodal (ours) | existing `lizard_cell_type_prediction`, `pannuke_cell_type_prediction` | n/a — uses the existing trimodal checkpoint |
-| Bimodal I↔T (Quilt-1M only) | same as above with `model=spotwhisperer_quilt1m` | n/a |
+| Bimodal I↔T (Quilt-1M only) | same as above with `model=spatialwhisperer_quilt1m` | n/a |
 
 Minor change to `two_stage_predict.py`: the background-class filter is now case-insensitive
 (`c.lower() != "background"`), since Lizard's adata uses lowercase `background` while
@@ -262,8 +262,8 @@ Per-class breakdown is at `table2_two_stage_baselines_per_class.csv`. Notable pe
 
 ```bash
 # From Sherlock login:
-ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spotwhisperer_eval/experiments/two_stage_baseline/run_secondary_benchmarks.sh'
+ssh sherlock 'sbatch /home/groups/zinaida/moritzs/cellwhisperer_private/src/spatialwhisperer_eval/experiments/two_stage_baseline/run_secondary_benchmarks.sh'
 
 # After completion, build Table 2 + per-class table:
-ssh sherlock 'cd /home/groups/zinaida/moritzs/cellwhisperer_private && conda run -n cellwhisperer python src/spotwhisperer_eval/experiments/two_stage_baseline/build_table2.py'
+ssh sherlock 'cd /home/groups/zinaida/moritzs/cellwhisperer_private && conda run -n cellwhisperer python src/spatialwhisperer_eval/experiments/two_stage_baseline/build_table2.py'
 ```

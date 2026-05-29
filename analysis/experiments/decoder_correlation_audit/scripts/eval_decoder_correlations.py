@@ -101,9 +101,9 @@ def main():
     logger.info("Device: %s", device)
 
     # ── Datamodule (same construction as train_two_stage_decoder.py) ─────────
-    from cellwhisperer.jointemb.dataset import JointEmbedDataModule
-    from cellwhisperer.jointemb.mlp_model import MLPTranscriptomeProcessor
-    from cellwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
+    from spatialwhisperer.jointemb.dataset import JointEmbedDataModule
+    from spatialwhisperer.jointemb.mlp_model import MLPTranscriptomeProcessor
+    from spatialwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
         RawUNI2DecoderLightning,
     )
 

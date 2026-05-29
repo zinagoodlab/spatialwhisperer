@@ -2,7 +2,7 @@
 # Analyzes disease detectability and performance improvements using LLM-based scoring
 
 # Results paths for model interpretation
-MODEL_INTERPRETATION_RESULTS = PROJECT_DIR / "results/spotwhisperer_eval/benchmarks/model_interpretation"
+MODEL_INTERPRETATION_RESULTS = PROJECT_DIR / "results/spatialwhisperer_eval/benchmarks/model_interpretation"
 
 rule llm_histopathology_analysis:
     """
@@ -120,47 +120,6 @@ rule distribution_comparison_analysis:
     script:
         "../scripts/distribution_comparison_detectability_scores.py"
 
-rule quilt1m_mention_correlation:
-    """
-    Correlate Quilt1M disease mentions with performance changes; output data and plot.
-    """
-    input:
-        per_class_analysis=rules.cellwhisperer_per_class_analysis.output.analysis,
-        mpl_style=ancient(PROJECT_DIR / config["plot_style"])
-    output:
-        correlation_data=MODEL_INTERPRETATION_RESULTS / "quilt1m_mention_correlation_data.csv",
-        correlation_plots=report(MODEL_INTERPRETATION_RESULTS / "quilt1m_mention_correlation_analysis.png",
-                               category="model_interpretation", subcategory="quilt1m_analysis",
-                               labels={"Analysis": "Quilt1M Mention Correlation", "Format": "plot"})
-    conda:
-        "cellwhisperer"
-    resources:
-        mem_mb=20000,
-        slurm="cpus-per-task=2"
-    script:
-        "../scripts/quilt1m_mention_correlation_analysis.py"
-
-rule adhoc_per_class_analysis:
-    """
-    Exploratory plots for human_disease per-class results.
-    """
-    input:
-        per_class_analysis=rules.cellwhisperer_per_class_analysis.output.analysis,
-        mpl_style=ancient(PROJECT_DIR / config["plot_style"])
-    output:
-        analysis_plots=report(MODEL_INTERPRETATION_RESULTS / "human_disease_analysis.png",
-                            category="model_interpretation", subcategory="adhoc_analysis",
-                            labels={"Analysis": "Human Disease Analysis", "Format": "plot"}),
-        mention_correlation_plots=MODEL_INTERPRETATION_RESULTS / "human_disease_mention_correlation.png",
-        violin_plots=MODEL_INTERPRETATION_RESULTS / "human_disease_violin_plot.png"
-    conda:
-        "cellwhisperer"
-    resources:
-        mem_mb=20000,
-        slurm="cpus-per-task=2"
-    script:
-        "../scripts/adhoc_per_class_analysis.py"
-
 rule model_interpretation_all:
     """
     Run all model interpretation analyses end-to-end.
@@ -174,7 +133,3 @@ rule model_interpretation_all:
         rules.correlation_analysis.output.four_group_plots,
         rules.high_detectability_disease_analysis.output.comprehensive_plots,
         rules.distribution_comparison_analysis.output.detectability_violin_plots,
-        
-        # Additional analyses
-        rules.quilt1m_mention_correlation.output.correlation_plots,
-        rules.adhoc_per_class_analysis.output.analysis_plots,

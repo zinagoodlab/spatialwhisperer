@@ -24,7 +24,7 @@ geneformer_ensembl_ids = set(tokenizer.genelist_dict.keys())
 logger.info(f"Geneformer vocabulary: {len(geneformer_ensembl_ids)} Ensembl gene IDs")
 
 # Load the Ensembl ↔ symbol mapping
-from cellwhisperer.config import get_path
+from spatialwhisperer.config import get_path
 
 annot_path = get_path(["paths", "ensembl_gene_symbol_map"])
 annot = pd.read_csv(annot_path, index_col=0)

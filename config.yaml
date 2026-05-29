@@ -20,7 +20,7 @@ paths:
   cosmx6k_genes: static/cosmx6k_cxg_overlap_genes.csv
   jointemb_models: results/models/jointemb
   wandb_logs: results/wandb_logging
-  csv_logs: results/spotwhisperer_eval/csv_logging
+  csv_logs: results/spatialwhisperer_eval/csv_logging
   datamodule_prepared_path: scratch/lightning_processed/{dataset}/{hash}.pt
   data_loading_individual_samples: scratch/data_loading/{dataset_name}_{i}/{hash}  # one file per datapoint
   cache: scratch/cache  # overwritable with CELLWHISPERER_CACHE env
@@ -172,9 +172,9 @@ model_name_path_map:
   cellwhisperer_uce: cellwhisperer_clip_v2_uce  # a57mxh0e (4 epochs)
   cellwhisperer_scgpt: cellwhisperer_clip_v2_scgpt  #  eejwiodj (4 epochs)
 
-  spotwhisperer: spotwhisperer_clip_v1  # zun9upd2 (3 scales?) HEST+ARCHS4+CELLXGENECENSUS?
-  spotwhisperer2: spotwhisperer_clip_v1  # ? <- 3 scales
-  spotwhisperer3: spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m
+  spatialwhisperer: spatialwhisperer_clip_v1  # zun9upd2 (3 scales?) HEST+ARCHS4+CELLXGENECENSUS?
+  spatialwhisperer2: spatialwhisperer_clip_v1  # ? <- 3 scales
+  spatialwhisperer3: spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m
 
   geneformer: resources/geneformer-12L-30M
   scgpt: resources/scGPT_human

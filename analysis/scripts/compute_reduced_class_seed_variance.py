@@ -18,18 +18,15 @@ import anndata
 from pathlib import Path
 from sklearn.metrics import roc_auc_score, f1_score
 
-BASE = Path(
-    "/home/groups/zinaida/moritzs/cellwhisperer_private/results/pathocell_evaluation"
-)
-H5AD_BASE = Path(
-    "/home/groups/zinaida/moritzs/cellwhisperer_private/resources/pathocell/processed"
-)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+BASE = PROJECT_ROOT / "results/pathocell_evaluation"
+H5AD_BASE = PROJECT_ROOT / "resources/pathocell/processed"
 
 MODELS = {
-    "seed0_orig": "spotwhisperer_cellxgene_census__archs4_geo__hest1k",
-    "seed0_retrained": "spotwhisperer_cellxgene_census__archs4_geo__hest1k_seed0",
-    "seed1": "spotwhisperer_cellxgene_census__archs4_geo__hest1k_seed1",
-    "seed2": "spotwhisperer_cellxgene_census__archs4_geo__hest1k_seed2",
+    "seed0_orig": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k",
+    "seed0_retrained": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed0",
+    "seed1": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed1",
+    "seed2": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed2",
 }
 
 # --- Lizard config ---

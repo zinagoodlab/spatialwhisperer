@@ -2,7 +2,7 @@
 DeepSpot-comparable held-out evaluation of the HEST-1K UNI2→MLP decoder.
 
 Iterates the 10 HEST-bench organs (hesteval_<organ>). For each organ:
-  1. Loads the converted spotwhisperer-format dataset via JointEmbedDataModule
+  1. Loads the converted spatialwhisperer-format dataset via JointEmbedDataModule
      with train_fraction=0.0 (= all spots go to val).
   2. Filters to held-out samples only (i.e. those NOT present in our
      hest1k training set at results/hest1k/h5ads/full_data_<sample>.h5ad).
@@ -101,9 +101,9 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info("Device: %s", device)
 
-    from cellwhisperer.jointemb.dataset import JointEmbedDataModule
-    from cellwhisperer.jointemb.mlp_model import MLPTranscriptomeProcessor
-    from cellwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
+    from spatialwhisperer.jointemb.dataset import JointEmbedDataModule
+    from spatialwhisperer.jointemb.mlp_model import MLPTranscriptomeProcessor
+    from spatialwhisperer.expression_decoder.raw_uni2_decoder_lightning import (
         RawUNI2DecoderLightning,
     )
 

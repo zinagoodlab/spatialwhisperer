@@ -5,27 +5,27 @@ Reviewer requested variance estimates for Table 2 results (CRC PathoCellBench).
 Quote: "Can the authors provide variance estimates across multiple seeds?"
 
 ## Design
-- **Existing model**: `spotwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt` (seed 0)
-  - Already has CRC eval results in `results/pathocell_evaluation/spotwhisperer_cellxgene_census__archs4_geo__hest1k/summary/`
+- **Existing model**: `spatialwhisperer_cellxgene_census__archs4_geo__hest1k.ckpt` (seed 0)
+  - Already has CRC eval results in `results/pathocell_evaluation/spatialwhisperer_cellxgene_census__archs4_geo__hest1k/summary/`
 - **New models to train**: seeds 1 and 2, producing:
-  - `spotwhisperer_cellxgene_census__archs4_geo__hest1k_seed1.ckpt`
-  - `spotwhisperer_cellxgene_census__archs4_geo__hest1k_seed2.ckpt`
+  - `spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed1.ckpt`
+  - `spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed2.ckpt`
 - **Evaluation**: CRC PathoCellBench only (109 datasets, patch-level)
 - **Output**: `results/pathocell_evaluation/seed_variance/seed_variance_table.csv`
   - Per-cell-type AUROC mean +/- std across 3 training seeds
 
 ## Implementation
-- `rules/seed_analysis.smk`: training rule (`train_spotwhisperer_seeded`) + aggregation rule (`seed_variance_table`)
+- `rules/seed_analysis.smk`: training rule (`train_spatialwhisperer_seeded`) + aggregation rule (`seed_variance_table`)
 - `seed_training_config.yaml`: copy of `base_config.yaml` with two changes:
   - `callbacks: [ModelCheckpoint(save_last=true)]` (required since the hardcoded callback was removed from `training.py` in commit `1e24aea5`)
   - `use_cache: true` (so the second sequential training run reuses cached data from the first)
 - `scripts/compute_seed_variance_table.py`: reads per-class CSVs from 3 seeds, computes mean/std
 - Seeded models use `{model}_seed{N}` naming which flows through existing eval pipeline unchanged
-- `ruleorder: train_spotwhisperer_seeded > train_spotwhisperer` to resolve wildcard ambiguity
+- `ruleorder: train_spatialwhisperer_seeded > train_spatialwhisperer` to resolve wildcard ambiguity
 
 ## How to run
 ```bash
-# From src/spotwhisperer_eval/ on Sherlock
+# From src/spatialwhisperer_eval/ on Sherlock
 snakemake --profile sm7_slurm --jobs 1 seed_analysis_all
 ```
 
@@ -58,7 +58,7 @@ snakemake --profile sm7_slurm --jobs 1 seed_analysis_all
 - `checkpoint_callback.last_model_path` was empty because no `ModelCheckpoint` callback was instantiated
 - In `base_config.yaml`, `callbacks: null` means no callbacks are created
 - The original model (Dec 25) was trained with an older code version (pre-commit `1e24aea5`, Feb 11) that had a **hardcoded** `ModelCheckpoint(save_last=True)` in `cli_main()`. That hardcoded callback was removed in `1e24aea5` and the comment says configs should specify callbacks explicitly — but `base_config.yaml` was never updated.
-- The `train_spotwhisperer` rule in `training.smk` has the same latent bug: any new training with the current code + `base_config.yaml` would fail to save checkpoints.
+- The `train_spatialwhisperer` rule in `training.smk` has the same latent bug: any new training with the current code + `base_config.yaml` would fail to save checkpoints.
 
 ### 2026-03-26: Third attempt (current)
 - Created `seed_training_config.yaml`: copy of `base_config.yaml` with:
@@ -78,7 +78,7 @@ snakemake --profile sm7_slurm --jobs 1 seed_analysis_all
 - Retraining seed 0 with `seed_training_config.yaml` to get apples-to-apples comparison
 - Controller: **19807502** (`seed0_retrain`)
 - Training job: **19807584** on H100
-- Target: `spotwhisperer_cellxgene_census__archs4_geo__hest1k_seed0.ckpt` + CRC eval
+- Target: `spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed0.ckpt` + CRC eval
 
 **Lizard/PanNuke evals for seed1+seed2** (in parallel):
 - Models already exist from CRC runs; only eval pipeline runs
@@ -90,8 +90,8 @@ snakemake --profile sm7_slurm --jobs 1 seed_analysis_all
 
 ## Upcoming: quilt1m_curated seed analysis
 
-The `spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated` model (Jan 15) was also
-trained with seed 0 (same `train_spotwhisperer` rule, `SEEDS[0]=0`). After current runs complete:
+The `spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m_curated` model (Jan 15) was also
+trained with seed 0 (same `train_spatialwhisperer` rule, `SEEDS[0]=0`). After current runs complete:
 - Train seed1 and seed2 for `cellxgene_census__archs4_geo__hest1k__quilt1m_curated`
 - Eval all 3 seeds on CRC, Lizard, PanNuke
 - Aggregate variance table
@@ -109,7 +109,7 @@ This was the source of discrepancy between our scripts and the reported numbers.
 Fixed in `compute_reduced_class_table2_style.py` — now reproduces Table 2 exactly (seed0 CRC = 0.630).
 
 **Baseline CSVs**: extracted PLIP/CONCH/MUSK logits from Animesh's `VLM_benchmarks.zip` into
-`src/spotwhisperer_eval/static/baselines_animesh/`. Updated `pathocell_benchmark.smk` to reference
+`src/spatialwhisperer_eval/static/baselines_animesh/`. Updated `pathocell_benchmark.smk` to reference
 them via `BASELINES_DIR`.
 
 ## Status

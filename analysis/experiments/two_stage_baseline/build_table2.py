@@ -35,9 +35,9 @@ OUT_DIR = RESULTS / "comparison" / "patch" / "tables"
 
 # Six methods, ordered for the manuscript table.
 METHODS = [
-    ("Trimodal (ours)", "spotwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"),
-    ("Bimodal bridge T↔G+G↔I (ours)", "spotwhisperer_cellxgene_census__archs4_geo__hest1k"),
-    ("Bimodal I↔T (Quilt-1M only)", "spotwhisperer_quilt1m"),
+    ("Trimodal (ours)", "spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m"),
+    ("Bimodal bridge T↔G+G↔I (ours)", "spatialwhisperer_cellxgene_census__archs4_geo__hest1k"),
+    ("Bimodal I↔T (Quilt-1M only)", "spatialwhisperer_quilt1m"),
     ("Two-stage UNI2→GF (ours)", "two_stage_baseline"),
     ("OmiCLIP, short marker list", "omiclip"),
     ("OmiCLIP, extended marker list", "omiclip_pseudobulk"),

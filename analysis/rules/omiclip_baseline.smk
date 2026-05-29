@@ -86,7 +86,7 @@ ruleorder: omiclip_split_scores > pathocell_cell_type_prediction
 
 # ── Pseudobulk variant: expanded gene sentences ──────────────────────────────
 
-OMICLIP_PSEUDOBULK_GENES = PROJECT_DIR / "src" / "spotwhisperer_eval" / "scripts" / "generate_pseudobulk_genes.py"
+OMICLIP_PSEUDOBULK_GENES = PROJECT_DIR / "src" / "spatialwhisperer_eval" / "scripts" / "generate_pseudobulk_genes.py"
 OMICLIP_PB_LOGITS = PATHOCELL_RESULTS / "omiclip_pseudobulk" / "omiclip_logits.csv"
 
 
@@ -98,7 +98,7 @@ rule omiclip_pseudobulk_pathocell_score:
     input:
         checkpoint=OMICLIP_CHECKPOINT,
         gene_script=OMICLIP_PSEUDOBULK_GENES,
-        score_script=PROJECT_DIR / "src" / "spotwhisperer_eval" / "scripts" / "run_omiclip_baseline.py",
+        score_script=PROJECT_DIR / "src" / "spatialwhisperer_eval" / "scripts" / "run_omiclip_baseline.py",
         adatas=expand(
             PATHOCELL_DATA / "processed/{dataset}_patch.h5ad",
             dataset=DATASETS,

@@ -5,7 +5,7 @@ QUILT_TEXT_CONTROL_ROOT = Path("/dfs/user/moritzs/quilt1m_control")
 SNAP_OAK_ROOT = Path.home() / "oak" / "moritzs" / "cellwhisperer"
 SECTION43_CURATED_SUBSET_CSV = (
     SNAP_OAK_ROOT
-    / "results/spotwhisperer_eval/csv_logging/sweval___cellxgene_census__archs4_geo__hest1k___quilt1m_curated/test_individual_clip_scores.csv"
+    / "results/spatialwhisperer_eval/csv_logging/sweval___cellxgene_census__archs4_geo__hest1k___quilt1m_curated/test_individual_clip_scores.csv"
 )
 
 
