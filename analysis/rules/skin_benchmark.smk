@@ -11,10 +11,14 @@
 # rule did not have this guarantee, which is the root cause of the cache-
 # trust problem prompting this re-port.
 
-# MUSK CLI translates the "skin" dataset name to <root>/skincancer/ internally
-# (clip_benchmark/cli.py); the SkinDataset reads `data/tiles-v2.csv` relative
-# to that. Mirror that path here so we hit the same files.
-SKIN_DATASET_ROOT = PROJECT_DIR / config["paths"]["musk"]["datasets"] / "skincancer"
+# Auto-downloaded from heiDATA by rule download_kriegsmann_skin
+# (analysis/rules/eval_dataset_download.smk). Layout under SKIN_DATASET_ROOT/data/:
+#   class_dict.json
+#   tiles/<class>/<tile>.tif
+#   tiles-v2.csv  (columns: file, class, set ∈ {Train, Val, Test})
+# The CSV's `file` column is "tiles/<class>/<tile>.tif" relative to data/, so
+# dataset_root is set to SKIN_DATASET_ROOT/data (one level below the root).
+SKIN_DATASET_ROOT = PROJECT_DIR / "resources/kriegsmann_skin"
 SKIN_RESULTS = PROJECT_DIR / "results/skin_benchmark"
 SKIN_SCRIPTS = PROJECT_DIR / "analysis/scripts"
 
@@ -40,7 +44,7 @@ rule score_skin:
     output:
         scores=SKIN_RESULTS / "{model}" / "{labels}" / "{preprocess}" / "skin_scores.csv",
     params:
-        dataset_root=str(SKIN_DATASET_ROOT),
+        dataset_root=str(SKIN_DATASET_ROOT / "data"),
         batch_size=128,
         preprocess=lambda wildcards: wildcards.preprocess,
     wildcard_constraints:

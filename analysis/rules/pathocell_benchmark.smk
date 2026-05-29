@@ -14,25 +14,34 @@ PATHOCELL_MODEL_RESULTS = PATHOCELL_RESULTS / "{model}"
 # DATASETS = sorted([p.stem for p in _hdf_dir.glob("*.hdf")])
 DATASETS = ["reg006_B", "reg014_B", "reg022_B", "reg030_A", "reg037_B", "reg046_A", "reg056_A", "reg007_A", "reg015_A", "reg023_A", "reg030_B", "reg038_A", "reg047_A", "reg058_A", "reg007_B", "reg016_A", "reg023_B", "reg031_A", "reg039_A", "reg048_A", "reg059_A", "reg001_A", "reg008_A", "reg016_B", "reg024_B", "reg031_B", "reg039_B", "reg048_B", "reg059_B", "reg001_B", "reg008_B", "reg017_A", "reg025_A", "reg032_A", "reg040_A", "reg049_A", "reg060_A", "reg002_A", "reg009_A", "reg017_B", "reg025_B", "reg032_B", "reg040_B", "reg050_A", "reg060_B", "reg002_B", "reg009_B", "reg018_A", "reg026_A", "reg033_A", "reg041_A", "reg050_B", "reg061_A", "reg003_A", "reg010_A", "reg018_B", "reg026_B", "reg033_B", "reg041_B", "reg051_A", "reg062_A", "reg003_B", "reg010_B", "reg019_A", "reg027_A", "reg034_A", "reg042_A", "reg051_B", "reg063_A", "reg004_A", "reg011_A", "reg020_A", "reg027_B", "reg035_A", "reg042_B", "reg052_A", "reg064_A", "reg004_B", "reg011_B", "reg020_B", "reg028_A", "reg035_B", "reg043_A", "reg052_B", "reg065_A", "reg005_A", "reg012_A", "reg021_A", "reg028_B", "reg036_A", "reg044_A", "reg053_A", "reg066_A", "reg005_B", "reg012_B", "reg021_B", "reg029_A", "reg036_B", "reg045_A", "reg054_A", "reg067_A", "reg006_A", "reg013_B", "reg022_A", "reg029_B", "reg037_A", "reg045_B", "reg055_A", "reg068_A"]
 
-# Lizard benchmark datasets (H&E colon histology, 6 cell types)
-# Discovered from the sample list file written by the LMDB→HDF conversion rule.
-# Falls back to filesystem glob if the sample list doesn't exist yet.
+# Lizard benchmark datasets (H&E colon histology, 6 cell types).
+# Authoritative list at parse time = the test split shipped in static/, so
+# downstream rules can be planned before convert_lizard_lmdb_to_hdf has run.
+# After conversion, the sample_list.txt produced by that rule matches verbatim.
 _lizard_hdf_dir = PATHOCELL_DATA / "converted/lizard_hdf"
 _lizard_sample_list = _lizard_hdf_dir / "sample_list.txt"
+_lizard_static_list = PROJECT_DIR / "analysis/static/eval_test_splits/lizard_test_samples.txt"
 if _lizard_sample_list.exists():
     LIZARD_DATASETS = sorted(_lizard_sample_list.read_text().strip().split("\n"))
 elif _lizard_hdf_dir.exists():
     LIZARD_DATASETS = sorted([p.stem for p in _lizard_hdf_dir.glob("*.hdf")])
+elif _lizard_static_list.exists():
+    LIZARD_DATASETS = sorted(_lizard_static_list.read_text().strip().split("\n"))
 else:
     LIZARD_DATASETS = []
 
-# PanNuke benchmark datasets (H&E multi-tissue histology, 5 cell types + background)
+# PanNuke benchmark datasets (H&E multi-tissue histology, 5 cell types + background).
+# Static list = 51 batch names (batch_00000, batch_00050, ..., batch_02500) deterministic
+# from the 2523-row test split + batch_size=50 in convert_lmdb_to_hdf.py.
 _pannuke_hdf_dir = PATHOCELL_DATA / "converted/pannuke_hdf"
 _pannuke_sample_list = _pannuke_hdf_dir / "sample_list.txt"
+_pannuke_static_list = PROJECT_DIR / "analysis/static/eval_test_splits/pannuke_test_batches.txt"
 if _pannuke_sample_list.exists():
     PANNUKE_DATASETS = sorted(_pannuke_sample_list.read_text().strip().split("\n"))
 elif _pannuke_hdf_dir.exists():
     PANNUKE_DATASETS = sorted([p.stem for p in _pannuke_hdf_dir.glob("*.hdf")])
+elif _pannuke_static_list.exists():
+    PANNUKE_DATASETS = sorted(_pannuke_static_list.read_text().strip().split("\n"))
 else:
     PANNUKE_DATASETS = []
 
