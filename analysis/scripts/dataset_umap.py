@@ -28,7 +28,7 @@ import glob
 from spatialwhisperer.utils.model_io import load_cellwhisperer_model
 from spatialwhisperer.jointemb.dataset.inference import CellxGenePreparationLoader
 
-PROJECT_DIR = Path(__file__).resolve().parents[2]  # spatialwhisperer_paper root
+PROJECT_DIR = Path(__file__).resolve().parents[2]  # spatialwhisperer root
 matplotlib.style.use(str(PROJECT_DIR / "src/plot_style/main.style"))
 
 OUTPUT_DIR = PROJECT_DIR / "results/spatialwhisperer_eval/dataset_umap"
