@@ -24,11 +24,13 @@ rule download_kriegsmann_skin:
     """Download and unzip the Kriegsmann et al. (2022) skin H&E dataset (~3.7 GB).
 
     heiDATA file id 7166 = data.zip (the full tiled dataset + tiles-v2.csv).
-    Layout after unzip:
+    Layout after unzip (the zip's internal top level is `data/`, so we extract
+    directly into KRIEGSMANN_ROOT):
         {KRIEGSMANN_ROOT}/data/
             class_dict.json
-            tiles/<class>/<tile>.tif    (16 class subdirs, ~129k tiles total)
-            tiles-v2.csv                (set ∈ {Train, Val, Test} + class + file)
+            tiles/<class>/<tile>.jpg    (16 class subdirs, ~129k tiles total)
+            tiles-v2.csv                (14 cols incl. file, class, set ∈
+                                         {Train, Validation, Test}, case)
     """
     output:
         csv=KRIEGSMANN_ROOT / "data/tiles-v2.csv",
@@ -53,10 +55,10 @@ rule download_kriegsmann_skin:
         SIZE=$(stat -c%s "$TMP/data.zip")
         echo "Downloaded $SIZE bytes" >> $LOG
 
-        mkdir -p {KRIEGSMANN_ROOT}/data
-        cd {KRIEGSMANN_ROOT}
-        # data.zip top level = class_dict.json, tiles/, tiles-v2.csv → extract under data/
-        unzip -q -o "$TMP/data.zip" -d data/
+        mkdir -p {KRIEGSMANN_ROOT}
+        # data.zip's internal top level is `data/`, so extracting into the root
+        # produces {KRIEGSMANN_ROOT}/data/{tiles-v2.csv, tiles/, class_dict.json}.
+        unzip -q -o "$TMP/data.zip" -d {KRIEGSMANN_ROOT}
         echo "Unzipped to {KRIEGSMANN_ROOT}/data/" >> $LOG
 
         # Sanity: tiles-v2.csv must exist and have a Test split.
