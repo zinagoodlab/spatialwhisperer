@@ -33,56 +33,61 @@ include: "rules/freezing_encoder_appendix.smk"
 include: "rules/quilt_text_harmonization_control.smk"
 include: "rules/recheck.smk"
 
-rule all:
+
+# Canonical "trimodal" production model used for all paper-cited single-model evaluations.
+PAPER_MAIN_MODEL = f"spatialwhisperer_{VARIANCE_DATASET_COMBO}"
+
+
+rule paper_all:
     """
-    Default target: run training, evaluations, plots, and analyses end-to-end.
+    Single target: produces every artefact cited in the manuscript and appendix.
+
+    Composes the per-benchmark aggregate rules with the headline cross-benchmark
+    plots and the skin / disease-stratification leaf outputs that don't have
+    their own *_all wrapper yet. Run from inside analysis/:
+
+        pixi run snakemake -j N paper_all
     """
     input:
-        # Analysis plots
-        # expand(rules.create_analysis_plots.output.plots, test_dataset=BASE_DATASETS),
-        # expand(rules.create_retrieval_plots.output.plots, test_dataset=BASE_DATASETS),
+        # ── Cross-benchmark headline plots ─────────────────────────────────────
         rules.spider_performance_plot.output.plot,
         rules.bimodal_bridge_plot.output.plot,
         rules.subset_performance_trend_grid.output.plot,
-
-        # Per-class comparison for CellWhisperer benchmark
         expand(
             rules.cellwhisperer_per_class_analysis.output.analysis,
             allow_missing=True,
         ),
 
-        # Interpretation/per-class analyses
-        # rules.model_interpretation_all.input,
+        # ── Per-benchmark aggregates ───────────────────────────────────────────
+        rules.pathocell_all.input,
+        rules.hest_benchmark_all.input,
+        rules.spatialwhisperer_all.input,            # lung
+        rules.cellwhisperer_benchmark_all.input,
+        # subset_all is parameterised by {subratio}; the cross-ratio grid is already
+        # in subset_performance_trend_grid above, so no need to expand subset_all here.
+        rules.seed_analysis_all.input,
+        rules.lambda_ablation_all.input,
+        rules.freezing_encoder_appendix_all.input,
+        rules.model_interpretation_all.input,
 
-        # # Comprehensive CellWhisperer benchmarks (NEW)
-        # expand(
-        #     rules.aggregate_comprehensive_benchmarks.output.aggregated_comprehensive,
-        #     model=[
-        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["trimodal"]),
-        #         "spatialwhisperer_{}".format(MODEL_MAPPINGS["cellxgene_census__archs4_geo"]["bimodal_matching"]),
-        #     ],
-        #     allow_missing=True,
-        # ),
-
-        # # Sample metadata extraction (too many files/slow)
-        # # expand(
-        # #     rules.extract_sample_metadata.output.metadata,
-        # #     dataset=[dataset for base_dataset in BASE_DATASETS for dataset in base_dataset.split("__")],
-        # #     allow_missing=True,
-        # # ),
-
-        # # Per-class comparison for retrieval analysis
-        # expand(
-        #     rules.retrieval_per_class_analysis.output.analysis,
-        #     dataset=BASE_DATASETS,
-        #     allow_missing=True,
-        # ),
-
-        # # Per-class comparison for HEST benchmark
-        # expand(
-        #     rules.hest_per_class_analysis.output.analysis,
-        #     allow_missing=True,
-        # ),
-
-
+        # ── Benchmarks without an _all wrapper: list leaf outputs explicitly ──
+        # Skin (Kriegsmann 16-class) — clinical labels, resize_crop preprocess.
+        expand(
+            rules.compute_skin_metrics.output.summary,
+            model=[PAPER_MAIN_MODEL],
+            labels=["clinical"],
+            preprocess=["resize_crop"],
+        ),
+        # PanNuke disease stratification (per-tissue-type metrics, both subsets).
+        expand(
+            rules.compute_tissue_type_metrics.output.summary,
+            model=[PAPER_MAIN_MODEL],
+            subset=["all", "benign_only"],
+        ),
     default_target: True
+
+
+rule all:
+    """Alias for paper_all (keeps `snakemake` with no target working)."""
+    input:
+        rules.paper_all.input,
