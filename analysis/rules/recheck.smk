@@ -130,7 +130,7 @@ rule omiclip_pseudobulk_pathocell_score_recheck:
     input:
         checkpoint=OMICLIP_CHECKPOINT,
         gene_script=OMICLIP_PSEUDOBULK_GENES,
-        score_script=PROJECT_DIR / "src" / "spatialwhisperer_eval" / "scripts" / "run_omiclip_baseline.py",
+        score_script=PROJECT_DIR / "analysis" / "scripts" / "run_omiclip_baseline.py",
         adatas=expand(
             PATHOCELL_DATA / "processed/{dataset}_patch.h5ad",
             dataset=DATASETS,
