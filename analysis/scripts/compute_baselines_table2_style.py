@@ -1,30 +1,32 @@
-#!/usr/bin/env python3
 """
-Compute PLIP/CONCH/MUSK AUROC with Table 2 methodology:
+Compute PLIP/CONCH AUROC with Table 2 methodology:
   - Presence-based binary labels (true_probs > 0)
   - Classes → datasets → mean aggregation
   - Reduced class schemes for Lizard (3-class) and PanNuke (4-class)
   - CRC: 13-class excl Background + Other cells
 
-Usage (on Sherlock):
-    python compute_baselines_table2_style.py
+Inputs (Snakemake):
+- snakemake.input.crc_csvs: list of {baseline}_logits_{terms_id}.csv (one per baseline)
+- snakemake.input.lizard_csvs: list of lizard/{baseline}_logits_lizard_{terms_id}.csv
+- snakemake.input.pannuke_csvs: list of pannuke/{baseline}_logits_pannuke_{terms_id}.csv
+- snakemake.input.crc_gt: list of CRC patch h5ads
+- snakemake.input.lizard_gt: list of Lizard patch h5ads
+- snakemake.input.pannuke_gt: list of PanNuke patch h5ads
+- snakemake.params.baselines: list of baseline names matching the *_csvs lists order
+
+Outputs:
+- snakemake.output.macro: summary CSV (baseline x benchmark x auroc)
+- snakemake.output.per_class: per-class breakdown CSV
 """
 
-import os
 import re
+from pathlib import Path
+
+import anndata
 import numpy as np
 import pandas as pd
-import anndata
-from pathlib import Path
 from sklearn.metrics import roc_auc_score
 
-# Paths — relative to the project root (analysis/scripts/<file> → parents[2])
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-STATIC_DIR = Path(__file__).parent.parent / "static" / "baselines_animesh"
-H5AD_BASE = PROJECT_ROOT / "resources/pathocell/processed"
-OUT_DIR = PROJECT_ROOT / "results/pathocell_evaluation/seed_variance"
-
-# Column name mappings from baseline CSVs to h5ad class names
 LIZARD_COL_TO_CLASS = {
     "neutrophil": "Neutrophil",
     "epithelial": "Epithelial",
@@ -42,14 +44,11 @@ PANNUKE_COL_TO_CLASS = {
 }
 
 
-# CRC (pathocellbench) columns use "A sample of X cells" format
-# Map to h5ad class names by stripping "A sample of " and " cells"
 def crc_col_to_class(col):
     m = re.match(r"A sample of (.+?)( cells)?$", col)
     return m.group(1) if m else col
 
 
-# Reduced class configs
 LIZARD_LEUKOCYTE_ORIG = {"Neutrophil", "Lymphocyte", "Eosinophil"}
 LIZARD_DROP = {"Plasma"}
 LIZARD_REDUCED_CLASSES = ["Epithelial", "Leukocyte", "Fibroblast"]
@@ -69,15 +68,12 @@ CRC_EXCLUDE = {
     "A sample of Background cells",
 }
 
-BASELINES = ["conch", "plip"]  # MUSK dropped (not part of the published paper)
-TERMS = os.environ.get("BASELINE_TERMS", "terms2")  # override via env: BASELINE_TERMS=terms1
 
-
-def load_gt(h5ad_dir, pattern="*_patch.h5ad"):
+def load_gt(h5ad_files):
     gt = {}
-    for f in sorted(h5ad_dir.glob(pattern)):
-        sample = f.stem.replace("_patch", "")
-        adata = anndata.read_h5ad(str(f))
+    for f in sorted(map(str, h5ad_files)):
+        sample = Path(f).stem.replace("_patch", "")
+        adata = anndata.read_h5ad(f)
         counts_df = adata.obsm["cell_type_counts_coarse"]
         non_bg = [c for c in counts_df.columns if c.lower() != "background"]
         counts_nobg = counts_df[non_bg]
@@ -92,14 +88,12 @@ def load_gt(h5ad_dir, pattern="*_patch.h5ad"):
 
 
 def load_baseline_csv(csv_path):
-    """Load baseline CSV and split into per-sample dict of DataFrames."""
     df = pd.read_csv(csv_path)
     if "source_image" in df.columns:
         df = df[df["source_image"].str.contains("_patch.tiff")].copy()
     scores_by_sample = {}
     for src_img, group in df.groupby("source_image"):
         sample = src_img.replace("_patch.tiff", "")
-        # Extract sample ID (e.g., reg001_A from reg001_A_patch.tiff)
         m = re.search(r"(reg\d+_[A-Z])", sample)
         if m:
             sample = m.group(1)
@@ -121,7 +115,6 @@ def presence_auroc(scores_col, true_probs_col):
 def eval_crc(scores_by_sample, gt_by_sample, col_to_class_fn):
     first_sc = next(iter(scores_by_sample.values()))
     sc_cols = list(first_sc.columns)
-    # Map score columns to h5ad class names
     col_map = {c: col_to_class_fn(c) for c in sc_cols}
     h5ad_classes_needed = set(col_map.values()) - CRC_EXCLUDE - {"Background"}
 
@@ -164,10 +157,8 @@ def eval_lizard(scores_by_sample, gt_by_sample, col_to_class):
         orig_classes = info["classes"]
         counts = info["counts"]
 
-        # Rename columns to h5ad class names
         sc_renamed = sc.rename(columns=col_to_class)
 
-        # Build merged counts
         epi_idx = orig_classes.index("Epithelial")
         fibro_idx = orig_classes.index("Connective tissue")
         leuk_indices = [
@@ -184,7 +175,6 @@ def eval_lizard(scores_by_sample, gt_by_sample, col_to_class):
             merged_counts.sum(axis=1, keepdims=True) + 1e-12
         )
 
-        # Build merged scores
         epi_score = sc_renamed["Epithelial"].values
         leuk_score = sum(
             sc_renamed[c].values
@@ -193,7 +183,6 @@ def eval_lizard(scores_by_sample, gt_by_sample, col_to_class):
         )
         fibro_score = sc_renamed["Connective tissue"].values
 
-        # Filter Plasma-dominant patches
         dominant = np.array(orig_classes)[counts.argmax(axis=1)]
         keep = np.array([d not in LIZARD_DROP for d in dominant])
 
@@ -253,91 +242,61 @@ def _aggregate(per_ds_class, class_names):
     return (np.mean(valid) if valid else np.nan), per_class_mean
 
 
-if __name__ == "__main__":
-    print("Loading ground truth...")
-    lizard_gt = load_gt(H5AD_BASE / "lizard")
-    pannuke_gt = load_gt(H5AD_BASE / "pannuke")
-    crc_gt = load_gt(H5AD_BASE)
+baselines = list(snakemake.params.baselines)
+crc_csvs = [Path(p) for p in snakemake.input.crc_csvs]
+lizard_csvs = [Path(p) for p in snakemake.input.lizard_csvs]
+pannuke_csvs = [Path(p) for p in snakemake.input.pannuke_csvs]
+assert len(crc_csvs) == len(lizard_csvs) == len(pannuke_csvs) == len(baselines)
 
-    rows = []
-    per_class_rows = []
+lizard_gt = load_gt(snakemake.input.lizard_gt)
+pannuke_gt = load_gt(snakemake.input.pannuke_gt)
+crc_gt = load_gt(snakemake.input.crc_gt)
 
-    for baseline in BASELINES:
-        print(f"\n{'=' * 60}")
-        print(f"  {baseline.upper()}")
-        print(f"{'=' * 60}")
+rows = []
+per_class_rows = []
 
-        # CRC
-        crc_csv = STATIC_DIR / f"{baseline}_logits_{TERMS}.csv"
-        if crc_csv.exists():
-            scores = load_baseline_csv(crc_csv)
-            if scores:
-                macro, pc = eval_crc(scores, crc_gt, crc_col_to_class)
-                print(f"  CRC 13-class: AUROC = {macro:.4f}")
-                rows.append(
-                    {
-                        "model": baseline.upper(),
-                        "benchmark": "CRC_13class",
-                        "auroc": macro,
-                    }
-                )
-                for cls, auc in pc.items():
-                    per_class_rows.append({"model": baseline.upper(), "benchmark": "CRC", "class": cls, "auroc": auc})
+for baseline, crc_csv, liz_csv, pan_csv in zip(
+    baselines, crc_csvs, lizard_csvs, pannuke_csvs
+):
+    crc_scores = load_baseline_csv(crc_csv)
+    macro, pc = eval_crc(crc_scores, crc_gt, crc_col_to_class)
+    rows.append(
+        {"model": baseline.upper(), "benchmark": "CRC_13class", "auroc": macro}
+    )
+    for cls, auc in pc.items():
+        per_class_rows.append(
+            {"model": baseline.upper(), "benchmark": "CRC", "class": cls, "auroc": auc}
+        )
 
-        # Lizard
-        liz_csv = STATIC_DIR / "lizard" / f"{baseline}_logits_lizard_{TERMS}.csv"
-        if liz_csv.exists():
-            scores = load_baseline_csv(liz_csv)
-            if scores:
-                macro, pc = eval_lizard(scores, lizard_gt, LIZARD_COL_TO_CLASS)
-                print(f"  Lizard 3-class: AUROC = {macro:.4f}")
-                for cls, auc in pc.items():
-                    print(f"    {cls:20s}: {auc:.4f}")
-                rows.append(
-                    {
-                        "model": baseline.upper(),
-                        "benchmark": "Lizard_3class",
-                        "auroc": macro,
-                    }
-                )
-                for cls, auc in pc.items():
-                    per_class_rows.append({"model": baseline.upper(), "benchmark": "Lizard", "class": cls, "auroc": auc})
+    liz_scores = load_baseline_csv(liz_csv)
+    macro, pc = eval_lizard(liz_scores, lizard_gt, LIZARD_COL_TO_CLASS)
+    rows.append(
+        {"model": baseline.upper(), "benchmark": "Lizard_3class", "auroc": macro}
+    )
+    for cls, auc in pc.items():
+        per_class_rows.append(
+            {
+                "model": baseline.upper(),
+                "benchmark": "Lizard",
+                "class": cls,
+                "auroc": auc,
+            }
+        )
 
-        # PanNuke
-        pan_csv = STATIC_DIR / "pannuke" / f"{baseline}_logits_pannuke_{TERMS}.csv"
-        if pan_csv.exists():
-            scores = load_baseline_csv(pan_csv)
-            if scores:
-                macro, pc = eval_pannuke(scores, pannuke_gt, PANNUKE_COL_TO_CLASS)
-                print(f"  PanNuke 4-class: AUROC = {macro:.4f}")
-                for cls, auc in pc.items():
-                    print(f"    {cls:35s}: {auc:.4f}")
-                rows.append(
-                    {
-                        "model": baseline.upper(),
-                        "benchmark": "PanNuke_4class",
-                        "auroc": macro,
-                    }
-                )
-                for cls, auc in pc.items():
-                    per_class_rows.append({"model": baseline.upper(), "benchmark": "PanNuke", "class": cls, "auroc": auc})
+    pan_scores = load_baseline_csv(pan_csv)
+    macro, pc = eval_pannuke(pan_scores, pannuke_gt, PANNUKE_COL_TO_CLASS)
+    rows.append(
+        {"model": baseline.upper(), "benchmark": "PanNuke_4class", "auroc": macro}
+    )
+    for cls, auc in pc.items():
+        per_class_rows.append(
+            {
+                "model": baseline.upper(),
+                "benchmark": "PanNuke",
+                "class": cls,
+                "auroc": auc,
+            }
+        )
 
-    df = pd.DataFrame(rows)
-    print(f"\n{'=' * 60}")
-    print("SUMMARY (Table 2 style: presence-based AUROC, classes → datasets → mean)")
-    print(f"{'=' * 60}")
-    for bench in df["benchmark"].unique():
-        sub = df[df["benchmark"] == bench]
-        print(f"\n{bench}:")
-        for _, row in sub.iterrows():
-            print(f"  {row['model']:10s}: AUROC = {row['auroc']:.4f}")
-
-    out_path = OUT_DIR / f"baselines_table2_style_{TERMS}.csv"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(out_path, index=False)
-    print(f"\nSaved to {out_path}")
-
-    pc_df = pd.DataFrame(per_class_rows)
-    pc_path = OUT_DIR / f"baselines_table2_style_per_class_{TERMS}.csv"
-    pc_df.to_csv(pc_path, index=False)
-    print(f"Saved per-class to {pc_path}")
+pd.DataFrame(rows).to_csv(snakemake.output.macro, index=False)
+pd.DataFrame(per_class_rows).to_csv(snakemake.output.per_class, index=False)

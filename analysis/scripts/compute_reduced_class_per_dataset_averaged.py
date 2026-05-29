@@ -1,41 +1,21 @@
-#!/usr/bin/env python3
 """
 Compute reduced-class Lizard/PanNuke/CRC AUROC with per-dataset averaging
-(matching Table 2 methodology), across training seeds.
+(macro per dataset, then mean across datasets) across training seeds.
 
-For each dataset:
-  1. Apply class merging/dropping
-  2. Compute per-class AUROC within dataset
-  3. Average across classes → per-dataset macro AUROC
-Then average across datasets → final macro AUROC.
-
-Usage (on Sherlock):
-    python compute_reduced_class_per_dataset_averaged.py
+Inputs/outputs: see compute_reduced_class_table2_style.py docstring.
 """
 
+from pathlib import Path
+
+import anndata
 import numpy as np
 import pandas as pd
-import anndata
-from pathlib import Path
 from sklearn.metrics import roc_auc_score
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BASE = PROJECT_ROOT / "results/pathocell_evaluation"
-H5AD_BASE = PROJECT_ROOT / "resources/pathocell/processed"
-
-MODELS = {
-    "seed0_orig": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k",
-    "seed0_retrained": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed0",
-    "seed1": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed1",
-    "seed2": "spatialwhisperer_cellxgene_census__archs4_geo__hest1k_seed2",
-}
-
-# --- Lizard reduced config ---
 LIZARD_LEUKOCYTE_ORIG = {"Neutrophil", "Lymphocyte", "Eosinophil"}
 LIZARD_DROP = {"Plasma"}
 LIZARD_REDUCED_CLASSES = ["Epithelial", "Leukocyte", "Fibroblast"]
 
-# --- PanNuke reduced config ---
 PANNUKE_DROP = {"Dead Cells"}
 PANNUKE_REDUCED_CLASSES = [
     "Epithelial",
@@ -44,7 +24,6 @@ PANNUKE_REDUCED_CLASSES = [
     "Neoplastic cells",
 ]
 
-# --- CRC config ---
 CRC_EXCLUDE = {
     "Other cells",
     "Background",
@@ -53,11 +32,11 @@ CRC_EXCLUDE = {
 }
 
 
-def load_gt_for_dir(h5ad_dir, pattern="*_patch.h5ad"):
+def load_gt_files(h5ad_files):
     gt = {}
-    for f in sorted(h5ad_dir.glob(pattern)):
-        sample = f.stem.replace("_patch", "")
-        adata = anndata.read_h5ad(str(f))
+    for f in sorted(map(str, h5ad_files)):
+        sample = Path(f).stem.replace("_patch", "")
+        adata = anndata.read_h5ad(f)
         counts_df = adata.obsm["cell_type_counts_coarse"]
         non_bg = [c for c in counts_df.columns if c.lower() != "background"]
         counts_nobg = counts_df[non_bg]
@@ -66,16 +45,18 @@ def load_gt_for_dir(h5ad_dir, pattern="*_patch.h5ad"):
     return gt
 
 
-def load_scores(score_dir, seed_suffix="seed0"):
-    scores_by_sample = {}
-    for f in sorted(score_dir.glob(f"*_scores_{seed_suffix}.csv")):
-        sample = f.stem.replace(f"_patch_scores_{seed_suffix}", "")
-        scores_by_sample[sample] = pd.read_csv(f)
-    return scores_by_sample
+def scores_by_model(score_files, models):
+    groups = {m: {} for m in models}
+    for f in map(Path, score_files):
+        sample = f.stem.replace("_patch_scores_seed0", "")
+        for m in models:
+            if f"/{m}/" in str(f):
+                groups[m][sample] = pd.read_csv(f)
+                break
+    return groups
 
 
 def per_class_auroc(scores_array, gt_labels, class_names):
-    """Compute per-class one-vs-rest AUROC."""
     gt_to_idx = {c: i for i, c in enumerate(class_names)}
     gt_onehot = np.zeros((len(gt_labels), len(class_names)))
     for i, lab in enumerate(gt_labels):
@@ -92,7 +73,6 @@ def per_class_auroc(scores_array, gt_labels, class_names):
 
 
 def eval_lizard_reduced_per_dataset(scores_by_sample, gt_by_sample):
-    """Per-dataset averaged macro AUROC for Lizard 3-class."""
     per_dataset_macro = []
     for sample in sorted(gt_by_sample.keys()):
         if sample not in scores_by_sample:
@@ -125,11 +105,10 @@ def eval_lizard_reduced_per_dataset(scores_by_sample, gt_by_sample):
         if not np.isnan(macro):
             per_dataset_macro.append(macro)
 
-    return np.mean(per_dataset_macro) if per_dataset_macro else np.nan
+    return float(np.mean(per_dataset_macro)) if per_dataset_macro else np.nan
 
 
 def eval_pannuke_reduced_per_dataset(scores_by_sample, gt_by_sample):
-    """Per-dataset averaged macro AUROC for PanNuke 4-class."""
     per_dataset_macro = []
     for sample in sorted(gt_by_sample.keys()):
         if sample not in scores_by_sample:
@@ -140,7 +119,6 @@ def eval_pannuke_reduced_per_dataset(scores_by_sample, gt_by_sample):
         keep_cols = [
             c for c in sc.columns if c not in PANNUKE_DROP and c.lower() != "background"
         ]
-        # Only keep columns that are in PANNUKE_REDUCED_CLASSES
         keep_cols = [c for c in keep_cols if c in PANNUKE_REDUCED_CLASSES]
         sc_kept = sc[keep_cols].values
 
@@ -160,12 +138,10 @@ def eval_pannuke_reduced_per_dataset(scores_by_sample, gt_by_sample):
         if not np.isnan(macro):
             per_dataset_macro.append(macro)
 
-    return np.mean(per_dataset_macro) if per_dataset_macro else np.nan
+    return float(np.mean(per_dataset_macro)) if per_dataset_macro else np.nan
 
 
 def eval_crc_per_dataset(scores_by_sample, gt_by_sample):
-    """Per-dataset averaged macro AUROC for CRC (excl Background + Other cells)."""
-    # Determine class names from first sample
     first_sc = next(iter(scores_by_sample.values()))
     orig_classes = list(first_sc.columns)
     keep_classes = [
@@ -194,69 +170,30 @@ def eval_crc_per_dataset(scores_by_sample, gt_by_sample):
         if not np.isnan(macro):
             per_dataset_macro.append(macro)
 
-    return np.mean(per_dataset_macro) if per_dataset_macro else np.nan
+    return float(np.mean(per_dataset_macro)) if per_dataset_macro else np.nan
 
 
-if __name__ == "__main__":
-    print("Loading ground truth...")
-    lizard_gt = load_gt_for_dir(H5AD_BASE / "lizard")
-    pannuke_gt = load_gt_for_dir(H5AD_BASE / "pannuke")
-    crc_gt = load_gt_for_dir(H5AD_BASE)
+models = list(snakemake.params.models)
+seed_labels = list(snakemake.params.seed_labels)
+assert len(models) == len(seed_labels)
 
-    rows = []
-    for seed_label, model_name in MODELS.items():
-        model_dir = BASE / model_name
-        print(f"\n{'=' * 60}")
-        print(f"  {seed_label} ({model_name})")
-        print(f"{'=' * 60}")
+crc_gt = load_gt_files(snakemake.input.crc_gt)
+lizard_gt = load_gt_files(snakemake.input.lizard_gt)
+pannuke_gt = load_gt_files(snakemake.input.pannuke_gt)
 
-        # CRC
-        crc_scores = load_scores(model_dir)
-        if crc_scores:
-            auc = eval_crc_per_dataset(crc_scores, crc_gt)
-            print(f"  CRC 13-class (per-dataset avg): AUROC = {auc:.4f}")
-            rows.append({"seed": seed_label, "benchmark": "CRC_13class", "auroc": auc})
+crc_per_model = scores_by_model(snakemake.input.crc_scores, models)
+lizard_per_model = scores_by_model(snakemake.input.lizard_scores, models)
+pannuke_per_model = scores_by_model(snakemake.input.pannuke_scores, models)
 
-        # Lizard
-        liz_dir = model_dir / "lizard"
-        if liz_dir.exists():
-            liz_scores = load_scores(liz_dir)
-            if liz_scores:
-                auc = eval_lizard_reduced_per_dataset(liz_scores, lizard_gt)
-                print(f"  Lizard 3-class (per-dataset avg): AUROC = {auc:.4f}")
-                rows.append(
-                    {"seed": seed_label, "benchmark": "Lizard_3class", "auroc": auc}
-                )
+rows = []
+for model, seed_label in zip(models, seed_labels):
+    auc = eval_crc_per_dataset(crc_per_model[model], crc_gt)
+    rows.append({"seed": seed_label, "benchmark": "CRC_13class", "auroc": auc})
 
-        # PanNuke
-        pan_dir = model_dir / "pannuke"
-        if pan_dir.exists():
-            pan_scores = load_scores(pan_dir)
-            if pan_scores:
-                auc = eval_pannuke_reduced_per_dataset(pan_scores, pannuke_gt)
-                print(f"  PanNuke 4-class (per-dataset avg): AUROC = {auc:.4f}")
-                rows.append(
-                    {"seed": seed_label, "benchmark": "PanNuke_4class", "auroc": auc}
-                )
+    auc = eval_lizard_reduced_per_dataset(lizard_per_model[model], lizard_gt)
+    rows.append({"seed": seed_label, "benchmark": "Lizard_3class", "auroc": auc})
 
-    df = pd.DataFrame(rows)
-    print(f"\n{'=' * 60}")
-    print("SUMMARY (per-dataset averaged, reduced classes)")
-    print(f"{'=' * 60}")
-    for bench in df["benchmark"].unique():
-        sub = df[df["benchmark"] == bench]
-        print(f"\n{bench}:")
-        for _, row in sub.iterrows():
-            print(f"  {row['seed']:20s}: AUROC = {row['auroc']:.4f}")
-        new_seeds = sub[sub["seed"].isin(["seed0_retrained", "seed1", "seed2"])][
-            "auroc"
-        ].values
-        if len(new_seeds) >= 2:
-            print(
-                f"  Mean (new seeds):    AUROC = {np.mean(new_seeds):.4f} +/- {np.std(new_seeds):.4f}"
-            )
+    auc = eval_pannuke_reduced_per_dataset(pannuke_per_model[model], pannuke_gt)
+    rows.append({"seed": seed_label, "benchmark": "PanNuke_4class", "auroc": auc})
 
-    out_path = BASE / "seed_variance" / "reduced_class_per_dataset_averaged.csv"
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(out_path, index=False)
-    print(f"\nSaved to {out_path}")
+pd.DataFrame(rows).to_csv(snakemake.output.table, index=False)
