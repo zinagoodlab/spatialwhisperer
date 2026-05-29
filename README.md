@@ -1,13 +1,12 @@
 # SpatialWhisperer
 
-Accompanying repository for **SpatialWhisperer: Transitive Image-Gene-Text
-Alignment for Histopathology** (ICML 2026; *link TBD*).
+Accompanying repository for **Transitive Representation Learning Enhances
+Histopathology Annotation** (Schaefer et al., ICML 2026).
 
 Use this repo to:
 
-- **Reproduce paper analyses** &mdash; the `analysis/` Snakemake pipeline that
-  produced the published tables and figures (PathoCell, Lizard, PanNuke,
-  Skin Conditions, HEST, subsampling, lambda ablation, ...).
+- **Reproduce paper analyses** &mdash; Use the `analysis/` Snakemake pipeline to
+  reproduce our published results
 - **Run the model on your own data** &mdash; load the trained checkpoint from
   HuggingFace and embed image patches, transcriptome profiles, and free-text
   prompts in the shared trimodal space.
@@ -15,7 +14,7 @@ Use this repo to:
 Released artifacts:
 
 - Model weights: **<https://huggingface.co/Good-Lab/spatialwhisperer>**
-- Paper: *[arXiv link forthcoming]*
+- Paper: <https://openreview.net/forum?id=Ze7U293Zw4>
 
 ---
 
@@ -199,10 +198,15 @@ their own licenses on HuggingFace.
 
 ```bibtex
 @inproceedings{schaefer2026spatialwhisperer,
-  title  = {SpatialWhisperer: Transitive Image-Gene-Text Alignment for Histopathology},
-  author = {Schaefer, Moritz and ...},
+  title     = {Transitive Representation Learning Enhances Histopathology Annotation},
+  author    = {Schaefer, Moritz and Piran, Zoe and Walter, Nils Philipp and Awasthi, Animesh and Bock, Christoph and Leskovec, Jure and Good, Zinaida},
   booktitle = {Proceedings of the 43rd International Conference on Machine Learning},
-  year   = {2026},
-  note   = {Paper link TBD}
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {306},
+  publisher = {PMLR},
+  address   = {Seoul, South Korea},
+  month     = jul,
+  year      = {2026},
+  url       = {https://openreview.net/forum?id=Ze7U293Zw4}
 }
 ```
