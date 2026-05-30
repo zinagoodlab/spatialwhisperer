@@ -13,6 +13,8 @@
 #   - PathoCell-CRC (existing pathocell_download_dataset rule, unchanged) supplies
 #       the CRC HDFs from the same gated repo.
 
+from pathlib import Path
+
 # ----------------------------------------------------------------------------
 # Kriegsmann skin
 # ----------------------------------------------------------------------------
@@ -61,8 +63,13 @@ rule download_kriegsmann_skin:
         unzip -q -o "$TMP/data.zip" -d {KRIEGSMANN_ROOT}
         echo "Unzipped to {KRIEGSMANN_ROOT}/data/" >> $LOG
 
-        # Sanity: tiles-v2.csv must exist and have a Test split.
-        TEST_N=$(awk -F, 'NR>1 && $NF=="Test" {{c++}} END {{print c+0}}' {output.csv})
+        # Sanity: tiles-v2.csv must exist and have a Test split. `set` is one of
+        # 14 columns (not the last), so look it up by name from the header.
+        TEST_N=$(awk -F, '
+            NR==1 {{ for (i=1;i<=NF;i++) if ($i=="set") c=i; next }}
+            $c=="Test" {{ n++ }}
+            END {{ print n+0 }}
+        ' {output.csv})
         echo "Test split rows: $TEST_N" >> $LOG
         test "$TEST_N" -ge 1000  # paper uses 386 patients ≈ ~13k test tiles; abort if too few
     """
@@ -81,6 +88,10 @@ rule download_lizard_lmdb:
     Lizard LMDB: data.mdb + lock.mdb (~1.67 GB).
     Splits: data/lizard/splits/lizard_default_train_test_val_split.csv (~3.4 KB).
     Requires HF token with access to the gated repo.
+
+    Uses `snapshot_download` (via `download_hf_subset.py`) instead of
+    `huggingface-cli --include`; the cli was silently dropping the LMDB
+    files when given two `--include` patterns at once.
     """
     output:
         lmdb_dir=directory(LIZARD_RAW / "lizard_lmdb"),
@@ -88,33 +99,19 @@ rule download_lizard_lmdb:
         marker=touch(LIZARD_RAW / "download_complete.marker"),
     params:
         repo_id="Kainmueller-Lab/PathoCell",
+        allow_patterns=["data/lizard/lizard_lmdb/*", "data/lizard/splits/*"],
+        staging_dir=lambda wildcards, output: Path(output.lmdb_dir).parent / "staging",
+        subdirs_to_move=lambda wildcards, output: [
+            ("data/lizard/lizard_lmdb", str(output.lmdb_dir)),
+            ("data/lizard/splits", str(Path(output.splits_csv).parent)),
+        ],
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=2",
     log:
         "logs/download_lizard_lmdb.log",
-    shell: """
-        set -euo pipefail
-        LOG=$(realpath {log})
-        mkdir -p {LIZARD_RAW}
-        # HF cli ignores --local-dir's parent prefix; download into a staging dir
-        # and move only the lizard subtree to keep paths predictable.
-        TMP=$(mktemp -d)
-        trap 'rm -rf "$TMP"' EXIT
-
-        echo "Downloading Lizard LMDB + splits from {params.repo_id}" >> $LOG
-        huggingface-cli download {params.repo_id} \
-            --repo-type dataset \
-            --include "data/lizard/lizard_lmdb/*" \
-            --include "data/lizard/splits/*" \
-            --local-dir "$TMP" 2>>$LOG
-
-        rsync -a "$TMP/data/lizard/lizard_lmdb/" {output.lmdb_dir}/
-        mkdir -p $(dirname {output.splits_csv})
-        rsync -a "$TMP/data/lizard/splits/" $(dirname {output.splits_csv})/
-
-        echo "Lizard download complete: $(du -sh {output.lmdb_dir} | cut -f1)" >> $LOG
-    """
+    script:
+        "../scripts/download_hf_subset.py"
 
 
 rule convert_lizard_lmdb_to_hdf:
@@ -150,6 +147,8 @@ rule download_pannuke_lmdb_parts:
     HF stores data.mdb as part_aa (48G) + part_ab (48G) + part_ac (8G).
     Disk: ~104 GB just for parts, +104 GB for concatenated LMDB. Use a node
     with ≥250 GB scratch (ILC ampere/blackwell nodes via /lfs/local/0).
+
+    Uses `snapshot_download` (same fix as `download_lizard_lmdb`).
     """
     output:
         parts_dir=directory(PANNUKE_RAW / "pannuke_lmdb_parts"),
@@ -157,32 +156,19 @@ rule download_pannuke_lmdb_parts:
         marker=touch(PANNUKE_RAW / "download_complete.marker"),
     params:
         repo_id="Kainmueller-Lab/PathoCell",
+        allow_patterns=["data/pannuke/pannuke_lmdb/*", "data/pannuke/splits/*"],
+        staging_dir=lambda wildcards, output: Path(output.parts_dir).parent / "staging",
+        subdirs_to_move=lambda wildcards, output: [
+            ("data/pannuke/pannuke_lmdb", str(output.parts_dir)),
+            ("data/pannuke/splits", str(Path(output.splits_csv).parent)),
+        ],
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=4",
     log:
         "logs/download_pannuke_lmdb_parts.log",
-    shell: """
-        set -euo pipefail
-        LOG=$(realpath {log})
-        mkdir -p {PANNUKE_RAW}
-        TMP=$(mktemp -d)
-        trap 'rm -rf "$TMP"' EXIT
-
-        echo "Downloading PanNuke LMDB parts + splits from {params.repo_id}" >> $LOG
-        huggingface-cli download {params.repo_id} \
-            --repo-type dataset \
-            --include "data/pannuke/pannuke_lmdb/*" \
-            --include "data/pannuke/splits/*" \
-            --local-dir "$TMP" 2>>$LOG
-
-        mkdir -p {output.parts_dir}
-        rsync -a "$TMP/data/pannuke/pannuke_lmdb/" {output.parts_dir}/
-        mkdir -p $(dirname {output.splits_csv})
-        rsync -a "$TMP/data/pannuke/splits/" $(dirname {output.splits_csv})/
-
-        echo "PanNuke parts download complete: $(du -sh {output.parts_dir} | cut -f1)" >> $LOG
-    """
+    script:
+        "../scripts/download_hf_subset.py"
 
 
 rule concat_pannuke_lmdb_parts:
