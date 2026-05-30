@@ -56,8 +56,8 @@ rule download_kriegsmann_skin:
         echo "Downloaded $SIZE bytes" >> $LOG
 
         mkdir -p {KRIEGSMANN_ROOT}
-        # data.zip's internal top level is `data/`, so extracting into the root
-        # produces {KRIEGSMANN_ROOT}/data/{tiles-v2.csv, tiles/, class_dict.json}.
+        # data.zip's internal top level is `data/`; extracting into the root
+        # gives <root>/data/ with tiles-v2.csv, tiles/, class_dict.json.
         unzip -q -o "$TMP/data.zip" -d {KRIEGSMANN_ROOT}
         echo "Unzipped to {KRIEGSMANN_ROOT}/data/" >> $LOG
 

@@ -237,13 +237,17 @@ rule pathocell_process_data:
     """
     Process PathoCell data into CellWhisperer format.
     Converts a PathoCell HDF file to AnnData with spatial coordinates.
+
+    The raw files (`CT_mapping*.txt`, `{dataset}.hdf`) live inside the
+    `data_dir` produced by `pathocell_download_dataset` (declared as a
+    Snakemake `directory()`), so per-file outputs aren't tracked. We
+    therefore depend on the directory output as the build trigger and
+    pass the specific file paths via `params:` — keeps the DAG planable
+    without enumerating 109 hdf outputs in the download rule.
     """
     input:
         dataset_marker=rules.pathocell_download_dataset.output.dataset_marker,
         data_dir=rules.pathocell_download_dataset.output.data_dir,
-        ct_mapping_fine=lambda wildcards: PATHOCELL_DATA / "raw/pathocell_hdf/CT_mapping.txt",
-        ct_mapping_coarse=lambda wildcards: PATHOCELL_DATA / "raw/pathocell_hdf/CT_coarse_mapping.txt",
-        hdf_file=lambda wildcards: PATHOCELL_DATA / f"raw/pathocell_hdf/{wildcards.dataset}.hdf"
     output:
         adata=PATHOCELL_DATA / "processed/{dataset}_{prediction_level}.h5ad",
         image=PATHOCELL_DATA / "processed/{dataset}_{prediction_level}.tiff",
@@ -251,7 +255,10 @@ rule pathocell_process_data:
     conda:
         "cellwhisperer"
     params:
-        patch_level=lambda wildcards: wildcards.prediction_level=="patch"
+        patch_level=lambda wildcards: wildcards.prediction_level=="patch",
+        ct_mapping_fine=lambda wildcards: PATHOCELL_DATA / "raw/pathocell_hdf/CT_mapping.txt",
+        ct_mapping_coarse=lambda wildcards: PATHOCELL_DATA / "raw/pathocell_hdf/CT_coarse_mapping.txt",
+        hdf_file=lambda wildcards: PATHOCELL_DATA / f"raw/pathocell_hdf/{wildcards.dataset}.hdf",
     wildcard_constraints:
         prediction_level="(cell|patch)",
         dataset="[^/]+"
@@ -288,7 +295,8 @@ rule pathocell_cell_type_prediction:
     wildcard_constraints:
         prediction_level="(cell|patch)",
         dataset="[^/]+",
-        seed="\\d+"
+        seed="\\d+",
+        model="[^/]+",   # exclude subdir paths so this rule doesn't match lizard/<ds> or pannuke/<ds>
     conda:
         "cellwhisperer"
     resources:
@@ -404,9 +412,13 @@ rule lizard_process_data:
     Process Lizard dataset HDF file into CellWhisperer format.
     Converts a Lizard HDF file to AnnData with spatial coordinates.
     Cell types: background, Neutrophil, Epithelial, Lymphocyte, Plasma, Eosinophil, Connective tissue
+
+    Inputs the `sample_list.txt` produced by `convert_lizard_lmdb_to_hdf` as a
+    build trigger (its `output_dir` is a `directory()` so per-file outputs
+    aren't tracked); the actual hdf path is passed via `params`.
     """
     input:
-        hdf_file=lambda wildcards: PATHOCELL_DATA / f"converted/lizard_hdf/{wildcards.dataset}.hdf"
+        sample_list=_lizard_sample_list,
     output:
         adata=PATHOCELL_DATA / "processed/lizard/{dataset}_{prediction_level}.h5ad",
         image=PATHOCELL_DATA / "processed/lizard/{dataset}_{prediction_level}.tiff",
@@ -414,7 +426,8 @@ rule lizard_process_data:
     conda:
         "cellwhisperer"
     params:
-        patch_level=lambda wildcards: wildcards.prediction_level == "patch"
+        patch_level=lambda wildcards: wildcards.prediction_level == "patch",
+        hdf_file=lambda wildcards: PATHOCELL_DATA / f"converted/lizard_hdf/{wildcards.dataset}.hdf",
     wildcard_constraints:
         prediction_level="(cell|patch)",
         dataset="[^/]+"
@@ -537,9 +550,13 @@ rule pannuke_process_data:
     Process PanNuke dataset HDF file into CellWhisperer format.
     Converts a PanNuke HDF file to AnnData with spatial coordinates.
     Cell types: Background, Epithelial, Dead Cells, Connective/Soft tissue cells, Inflammatory, Neoplastic cells
+
+    Same `directory()` indirection as `lizard_process_data` — depend on the
+    convert rule's sample_list as a build trigger; pass the actual hdf path
+    via `params`.
     """
     input:
-        hdf_file=lambda wildcards: PATHOCELL_DATA / f"converted/pannuke_hdf/{wildcards.dataset}.hdf"
+        sample_list=_pannuke_sample_list,
     output:
         adata=PATHOCELL_DATA / "processed/pannuke/{dataset}_{prediction_level}.h5ad",
         image=PATHOCELL_DATA / "processed/pannuke/{dataset}_{prediction_level}.tiff",
@@ -547,7 +564,8 @@ rule pannuke_process_data:
     conda:
         "cellwhisperer"
     params:
-        patch_level=lambda wildcards: wildcards.prediction_level == "patch"
+        patch_level=lambda wildcards: wildcards.prediction_level == "patch",
+        hdf_file=lambda wildcards: PATHOCELL_DATA / f"converted/pannuke_hdf/{wildcards.dataset}.hdf",
     wildcard_constraints:
         prediction_level="(cell|patch)",
         dataset="[^/]+"

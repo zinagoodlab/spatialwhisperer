@@ -134,6 +134,39 @@ rule reduced_class_table2_style:
         "../scripts/compute_reduced_class_table2_style.py"
 
 
+rule reduced_class_table2_style_seed0:
+    """Seed-0-only variant for the public reproducer (uses only the published checkpoint)."""
+    input:
+        crc_scores=expand(
+            PATHOCELL_RESULTS / "{model}" / "{dataset}_patch_scores_seed0.csv",
+            model=[VARIANCE_MODEL_BASE], dataset=DATASETS,
+        ),
+        lizard_scores=expand(
+            PATHOCELL_RESULTS / "{model}" / "lizard/{dataset}_patch_scores_seed0.csv",
+            model=[VARIANCE_MODEL_BASE], dataset=LIZARD_DATASETS,
+        ),
+        pannuke_scores=expand(
+            PATHOCELL_RESULTS / "{model}" / "pannuke/{dataset}_patch_scores_seed0.csv",
+            model=[VARIANCE_MODEL_BASE], dataset=PANNUKE_DATASETS,
+        ),
+        crc_gt=_crc_gt_h5ads(),
+        lizard_gt=_lizard_gt_h5ads(),
+        pannuke_gt=_pannuke_gt_h5ads(),
+    output:
+        macro=PATHOCELL_RESULTS / "seed_variance/reduced_class_table2_style_seed0.csv",
+        per_class=PATHOCELL_RESULTS / "seed_variance/reduced_class_table2_style_seed0_per_class.csv",
+    params:
+        models=[VARIANCE_MODEL_BASE],
+        seed_labels=["seed0"],
+    conda:
+        "cellwhisperer"
+    resources:
+        mem_mb=8000,
+        slurm="cpus-per-task=1",
+    script:
+        "../scripts/compute_reduced_class_table2_style.py"
+
+
 rule reduced_class_seed_variance:
     """Same scores as table2_style but pooled globally across samples (different aggregation)."""
     input:

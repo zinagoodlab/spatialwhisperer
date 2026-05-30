@@ -15,6 +15,7 @@ include: "rules/hest_benchmark.smk"
 include: "rules/lung_benchmark.smk"
 include: "rules/pathocell_benchmark.smk"
 include: "rules/eval_dataset_download.smk"
+include: "rules/checkpoint_download.smk"
 include: "rules/cellwhisperer_benchmark.smk"
 include: "rules/cellwhisperer_comprehensive_benchmark.smk"
 include: "rules/plots.smk"
@@ -34,60 +35,93 @@ include: "rules/quilt_text_harmonization_control.smk"
 include: "rules/recheck.smk"
 
 
-# Canonical "trimodal" production model used for all paper-cited single-model evaluations.
-PAPER_MAIN_MODEL = f"spatialwhisperer_{VARIANCE_DATASET_COMBO}"
-
-
 rule paper_all:
     """
-    Single target: produces every artefact cited in the manuscript and appendix.
+    Public reproducer: produces every artefact cited in the manuscript that is
+    reachable from the single published checkpoint (`Good-Lab/spatialwhisperer`
+    on HF, fetched by `download_spatialwhisperer_checkpoint`). NO training.
 
-    Composes the per-benchmark aggregate rules with the headline cross-benchmark
-    plots and the skin / disease-stratification leaf outputs that don't have
-    their own *_all wrapper yet. Run from inside analysis/:
+    Excluded by design (require training additional models):
+      - seed_analysis_all (needs seed1, seed2 checkpoints)
+      - lambda_ablation_all, freezing_encoder_appendix_all (ablation models)
+      - subset_performance_trend_grid, spider_performance_plot,
+        bimodal_bridge_plot (require multi-model comparison checkpoints)
+      - multi-model pathocell_per_class delta plots in pathocell_all
+
+    Run from inside analysis/:
 
         pixi run snakemake -j N paper_all
     """
     input:
-        # ── Cross-benchmark headline plots ─────────────────────────────────────
-        rules.spider_performance_plot.output.plot,
-        rules.bimodal_bridge_plot.output.plot,
-        rules.subset_performance_trend_grid.output.plot,
+        # ── Multi-seed Table 2 baselines (no model needed; just static CSVs) ──
         expand(
-            rules.cellwhisperer_per_class_analysis.output.analysis,
-            allow_missing=True,
+            rules.baselines_table2_style.output.macro,
+            terms_id=TERMS_IDS,
+        ),
+        expand(
+            rules.baselines_table2_style.output.per_class,
+            terms_id=TERMS_IDS,
         ),
 
-        # ── Per-benchmark aggregates ───────────────────────────────────────────
-        rules.pathocell_all.input,
-        rules.hest_benchmark_all.input,
-        rules.spatialwhisperer_all.input,            # lung
-        rules.cellwhisperer_benchmark_all.input,
-        # subset_all is parameterised by {subratio}; the cross-ratio grid is already
-        # in subset_performance_trend_grid above, so no need to expand subset_all here.
+        # ── Published-model evals on the three PathoCellBench benchmarks ───────
+        # CRC (109 datasets, 13-class), Lizard (70, 3-class reduced), PanNuke (51, 4-class reduced)
+        expand(
+            rules.pathocell_metrics_from_scores.output.aggregated,
+            model=[PUBLISHED_MODEL_NAME],
+            prediction_level=["patch"],
+        ),
+        expand(
+            rules.lizard_metrics_from_scores.output.aggregated,
+            model=[PUBLISHED_MODEL_NAME],
+            prediction_level=["patch"],
+        ),
+        expand(
+            rules.pannuke_metrics_from_scores.output.aggregated,
+            model=[PUBLISHED_MODEL_NAME],
+            prediction_level=["patch"],
+        ),
+
+        # ── Published-model Table 2-style per-class breakdown (single seed) ───
+        # `reduced_class_table2_style` expects all VARIANCE_MODELS (seed0+seed1+seed2);
+        # for the public reproducer we ship only seed0, so call its script via a
+        # dedicated single-seed variant below — added as `reduced_class_table2_style_seed0`
+        # in seed_analysis.smk alongside the multi-seed rule.
+        rules.reduced_class_table2_style_seed0.output.macro,
+        rules.reduced_class_table2_style_seed0.output.per_class,
+
+        # ── Skin Conditions (Kriegsmann 16-class), clinical labels ────────────
+        expand(
+            rules.compute_skin_metrics.output.summary,
+            model=[PUBLISHED_MODEL_NAME],
+            labels=["clinical"],
+            preprocess=["resize_crop"],
+        ),
+
+        # PanNuke disease stratification (`compute_tissue_type_metrics`) needs
+        # `pannuke_fold2_types.npy` and an alternative `splits/train_test_val_split.csv`
+        # path that the eval-data download rules don't produce; track that as a
+        # follow-up before re-adding the per-tissue-type metrics here.
+    default_target: True
+
+
+rule paper_dev_all:
+    """
+    Developer reproducer: paper_all plus everything that requires training
+    additional checkpoints from scratch. Not for the public-facing repo;
+    use this to verify the full pipeline still works after model edits.
+    """
+    input:
+        rules.paper_all.input,
         rules.seed_analysis_all.input,
         rules.lambda_ablation_all.input,
         rules.freezing_encoder_appendix_all.input,
         rules.model_interpretation_all.input,
-
-        # ── Benchmarks without an _all wrapper: list leaf outputs explicitly ──
-        # Skin (Kriegsmann 16-class) — clinical labels, resize_crop preprocess.
-        expand(
-            rules.compute_skin_metrics.output.summary,
-            model=[PAPER_MAIN_MODEL],
-            labels=["clinical"],
-            preprocess=["resize_crop"],
-        ),
-        # PanNuke disease stratification (per-tissue-type metrics, both subsets).
-        expand(
-            rules.compute_tissue_type_metrics.output.summary,
-            model=[PAPER_MAIN_MODEL],
-            subset=["all", "benign_only"],
-        ),
-    default_target: True
+        rules.hest_benchmark_all.input,
+        rules.spatialwhisperer_all.input,            # lung
+        rules.cellwhisperer_benchmark_all.input,
 
 
 rule all:
-    """Alias for paper_all (keeps `snakemake` with no target working)."""
+    """Alias for paper_all so bare `snakemake` works in the public reproducer."""
     input:
         rules.paper_all.input,
