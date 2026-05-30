@@ -38,3 +38,34 @@ rule download_spatialwhisperer_checkpoint:
 
 
 ruleorder: download_spatialwhisperer_checkpoint > train_spatialwhisperer
+
+
+# The published SpatialWhisperer checkpoint ships with foundation-model weights
+# (UNI2 image encoder, Geneformer transcriptome encoder) stripped to satisfy the
+# upstream licenses. The eval rules expect those weights at fixed paths under
+# `resources/`; fetch them via the helpers in `spatialwhisperer.utils.model_io`.
+
+rule download_geneformer_weights:
+    """Pull Geneformer-12L-30M weights from ctheodoris/Geneformer on HF."""
+    output:
+        config_json=PROJECT_DIR / "resources/geneformer-12L-30M/config.json",
+        model_bin=PROJECT_DIR / "resources/geneformer-12L-30M/pytorch_model.bin",
+        training_args=PROJECT_DIR / "resources/geneformer-12L-30M/training_args.bin",
+    resources:
+        mem_mb=4000,
+        slurm="cpus-per-task=2",
+    shell: """
+        python -c "from spatialwhisperer.utils.model_io import ensure_geneformer_weights; ensure_geneformer_weights()"
+    """
+
+
+rule download_uni2_weights:
+    """Pull UNI2-h weights from MahmoodLab/UNI2-h (gated; needs HF token w/ accepted terms)."""
+    output:
+        marker=touch(PROJECT_DIR / "resources/uni2/.download_complete"),
+    resources:
+        mem_mb=4000,
+        slurm="cpus-per-task=2",
+    shell: """
+        python -c "from spatialwhisperer.utils.model_io import ensure_uni2_weights; ensure_uni2_weights()"
+    """

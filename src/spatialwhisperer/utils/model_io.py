@@ -183,6 +183,17 @@ def load_cellwhisperer_model(
     # Old checkpoints reference `cellwhisperer.*` classes; alias them.
     _alias_cellwhisperer_to_spatialwhisperer()
 
+    # The published HF checkpoint ships with UNI2 and Geneformer weights stripped
+    # (license + FrozenCachedModel load path), so make sure both are on disk
+    # under PROJECT_ROOT/resources/{uni2,geneformer-12L-30M}/ before instantiating
+    # the Lightning module. Idempotent: skips work if already cached.
+    if model_path is not None:
+        try:
+            ensure_geneformer_weights()
+            ensure_uni2_weights()
+        except Exception as e:
+            logging.warning(f"Foundation-model weight download skipped: {e}")
+
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if model_path is not None:
