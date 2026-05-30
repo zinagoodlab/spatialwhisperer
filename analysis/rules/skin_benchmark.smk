@@ -52,8 +52,6 @@ rule score_skin:
     wildcard_constraints:
         labels="|".join(LABELS_OPTIONS),
         preprocess="|".join(PREPROCESS_OPTIONS),
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=40000,
         slurm=slurm_gres("medium", num_cpus=4, time="2:00:00"),
@@ -74,8 +72,6 @@ rule compute_skin_metrics:
     wildcard_constraints:
         labels="|".join(LABELS_OPTIONS),
         preprocess="|".join(PREPROCESS_OPTIONS),
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"

@@ -37,8 +37,6 @@ rule train_spatialwhisperer_fe:
         project_dir=PROJECT_DIR,
     wildcard_constraints:
         fe_config="|".join(FE_CONFIGS + FE_SMOKE_CONFIGS),
-    conda:
-        "cellwhisperer"
     resources:
         # Sized so the 3 Geneformer configs (lll, llu, ull) can run in
         # parallel on sh04-02n05 (64 CPUs / 1000 GB / 4 GPUs):

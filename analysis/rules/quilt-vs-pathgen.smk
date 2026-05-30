@@ -32,8 +32,6 @@ rule quilt_pathgen_paired_barplots:
         datasets=COMPARISON_DATASETS,
         benchmarks=["lung"],  # "pathocell", "musk"
         comparison_results_dir=COMPARISON_RESULTS
-    conda: 
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"

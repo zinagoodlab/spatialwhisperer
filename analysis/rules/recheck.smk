@@ -25,8 +25,6 @@ rule two_stage_pathocell_predict_recheck:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00"),
@@ -49,8 +47,6 @@ rule two_stage_lizard_predict_recheck:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00"),
@@ -73,8 +69,6 @@ rule two_stage_pannuke_predict_recheck:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00"),
@@ -98,8 +92,6 @@ rule omiclip_pathocell_score_recheck:
         data_dir=PATHOCELL_DATA / "processed",
         prediction_level="patch",
         batch_size=64,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=4, time="4:00:00"),
@@ -116,8 +108,6 @@ rule omiclip_pathocell_split_scores_recheck:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall",
@@ -142,8 +132,6 @@ rule omiclip_pseudobulk_pathocell_score_recheck:
         data_dir=PATHOCELL_DATA / "processed",
         prediction_level="patch",
         batch_size=64,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=4, time="4:00:00"),
@@ -164,8 +152,6 @@ rule omiclip_pseudobulk_pathocell_split_scores_recheck:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall",
@@ -195,8 +181,6 @@ rule omiclip_secondary_score_recheck:
     wildcard_constraints:
         omiclip_model="(omiclip|omiclip_pseudobulk)",
         benchmark="(lizard|pannuke)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=4, time="4:00:00"),
@@ -215,8 +199,6 @@ rule omiclip_secondary_split_scores_recheck:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall",

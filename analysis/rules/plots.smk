@@ -33,8 +33,6 @@ rule create_analysis_plots:
             "valfn_zshot_TabSap_cell_lvl/f1_macroAvg",
             "valfn_zshot_TabSap_cell_lvl/rocauc_macroAvg",
         ],
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=4"
@@ -63,8 +61,6 @@ rule create_retrieval_plots:
             "test_retrieval/left_right/rocauc_macroAvg",
             "test_retrieval/right_left/rocauc_macroAvg",
         ],
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=4"
@@ -159,8 +155,6 @@ rule spider_performance_plot:
             ],
         },
         modality_colors=MODALITY_COLORS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=4"
@@ -187,8 +181,6 @@ rule bimodal_bridge_plot:
         datasets=BASE_DATASETS,
         model_mappings=MODEL_MAPPINGS,
         modality_colors=MODALITY_COLORS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=4"

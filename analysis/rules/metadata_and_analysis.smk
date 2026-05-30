@@ -42,8 +42,6 @@ rule extract_sample_metadata:
         metadata=report(BENCHMARKS_DIR / "sample_metadata" / "{dataset}" / "sample_metadata.csv", category="per_class_analysis", subcategory=lambda wildcards: DATASET_PAIR_MAPPING[wildcards.dataset], labels={"Analysis": "Sample-level metadata", "Format": "csv"}),
     params:
         project_dir=PROJECT_DIR,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=4"
@@ -65,8 +63,6 @@ rule retrieval_per_class_analysis:
         plot=report(BENCHMARKS_DIR / "retrieval_per_class" / "{dataset}" / "per_class_analysis.pdf", category="per_class_analysis", subcategory=lambda wildcards: DATASET_PAIR_MAPPING[wildcards.dataset], labels={"Analysis": "Retrieval per class", "Format": "plot"}),
     params:
         model_mappings=lambda wildcards: MODEL_MAPPINGS[wildcards.dataset],
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"

@@ -23,8 +23,6 @@ rule create_hest_geneformer_genelist:
         hest_dir=PROJECT_DIR / "results" / "hest1k" / "h5ads",
     output:
         gene_list=TWO_STAGE_RESOURCES / "hest_geneformer_genes.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=32000,
         slurm="cpus-per-task=2"
@@ -49,8 +47,6 @@ rule train_two_stage_decoder:
         max_epochs=4,
         learning_rate=1e-3,
         batch_size=256,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=250000,
         slurm=slurm_gres("large", num_cpus=8, time="16:00:00")
@@ -80,8 +76,6 @@ rule retrain_geneformer_classifier:
     resources:
         mem_mb=350000,
         slurm=slurm_gres("large")
-    conda:
-        "cellwhisperer"
     script:
         "../scripts/retrain_geneformer_classifier.py"
 
@@ -90,8 +84,6 @@ rule download_transfered_labels:
     """Download pre-computed GPT-4o label transfer from CellWhisperer data release."""
     output:
         transfered_labels=PROJECT_DIR / "results" / "finetuning_eval" / "tabula_sapiens" / "transfered_labels.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=1000,
         slurm="cpus-per-task=1"
@@ -114,8 +106,6 @@ rule create_pathocell_label_mapping:
         transfered_labels=PROJECT_DIR / "results" / "finetuning_eval" / "tabula_sapiens" / "transfered_labels.csv",
     output:
         label_mapping=TWO_STAGE_RESOURCES / "pathocell_crc_label_mapping.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"
@@ -142,8 +132,6 @@ rule two_stage_pathocell_predict:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")
@@ -167,8 +155,6 @@ rule create_lizard_label_mapping:
         transfered_labels=PROJECT_DIR / "results" / "finetuning_eval" / "tabula_sapiens" / "transfered_labels.csv",
     output:
         label_mapping=TWO_STAGE_RESOURCES / "lizard_label_mapping.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"
@@ -184,8 +170,6 @@ rule create_pannuke_label_mapping:
         transfered_labels=PROJECT_DIR / "results" / "finetuning_eval" / "tabula_sapiens" / "transfered_labels.csv",
     output:
         label_mapping=TWO_STAGE_RESOURCES / "pannuke_label_mapping.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"
@@ -212,8 +196,6 @@ rule two_stage_lizard_predict:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")
@@ -240,8 +222,6 @@ rule two_stage_pannuke_predict:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")

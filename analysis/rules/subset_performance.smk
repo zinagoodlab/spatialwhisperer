@@ -81,8 +81,6 @@ rule subset_performance:
     params:
         modality_pair=lambda wildcards: wildcards.modality_pair,
         subratio=lambda wildcards: int(wildcards.subratio)
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=5000,
         slurm="cpus-per-task=1"
@@ -101,8 +99,6 @@ rule subset_all:
     output:
         combined_manifest=BENCHMARKS_DIR / "subset_performance" / "{subratio}" / "combined_manifest.txt"
 
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=2000,
         slurm="cpus-per-task=1"
@@ -188,8 +184,6 @@ rule subset_performance_trend_grid_pannuke:
         pathocell_eval_dir=PROJECT_DIR / "results/pathocell_evaluation",
         ratios=SUBSAMPLING_RATIOS,
         plot_trimodal_all_subset=PLOT_TRIMODAL_ALL_SUBSET
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=2"
@@ -304,8 +298,6 @@ rule subset_performance_trend_grid:
         benchmarks_dir=BENCHMARKS_DIR,
         ratios=SUBSAMPLING_RATIOS,
         plot_trimodal_all_subset=PLOT_TRIMODAL_ALL_SUBSET
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=2"

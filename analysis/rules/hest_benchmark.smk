@@ -22,8 +22,6 @@ rule prepare_hest_data:
         dataset_dir=directory(HEST_DATA_ROOT / "{dataset}")
     wildcard_constraints:
         dataset="(?!.*_spatialwhisperer$).*"  # Don't match names ending with _spatialwhisperer
-    conda:
-        "hest"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=2",
@@ -40,8 +38,6 @@ rule convert_hest_to_spatialwhisperer:
     output:
         converted_dataset=PROJECT_DIR / config["paths"]["full_dataset"].replace("{dataset}", "hesteval_{dataset}"),
         # multi_folder=directory(PROJECT_DIR / config["paths"]["full_dataset_multi"].replace("{dataset}", "hesteval_{dataset}")),  # still contains _{i}
-    conda:
-        "cellwhisperer"
     params:
         multi_folder=lambda wildcards, output: Path(output.converted_dataset).parent / "h5ads",
     # Get H&E configuration for HEST datasets
@@ -69,8 +65,6 @@ rule hest_spatialwhisperer_test:
         batch_size=64,
         seed=1,
         project_dir=PROJECT_DIR
-    conda:
-        "cellwhisperer"
     resources:
         slurm=slurm_gres("small", num_cpus=2),
         mem_mb=100000,
@@ -110,8 +104,6 @@ rule aggregate_hest_results:
             "test_retrieval/transcriptome_image/f1_macroAvg",
             # "test_retrieval/image_transcriptome/f1_macroAvg",  # TODO enable later (needs recompute)
         ]
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -137,8 +129,6 @@ rule hest_per_class_analysis:
     params:
         datasets=HEST_DATASETS,
         model_types=["trimodal", "bimodal_mismatch1", "bimodal_mismatch2", "bimodal_matching"]
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"
@@ -173,8 +163,6 @@ rule aggregate_hest_evaluation:
         )
     output:
         aggregated_hest=BENCHMARKS_DIR / "hest" / "{dataset_combo}" / "aggregated_results.json"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=1"

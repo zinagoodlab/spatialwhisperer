@@ -36,8 +36,6 @@ rule train_spatialwhisperer_seeded:
         project_dir=PROJECT_DIR,
     wildcard_constraints:
         seed="\\d+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=lambda wildcards: 250000 if "archs4_geo" in wildcards.dataset_combo else 150000,
         slurm=slurm_gres("large", num_cpus=12, time="70:00:00", num_gpus=1),
@@ -69,8 +67,6 @@ rule seed_variance_table:
     params:
         seed0=0,
         extra_seeds=VARIANCE_SEEDS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1",
@@ -125,8 +121,6 @@ rule reduced_class_table2_style:
     params:
         models=VARIANCE_MODELS,
         seed_labels=VARIANCE_SEED_LABELS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1",
@@ -158,8 +152,6 @@ rule reduced_class_table2_style_seed0:
     params:
         models=[VARIANCE_MODEL_BASE],
         seed_labels=["seed0"],
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1",
@@ -181,8 +173,6 @@ rule reduced_class_seed_variance:
     params:
         models=VARIANCE_MODELS,
         seed_labels=VARIANCE_SEED_LABELS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1",
@@ -204,8 +194,6 @@ rule reduced_class_per_dataset_averaged:
     params:
         models=VARIANCE_MODELS,
         seed_labels=VARIANCE_SEED_LABELS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1",
@@ -238,8 +226,6 @@ rule baselines_table2_style:
         baselines=TABLE2_BASELINES,
     wildcard_constraints:
         terms_id="(terms1|terms2)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1",

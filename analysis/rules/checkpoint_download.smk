@@ -20,8 +20,6 @@ rule download_spatialwhisperer_checkpoint:
     params:
         hf_repo=PUBLISHED_MODEL_HF_REPO,
         hf_filename="spatialwhisperer.ckpt",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=2",

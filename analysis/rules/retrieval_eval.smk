@@ -16,8 +16,6 @@ rule spatialwhisperer_test:
         seed=SEEDS[0],
         batch_size=128,
         project_dir=PROJECT_DIR,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         runtime=16*60,
@@ -49,8 +47,6 @@ rule aggregate_spatialwhisperer_test:
     output:
         aggregated_retrieval=BENCHMARKS_DIR / "retrieval" / "{dataset_combo}" / "aggregated_retrieval.csv",
         aggregated_cwevals=BENCHMARKS_DIR / "retrieval" / "{dataset_combo}" / "aggregated_cwevals.csv"
-    conda:
-        "cellwhisperer"
     params:
         dataset_combo=lambda wildcards: wildcards.dataset_combo.replace("__", ","),
         test_datasets=BASE_DATASETS

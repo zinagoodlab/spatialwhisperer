@@ -47,8 +47,6 @@ rule quilt_curated_bimodal_bridge_plot:
         model_mappings_curated=MODEL_MAPPINGS_CURATED,
         modality_colors=MODALITY_COLORS,
         comparison_results_dir=CURATED_COMPARISON_RESULTS
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"
@@ -108,8 +106,6 @@ rule quilt_curated_trimodal_spider_plot:
             ],
         },
         modality_colors=MODALITY_COLORS,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=4"
@@ -136,8 +132,6 @@ rule quilt_curated_individual_score_violins:
     params:
         dataset_combo=MODEL_MAPPINGS["quilt1m"]["bimodal_bridge"],
         test_datasets=["quilt1m", "quilt1m_curated"],
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=15000,
         slurm="cpus-per-task=1"

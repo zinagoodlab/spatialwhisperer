@@ -128,8 +128,6 @@ rule convert_lizard_lmdb_to_hdf:
     params:
         tile_size=224,
         batch_size=1,  # one HDF per sample (matches Sherlock-derived artifacts)
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=32000,
         slurm="cpus-per-task=2 partition=cmackall",
@@ -226,8 +224,6 @@ rule convert_pannuke_lmdb_to_hdf:
     params:
         tile_size=224,
         batch_size=50,  # ~51 HDFs of ≤50 tiles each (matches Sherlock-derived artifacts)
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=64000,
         slurm="cpus-per-task=4 partition=cmackall",

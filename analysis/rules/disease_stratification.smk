@@ -26,8 +26,6 @@ rule pannuke_disease_stratified_metrics:
     output:
         per_class=PATHOCELL_RESULTS / "{model}" / "pannuke_summary/disease_stratified_per_class.csv",
         summary=PATHOCELL_RESULTS / "{model}" / "pannuke_summary/disease_stratified_summary.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1"
@@ -51,8 +49,6 @@ rule build_pannuke_tissue_mapping:
         ),
     output:
         mapping=PATHOCELL_DATA / "processed/pannuke/tissue_mapping.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1"
@@ -68,8 +64,6 @@ rule score_pannuke_tissue_type:
         image=PATHOCELL_DATA / "processed/pannuke/{dataset}_patch.tiff",
     output:
         scores=PATHOCELL_RESULTS / "{model}" / "pannuke_tissue/{dataset}_tissue_scores.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=8, time="1:00:00")
@@ -100,8 +94,6 @@ rule compute_tissue_type_metrics:
         benign_only=lambda wildcards: wildcards.subset == "benign_only",
     wildcard_constraints:
         subset="(all|benign_only)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1"

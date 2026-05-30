@@ -36,8 +36,6 @@ rule cellwhisperer_zero_shot_prediction:
         dataset="|".join(CELLWHISPERER_BENCHMARK_DATASETS),
         metadata_col="celltype",
         normed="normed|raw"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=230000,
         slurm=slurm_gres()
@@ -62,8 +60,6 @@ rule cellwhisperer_benchmark_summary:
     output:
         summary_csv=CELLWHISPERER_MODEL_RESULTS / "benchmark_summary.csv",
         summary_plot=CELLWHISPERER_MODEL_RESULTS / "benchmark_summary.png"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm="cpus-per-task=2"
@@ -92,8 +88,6 @@ rule cellwhisperer_per_class_analysis:
     params:
         datasets=CELLWHISPERER_BENCHMARK_DATASETS,
         metrics=["rocauc", "f1", "accuracy", "precision", "recall_at_1", "recall_at_5", "recall_at_10", "recall_at_50"]  # All available metrics
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"

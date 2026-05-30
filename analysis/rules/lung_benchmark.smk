@@ -30,8 +30,6 @@ rule zero_shot_lung_prediction:
     wildcard_constraints:
         dataset="lung_tissue",
         metadata_col="cell_type_annotations|region_type_expert_annotation"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=35000,
         slurm=slurm_gres("small"),
@@ -54,8 +52,6 @@ rule plot_spatialwhisperer_confusion_matrix:
         performance_metrics=SPATIALWHISPERER_MODEL_RESULTS / "performance" / "{dataset}" / "{metadata_col}_{grouping}_metrics.json",
     wildcard_constraints:
         metadata_col=".*annotations?"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=100000,
         slurm="cpus-per-task=2"
@@ -125,8 +121,6 @@ rule lung_performance_summary:
     output:
         summary=SPATIALWHISPERER_RESULTS / "performance_summary_{model}.csv",
         plot=SPATIALWHISPERER_RESULTS / "performance_summary_{model}.png",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=1"
@@ -189,8 +183,6 @@ rule lung_download_sample:
         url="https://medical-epigenomics.org/papers/spatialwhisperer/data/LC{sample_n}.h5ad.gz",
     wildcard_constraints:
         sample_n="[1-5]"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -227,8 +219,6 @@ rule lung_metrics_from_scores:
         per_class_by_dataset=LUNG_RESULTS / "{model}" / "summary" / "per_class_by_dataset_metrics.csv",
     wildcard_constraints:
         model="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -250,8 +240,6 @@ rule lung_split_baseline_scores:
         seed="0",
         sample="lc_[0-9]+",
         terms_id="(terms1|terms2)"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -284,8 +272,6 @@ rule lung_baselines_vs_spatialwhisperer:
         metric="{metric}",
     wildcard_constraints:
         metric="(f1|rocauc|precision|accuracy)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1 partition=cmackall"

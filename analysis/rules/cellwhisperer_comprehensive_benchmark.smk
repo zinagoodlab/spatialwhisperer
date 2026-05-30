@@ -42,8 +42,6 @@ rule cellwhisperer_comprehensive_zero_shot:
     wildcard_constraints:
         dataset="|".join(set([pair[0] for pair in DATASET_METADATA_PAIRS])) if DATASET_METADATA_PAIRS else ".*",
         metadata_col="|".join(set([pair[1] for pair in DATASET_METADATA_PAIRS])) if DATASET_METADATA_PAIRS else ".*"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=350000,
         slurm=slurm_gres()
@@ -67,8 +65,6 @@ rule aggregate_comprehensive_benchmarks:
     params:
         dataset_metadata_pairs=DATASET_METADATA_PAIRS,
         comprehensive_benchmarks=COMPREHENSIVE_BENCHMARKS
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm="cpus-per-task=2"

@@ -37,8 +37,6 @@ rule train_spatialwhisperer_lambda:
         project_dir=PROJECT_DIR,
     wildcard_constraints:
         lambda_config="|".join(LAMBDA_CONFIGS),
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=250000,
         slurm=slurm_gres("large", num_cpus=12, time="24:00:00", num_gpus=1),

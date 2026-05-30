@@ -12,8 +12,6 @@ rule subsample_dataset:
     params:
         n=lambda wildcards: int(wildcards.subratio),
         seed=SEEDS[0]
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=350000,
         # slurm=slurm_gres(num_cpus=2, time="24:00:00", num_gpus=1)  # needs substantial memory
@@ -32,8 +30,6 @@ rule subsample_multi_file_dataset:
     params:
         n=lambda wildcards: int(wildcards.subratio),
         seed=SEEDS[0]
-    conda:
-        "cellwhisperer"
     script:
         "../scripts/subsample_multi_file_dataset.py"
 
@@ -69,8 +65,6 @@ rule train_spatialwhisperer:
         tmpmodel=PROJECT_DIR / config["paths"]["jointemb_models"] / "spatialwhisperer_clip_v1.ckpt",
         seed=SEEDS[0],
         project_dir=PROJECT_DIR
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=lambda wildcards: 250000 if "archs4_geo" in wildcards.dataset_combo else 150000,
         slurm=slurm_gres("large", num_cpus=12, time="70:00:00", num_gpus=1)

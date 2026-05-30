@@ -179,8 +179,6 @@ rule train_conch:
         identity_projection_config=lambda wildcards: "--model.model_config.identity_projection true" if wildcards.identity_projection == "_identity" else "",  # TODO this one does not work
         seed=SEEDS[0],
         project_dir=PROJECT_DIR,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=lambda wildcards: 150000,
         slurm=slurm_gres("large", num_cpus=12, time="70:00:00", num_gpus=1)
@@ -207,8 +205,6 @@ rule pathocell_download_dataset:
     output:
         dataset_marker=touch(PATHOCELL_DATA / "download_complete.marker"),
         data_dir=directory(PATHOCELL_DATA / "raw")
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=2"
@@ -252,8 +248,6 @@ rule pathocell_process_data:
         adata=PATHOCELL_DATA / "processed/{dataset}_{prediction_level}.h5ad",
         image=PATHOCELL_DATA / "processed/{dataset}_{prediction_level}.tiff",
         metadata=PATHOCELL_DATA / "processed/{dataset}_{prediction_level}_metadata.json"
-    conda:
-        "cellwhisperer"
     params:
         patch_level=lambda wildcards: wildcards.prediction_level=="patch",
         ct_mapping_fine=lambda wildcards: PATHOCELL_DATA / "raw/pathocell_hdf/CT_mapping.txt",
@@ -297,8 +291,6 @@ rule pathocell_cell_type_prediction:
         dataset="[^/]+",
         seed="\\d+",
         model="[^/]+",   # exclude subdir paths so this rule doesn't match lizard/<ds> or pannuke/<ds>
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=150000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")
@@ -337,8 +329,6 @@ rule pathocell_metrics_from_scores:
     wildcard_constraints:
         prediction_level="(cell|patch)",
         model="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -360,8 +350,6 @@ rule pathocell_aggregate_results:
         ),
     output:
         summary=PATHOCELL_MODEL_RESULTS / "summary" / "{prediction_level}_classification_summary.json"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -388,8 +376,6 @@ rule aggregate_pathocell_results:
         aggregated_pathocell=BENCHMARKS_DIR / "pathocell" / "{dataset_combo}" / "performance_summary.json"
     wildcard_constraints:
         dataset_combo="[^/]+"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -423,8 +409,6 @@ rule lizard_process_data:
         adata=PATHOCELL_DATA / "processed/lizard/{dataset}_{prediction_level}.h5ad",
         image=PATHOCELL_DATA / "processed/lizard/{dataset}_{prediction_level}.tiff",
         metadata=PATHOCELL_DATA / "processed/lizard/{dataset}_{prediction_level}_metadata.json"
-    conda:
-        "cellwhisperer"
     params:
         patch_level=lambda wildcards: wildcards.prediction_level == "patch",
         hdf_file=lambda wildcards: PATHOCELL_DATA / f"converted/lizard_hdf/{wildcards.dataset}.hdf",
@@ -463,8 +447,6 @@ rule lizard_cell_type_prediction:
         prediction_level="(cell|patch)",
         dataset="[^/]+",
         seed="\\d+"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=150000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")
@@ -503,8 +485,6 @@ rule lizard_metrics_from_scores:
     wildcard_constraints:
         prediction_level="(cell|patch)",
         model="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -526,8 +506,6 @@ rule lizard_aggregate_results:
         ),
     output:
         summary=PATHOCELL_MODEL_RESULTS / "lizard_summary" / "{prediction_level}_classification_summary.json"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -561,8 +539,6 @@ rule pannuke_process_data:
         adata=PATHOCELL_DATA / "processed/pannuke/{dataset}_{prediction_level}.h5ad",
         image=PATHOCELL_DATA / "processed/pannuke/{dataset}_{prediction_level}.tiff",
         metadata=PATHOCELL_DATA / "processed/pannuke/{dataset}_{prediction_level}_metadata.json"
-    conda:
-        "cellwhisperer"
     params:
         patch_level=lambda wildcards: wildcards.prediction_level == "patch",
         hdf_file=lambda wildcards: PATHOCELL_DATA / f"converted/pannuke_hdf/{wildcards.dataset}.hdf",
@@ -601,8 +577,6 @@ rule pannuke_cell_type_prediction:
         prediction_level="(cell|patch)",
         dataset="[^/]+",
         seed="\\d+"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=150000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")
@@ -641,8 +615,6 @@ rule pannuke_metrics_from_scores:
     wildcard_constraints:
         prediction_level="(cell|patch)",
         model="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -664,8 +636,6 @@ rule pannuke_aggregate_results:
         ),
     output:
         summary=PATHOCELL_MODEL_RESULTS / "pannuke_summary" / "{prediction_level}_classification_summary.json"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -715,8 +685,6 @@ rule label_variant_prediction:
         seed="\\d+",
         benchmark="(lizard|pannuke)",
         terms_id="[a-z0-9_]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=8, time="2:00:00")
@@ -758,8 +726,6 @@ rule label_variant_metrics:
         model="[^/]+",
         benchmark="(lizard|pannuke)",
         terms_id="[a-z0-9_]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -821,8 +787,6 @@ rule pathocell_compare_models:
         prediction_level="(cell|patch)",
         model_a="[^/]+",
         model_b="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=10000,
         slurm="cpus-per-task=1"
@@ -852,8 +816,6 @@ rule pathocell_per_class:
         model_b="[^/]+",
         # Limit metric to avoid overlap with scatter outputs (no underscores)
         metric="[A-Za-z0-9@]+|soft_rocauc",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1"
@@ -885,8 +847,6 @@ rule pathocell_performance_overview:
         prediction_level="(cell|patch)",
         model_a="[^/]+",
         model_b="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=6000,
         slurm="cpus-per-task=1"
@@ -917,8 +877,6 @@ rule pathocell_baselines_vs_trimodal:
         metric="{metric}",
     wildcard_constraints:
         metric="(f1|rocauc|soft_rocauc|precision|accuracy|recall_at_5|mae_prob|mse_prob)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=1"
@@ -937,8 +895,6 @@ rule pathocell_terms1_vs_terms2_table:
         plip_terms2_per_class=PATHOCELL_RESULTS / "plip_terms2/summary/patch_per_class_metrics_from_scores.csv",
     output:
         csv_table=PATHOCELL_RESULTS / "comparison" / "patch" / "tables" / "per_class_rocauc_conch_terms1_vs_terms2_plip_terms1_vs_terms2.csv",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"
@@ -961,8 +917,6 @@ rule pathocell_split_baseline_scores:
         seed="0",
         dataset="[^/]+",
         terms_id="(terms1|terms2)"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"
@@ -1021,8 +975,6 @@ rule pathocell_violin_deltas:
         prediction_level="(cell|patch)",
         model_a="[^/]+",
         model_b="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=6000,
         slurm="cpus-per-task=1"
@@ -1052,8 +1004,6 @@ rule pathocell_trimodal_comparison_table:
         latex_table=PATHOCELL_RESULTS / "comparison" / "patch" / "tables" / "trimodal_ablation_rocauc.tex",
     params:
         model_labels=list(TRIMODAL_ABLATION_MODELS.keys()),
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1"

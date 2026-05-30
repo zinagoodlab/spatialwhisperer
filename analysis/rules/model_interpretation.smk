@@ -17,8 +17,6 @@ rule llm_histopathology_analysis:
         plots=report(MODEL_INTERPRETATION_RESULTS / "histopathology_detectability_analysis.png", 
                     category="model_interpretation", subcategory="llm_analysis", 
                     labels={"Analysis": "H&E Detectability", "Format": "plot"})
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"
@@ -39,8 +37,6 @@ rule llm_hest_representation_analysis:
         plots=report(MODEL_INTERPRETATION_RESULTS / "hest_representation_analysis.png",
                     category="model_interpretation", subcategory="llm_analysis",
                     labels={"Analysis": "HEST Representation", "Format": "plot"})
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"
@@ -64,8 +60,6 @@ rule correlation_analysis:
         four_group_plots=report(MODEL_INTERPRETATION_RESULTS / "four_group_box_plots.png",
                               category="model_interpretation", subcategory="correlation_analysis",
                               labels={"Analysis": "Four Group Comparison", "Format": "plot"})
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"
@@ -86,8 +80,6 @@ rule high_detectability_disease_analysis:
                                  category="model_interpretation", subcategory="high_detectability",
                                  labels={"Analysis": "High Detectability Comprehensive", "Format": "plot"}),
         comprehensive_plots_svg=MODEL_INTERPRETATION_RESULTS / "high_detectability_comprehensive_analysis.svg"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=30000,
         slurm="cpus-per-task=4"
@@ -112,8 +104,6 @@ rule distribution_comparison_analysis:
         detectability_violin_svg=MODEL_INTERPRETATION_RESULTS / "detectability_comparison_violin_plots.svg",
         top_f1_diseases=MODEL_INTERPRETATION_RESULTS / "top_15_f1_improving_diseases.csv",
         top_rocauc_diseases=MODEL_INTERPRETATION_RESULTS / "top_15_rocauc_improving_diseases.csv"
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=20000,
         slurm="cpus-per-task=2"

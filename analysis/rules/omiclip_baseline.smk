@@ -17,8 +17,6 @@ rule omiclip_download_checkpoint:
     """
     output:
         checkpoint=OMICLIP_CHECKPOINT,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=8000,
         slurm="cpus-per-task=2 partition=cmackall"
@@ -50,8 +48,6 @@ rule omiclip_pathocell_score:
         data_dir=PATHOCELL_DATA / "processed",
         prediction_level="patch",
         batch_size=64,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=4, time="4:00:00")
@@ -72,8 +68,6 @@ rule omiclip_split_scores:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -110,8 +104,6 @@ rule omiclip_pseudobulk_pathocell_score:
         data_dir=PATHOCELL_DATA / "processed",
         prediction_level="patch",
         batch_size=64,
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=4, time="4:00:00")
@@ -139,8 +131,6 @@ rule omiclip_pseudobulk_split_scores:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -171,8 +161,6 @@ rule omiclip_generate_marker_genes:
     wildcard_constraints:
         benchmark="(lizard|pannuke)",
         variant="(short|pseudobulk)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall"
@@ -220,8 +208,6 @@ rule omiclip_secondary_score:
     wildcard_constraints:
         omiclip_model="(omiclip|omiclip_pseudobulk)",
         benchmark="(lizard|pannuke)",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=50000,
         slurm=slurm_gres("medium", num_cpus=4, time="4:00:00")
@@ -244,8 +230,6 @@ rule omiclip_secondary_split_scores:
         prediction_level="patch",
         seed="0",
         dataset="[^/]+",
-    conda:
-        "cellwhisperer"
     resources:
         mem_mb=4000,
         slurm="cpus-per-task=1 partition=cmackall"
