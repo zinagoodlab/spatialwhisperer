@@ -42,9 +42,11 @@ pynndescent = ">=0.5.11"
 biopython = ">=1.83"
 httpcore = ">=1.0.7"
 accelerate = ">=1.12.0"
+h5py = ">=3.10"  # convert_lmdb_to_hdf.py writes hdf; declare explicitly (was transitive)
 
 
 [pypi-dependencies]
+lmdb = ">=1.5"   # used by analysis/scripts/convert_lmdb_to_hdf.py for Lizard/PanNuke (Python binding lives on PyPI; conda-forge's `lmdb` is the C lib)
 # torchvision = "==0.*"
 # torchaudio = "==2.1.0"
 louvain = "*"

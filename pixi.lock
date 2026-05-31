@@ -527,6 +527,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/c1/a6/e5d57cbcc05b08351f531231657affc43f36eebe668692168849d9bd6478/jsonargparse-4.27.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ae/b3/a0f0f4faac229b0011d8c4a7ee6da7c2dca0b6fd08039c95920846f23ca4/kaleido-0.2.1-py2.py3-none-manylinux1_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/48/bb/28343e7f26cbacf355c754ef6be2f1efa8d6233b56a5be89c5bc8caca1d1/leidenalg-0.10.2-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+      - pypi: https://files.pythonhosted.org/packages/d6/c5/1ec96f55496b232b9cde99cfebe3dbb41be4d48debd93f1aaadbe89936b3/lmdb-2.2.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/f0/e3/8dc87471b34bc0db4e72f51a7aa0b454b3b9d551e15900862c022050aca3/loompy-3.0.7.tar.gz
       - pypi: https://files.pythonhosted.org/packages/5c/01/83d1dc711209568dd5847e87a856ff0d1a9bee092626f59b7c732b3c3fa4/louvain-0.8.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/70/ae/44c4a6a4cbb496d93c6257954260fe3a6e91b7bed2240e5dad2a717f5111/markdown-3.9-py3-none-any.whl
@@ -1069,6 +1070,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/c1/a6/e5d57cbcc05b08351f531231657affc43f36eebe668692168849d9bd6478/jsonargparse-4.27.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/a1/2b/680662678a57afab1685f0c431c2aba7783ce4344f06ec162074d485d469/kaleido-0.2.1-py2.py3-none-manylinux2014_aarch64.whl
       - pypi: https://files.pythonhosted.org/packages/8c/4e/4d31112151cfb49d8ae6a81a60f339ee4e35c50837103f5d5a475d7f16a9/leidenalg-0.10.2-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
+      - pypi: https://files.pythonhosted.org/packages/0f/30/3f9f357a58f0772663d480346d75ca152f6071121a25ec13d2994b461144/lmdb-2.2.0-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl
       - pypi: https://files.pythonhosted.org/packages/f0/e3/8dc87471b34bc0db4e72f51a7aa0b454b3b9d551e15900862c022050aca3/loompy-3.0.7.tar.gz
       - pypi: https://files.pythonhosted.org/packages/5c/48/25ef90b37625944ca7c7f988fb26e2c9efdb1a4242c14d2fa5f1bd86132b/louvain-0.8.2-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
       - pypi: https://files.pythonhosted.org/packages/70/ae/44c4a6a4cbb496d93c6257954260fe3a6e91b7bed2240e5dad2a717f5111/markdown-3.9-py3-none-any.whl
@@ -1623,6 +1625,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/c1/a6/e5d57cbcc05b08351f531231657affc43f36eebe668692168849d9bd6478/jsonargparse-4.27.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/45/8e/4297556be5a07b713bb42dde0f748354de9a6918dee251c0e6bdcda341e7/kaleido-0.2.1-py2.py3-none-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/82/90/0b9525098a7458939f5c2b956ffdc1fed460c0fe706f549087c3b0d12b81/leidenalg-0.10.2-cp38-abi3-macosx_11_0_arm64.whl
+      - pypi: https://files.pythonhosted.org/packages/02/ec/3154671ccff606bcde7ef33116c57e0a0cc49912fbf0449e117caa8579e7/lmdb-2.2.0-cp310-cp310-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/f0/e3/8dc87471b34bc0db4e72f51a7aa0b454b3b9d551e15900862c022050aca3/loompy-3.0.7.tar.gz
       - pypi: https://files.pythonhosted.org/packages/91/c7/becc3f0b6f338f5abca6db2e8eac79aee68caf9cd409f4c04f8b0e2e3a86/louvain-0.8.2-cp310-cp310-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/70/81/54e3ce63502cd085a0c556652a4e1b919c45a446bd1e5300e10c44c8c521/markdown-3.10-py3-none-any.whl
@@ -10543,6 +10546,21 @@ packages:
   - pkg:pypi/llvmlite?source=hash-mapping
   size: 305736
   timestamp: 1725305540839
+- pypi: https://files.pythonhosted.org/packages/02/ec/3154671ccff606bcde7ef33116c57e0a0cc49912fbf0449e117caa8579e7/lmdb-2.2.0-cp310-cp310-macosx_11_0_arm64.whl
+  name: lmdb
+  version: 2.2.0
+  sha256: 97c26c296a907a3990bf26fb7e13a332f58d91048b7c835feab43f9e9a5e9cd2
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/0f/30/3f9f357a58f0772663d480346d75ca152f6071121a25ec13d2994b461144/lmdb-2.2.0-cp310-cp310-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl
+  name: lmdb
+  version: 2.2.0
+  sha256: e86d3403a74d2b6f57459fa6bae07c5be97ad41be4baa102153f355125f058a0
+  requires_python: '>=3.9'
+- pypi: https://files.pythonhosted.org/packages/d6/c5/1ec96f55496b232b9cde99cfebe3dbb41be4d48debd93f1aaadbe89936b3/lmdb-2.2.0-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+  name: lmdb
+  version: 2.2.0
+  sha256: dab9b1b0376067ce42c9705065fd4197ddeaf63cda06e2a3988b16ab5a0e5991
+  requires_python: '>=3.9'
 - conda: https://conda.anaconda.org/conda-forge/noarch/logmuse-0.2.8-pyhd8ed1ab_1.conda
   sha256: e15dbb3a63f967fb0b68a98952b0c6fa3a0743fce8e946a6c186e4af920d7ddd
   md5: 7966fa985b84beb9ec674cf123f726f0
