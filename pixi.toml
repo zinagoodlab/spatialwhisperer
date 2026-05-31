@@ -5,11 +5,22 @@ name = "spatialwhisperer-paper"
 platforms = ["linux-aarch64", "linux-64", "osx-arm64"]
 version = "0.1.0"
 
+# Declare CUDA so pixi can resolve the linux-64 CUDA build of pytorch even when
+# locking from a non-CUDA host (e.g. the user's aarch64 laptop). aarch64 and
+# osx-arm64 ignore this — they fall through to non-CUDA constraints.
+[system-requirements]
+cuda = "12.0"
 
+
+# Force conda-forge's CUDA build of pytorch on linux-64. Without the
+# `build = "cuda*"` constraint, pixi resolves to the CPU build
+# (`cpu_mkl_py310_*`) and torch.cuda.is_available() returns False —
+# discovered on ILC ampere4 during paper_all smoke-testing. aarch64 and
+# osx-arm64 don't get CUDA builds upstream, so they stay on the default
+# (CPU) constraint in `[dependencies]`.
 [target.linux-64.dependencies]
-pytorch = {version = ">=2.7", channel = "pytorch"}
-torchvision = {version = ">=0.22", channel = "pytorch"}
-pytorch-cuda = {version = "12.*", channel = "pytorch"}
+pytorch = {version = ">=2.7", build = "cuda*"}
+torchvision = {version = ">=0.22", build = "cuda*"}
 
 [dependencies]
 gfortran = "*"
