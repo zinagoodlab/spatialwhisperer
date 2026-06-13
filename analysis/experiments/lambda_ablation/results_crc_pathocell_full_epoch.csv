@@ -1,0 +1,4 @@
+config,macro_auroc_classwise_dataset_avg,macro_soft_auroc_classwise_dataset_avg,macro_auroc_datasetwise_class_avg,macro_f1_datasetwise_class_avg,macro_precision_datasetwise_class_avg,macro_recall_at_5_datasetwise_class_avg,mean_cross_entropy,mean_js_divergence
+baseline_full_epoch,0.62846,0.484984,0.644041,0.081858,0.154404,0.504051,2.858542,0.335223
+image_heavy_full_epoch,0.639138,0.494543,0.654664,0.106566,0.183546,0.582717,2.599019,0.303633
+text_heavy_full_epoch,0.63462,0.492396,0.648375,0.099446,0.183355,0.554232,2.667086,0.315234

@@ -1,0 +1,4 @@
+# Baseline: equal weight (~1:1 ratio T↔G : I↔G), 4000 steps ≈ 1 epoch
+trainer:
+  max_steps: 4000
+  max_epochs: -1

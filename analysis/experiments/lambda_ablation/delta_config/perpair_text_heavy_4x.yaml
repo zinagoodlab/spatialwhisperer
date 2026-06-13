@@ -1,0 +1,10 @@
+# Per-pair lambda sweep, text-heavy 4:1 (λ_TG : λ_IG)
+# Same data + step count as all other perpair configs; only the ratio moves.
+trainer:
+  max_epochs: 1
+data:
+  dataset_names: archs4_geo,cellxgene_census,hest1k
+model:
+  loss_config:
+    clip_lambda_transcriptome_text: 4.0
+    clip_lambda_transcriptome_image: 1.0

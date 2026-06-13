@@ -1,0 +1,13 @@
+# HEST benchmark configuration - bare minimum parameters
+# Paths and datasets are now managed by snakemake rules
+
+# inference parameters
+batch_size: 128
+num_workers: 1
+
+# evaluation parameters
+dimreduce: null # "PCA"
+latent_dim: 256  # for PCA if enabled
+normalize: true
+method: "ridge"  # regression method
+seed: 1

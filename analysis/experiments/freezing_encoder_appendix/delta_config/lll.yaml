@@ -1,0 +1,5 @@
+# All three towers locked: only the projection heads (and any non-tower
+# parameters) are trained. Floor of the freezing axis.
+model:
+  model_config:
+    locking_mode: LLL

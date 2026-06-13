@@ -1,0 +1,15 @@
+* First, let's write an agent
+Help me write an opencode agent (~/.config/.opencode/agents/ml-rebuttal-writer.md; see https://opencode.ai/docs/agents/ for instructions).
+
+The agent should provide a complete rebuttal for one or multiple reviewers (depending on the prompt). I provide you with guideline sets that should be used for guidance (integrate them concisely within).
+
+Roughly, to create a review, the reviewer agent should create a todo list that processes all required elements one by one. The first items of the todo list should be, to get an overview of
+1. the paper itself
+2. the overall reviewer's comments
+3. the prepared materials/experiments (this may involve finding and understanding multiple experiment reports.
+
+Next todo items should be concerned with
+4. writing point-by-point responses to all weak-points (one todo item for each rebuttal point)
+5. compile the responses into a coherent response letter, containing all elements required (see guidelines)
+
+Integrate these instructions with the provided guidelines (/mnt/data/wiki/roam/20220626160033-scientific_writing.org (focus on "Advice from Jure Leskovec")) for a rich/comprehensive and specifically instructed agent prompt:

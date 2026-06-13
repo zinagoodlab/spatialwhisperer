@@ -1,0 +1,4 @@
+# Baseline: geneformer + LUL (matches main paper). 1 epoch.
+# No overrides — this is the reference point. Re-asserting seed=0 so the
+# YAML parses to a dict (LightningCLI rejects `None`-bodied --config files).
+seed_everything: 0

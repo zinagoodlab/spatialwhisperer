@@ -1,0 +1,6 @@
+# Text-heavy: text datasets doubled → ~2:1 ratio T↔G : I↔G
+trainer:
+  max_steps: 4000
+  max_epochs: -1
+data:
+  dataset_names: archs4_geo,archs4_geo,cellxgene_census,cellxgene_census,hest1k

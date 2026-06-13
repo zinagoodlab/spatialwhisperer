@@ -1,0 +1,5 @@
+# Text-heavy rerun: text datasets doubled, one full epoch over the duplicated mix
+trainer:
+  max_epochs: 1
+data:
+  dataset_names: archs4_geo,archs4_geo,cellxgene_census,cellxgene_census,hest1k

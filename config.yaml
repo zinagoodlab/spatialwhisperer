@@ -1,0 +1,273 @@
+anndata_text_obs_label: natural_language_annotation
+num_replicates: 5
+llava_projector_type: mlp2x_8t_gelu # NOTE fails if > 8 because we use a fully connected layer between all 8 tokens (i.e. having too many params)
+precomputing_base_url: https://medical-epigenomics.org/papers/schaefer2025cellwhisperer/data
+cluster_name: "sherlock"  # used within `config.smk` to define SLURM resources for snakemake jobs
+
+paths:
+  read_count_table: resources/{dataset}/read_count_table.h5ad
+  histo_image: resources/{dataset}/image.svs
+  raw_annotations: resources/{dataset}/annotations.tsv
+  structured_annotations: results/{dataset}/annotations.json
+  processed_annotations: results/{dataset}/processed_annotations.json
+  processed_multi_annotations: results/{dataset}/processed_multi_annotations.json
+  geneset_gmt: results/genesets/{library}.gmt
+  model_processed_dataset: results/{dataset}/{model}/full_output.npz
+  full_dataset: results/{dataset}/full_data.h5ad
+  full_dataset_multi: results/{dataset}/h5ads/full_data_{i}.h5ad  # be careful, this is not always used (although it should)
+  enrichr_terms_json: resources/enrichr_terms/terms.json
+  ensembl_gene_symbol_map: resources/ensembl_gene_symbol_map.csv
+  cosmx6k_genes: static/cosmx6k_cxg_overlap_genes.csv
+  jointemb_models: results/models/jointemb
+  wandb_logs: results/wandb_logging
+  csv_logs: results/spatialwhisperer_eval/csv_logging
+  datamodule_prepared_path: scratch/lightning_processed/{dataset}/{hash}.pt
+  data_loading_individual_samples: scratch/data_loading/{dataset_name}_{i}/{hash}  # one file per datapoint
+  cache: scratch/cache  # overwritable with CELLWHISPERER_CACHE env
+  cancer_gene_essentiality:
+    ccle_expression: CCLE_RNAseq_genes_counts_20180929.gct.gz
+    essential_genes: resources/cancer_gene_essentiality/CRISPRInferredCommonEssentials.csv
+    nonessential_genes: resources/cancer_gene_essentiality/AchillesNonessentialControls.csv
+
+  gsva:
+    result: results/{dataset}/gsva.parquet
+    correlation: results/{dataset}/{model}/gsva_correlations.csv
+    cw_transcriptome_term_scores: results/{dataset}/{model}/cw_transcriptome_term_scores.parquet
+    plots: results/plots/gsva_correlation/{dataset}/{model}
+
+  llava:
+    root: results/llava{llava_dataset}/
+    pretrain_text_dataset: results/llava{llava_dataset}/pretrain_texts.json
+    finetune_text_dataset: results/llava{llava_dataset}/finetune_conversations.json
+    evaluation_text_dataset: results/llava{llava_dataset}/evaluation/{dataset}_conversations.json  # note: for the LLM-benchmark, we set them to all-lowercase
+    combined_processed_data: results/llava_any/combined_processed_data/{model}.npz
+    pretrained_model_dir: results/llava{llava_dataset}/pretrained/{base_model}__{model}/
+    finetuned_model_dir: results/llava{llava_dataset}/finetuned/{base_model}__{model}/
+    evaluation_results:  results/plots/llava{llava_dataset}/{dataset}/{base_model}__{model}/{prompt_variation}/
+  geo_umap: results/plots/geo_umap/{model}/
+  ablations:
+    models: results/models/ablations/
+    plots: results/plots/ablations/
+
+  hest_benchmark:
+    results: results/plots/hest_benchmark
+    data_root: resources/hest_bench_data
+    embed_root: results/hest_bench_data/ST_data_emb
+    pred_root: results/hest_bench_data/ST_pred_results
+    data_processed: results/hest_bench_data/prepared/
+  musk:
+    datasets: scratch/musk/
+
+plot_style: "analysis/plot_style/main.style"
+
+
+# Warren's analysis (https://zinagoodlab.slack.com/archives/D094RP6317A/p1762215336551049) should that cells are 5-15um. Thus 56x56 is good (for 40x 224x224 it translates to 13um. For 40x 448x448 it translates to 26um)
+
+# Spatial transcriptomics processing parameters
+he_configs:  # TODO this is potentially not in sync with uni_model.py currently
+  visium_resolution:
+    target_pixel_size: 0.5        # μm/pixel (typical 20x magnification)
+    patch_size_pixels: 224        # Standard for all vision models
+    description: "Standard Visium-compatible resolution"
+
+  detailed_resolution:  # NOTE do this with 40x!
+    target_pixel_size: 0.25        # μm/pixel (higher magnification)
+    patch_size_pixels: 224        # Keep consistent for model compatibility
+    description: "High-resolution detailed analysis"
+
+  white_cutoff: 220
+
+  single_cell_40x_pixels: 56  # Warren's analysis (https://zinagoodlab.slack.com/archives/D094RP6317A/p1762215336551049) shows that cells are 5-15um. Thus 56x56 is good (for 40x 224x224 it translates to 13um. For 40x 448x448 translates to 26um)
+
+# Dataset mapping to resolution configs. TODO refactor away..
+dataset_he_mapping:
+  lymphoma_cosmx_small: visium_resolution
+  lymphoma_cosmx_small_detailed: detailed_resolution
+  lymphoma_cosmx_small_singlecell: detailed_resolution
+  lymphoma_cosmx_small_singlecell_corealigned: detailed_resolution
+  lymphoma_cosmx_small_singlecell_goodquality: detailed_resolution
+  lymphoma_cosmx_large: detailed_resolution
+  hest1k: visium_resolution
+  hest1k_crc_detailed: detailed_resolution
+  quilt1m: visium_resolution
+  # pathgen: visium_resolution
+
+# Additional dataset-specific parameters
+quilt1m_config:
+  crop_center_ratio: 0.5  # Use center 50% of image for cropping
+
+pathgen_config:
+  patch_size: 224  # Use 224x224 patches at 40x magnification (0.25 μm/pixel)
+  max_patches_per_wsi: 50  # Limit patches per WSI to manage size
+
+datasets:
+  - immgen
+  - human_disease
+  - tabula_sapiens
+  - tabula_sapiens_100_cells_per_type
+  - archs4_geo
+  - development
+  - car_t
+  - bowel_disease
+  - gut_cell_atlas
+  - pancreas
+  - hcaorganoids_normal__primary
+  - hcaorganoids_normal__organoid
+  - hcaorganoids_cancer__primary
+  - hcaorganoids_cancer__organoid
+  - lung_tissue
+  - hest1k
+  - quilt1m
+  - pathgen
+  - sthelar
+  - lymphoma_cosmx_small
+  - lymphoma_cosmx_small_detailed
+  - lymphoma_cosmx_small_singlecell
+  - lymphoma_cosmx_large
+  - cellxgene_census_8thsub
+  - archs4_geo_8thsub
+  - hest1k_8thsub  
+  - quilt1m_8thsub
+
+metadata_cols_per_zero_shot_validation_dataset:
+  immgen:
+    - celltype
+  human_disease:
+    - Disease_subtype
+    - Tissue
+  pancreas:
+    - celltype
+  aida:
+    - celltype
+  tabula_sapiens:
+    - celltype
+    - organ_tissue
+  tabula_sapiens_well_studied_celltypes:
+    - celltype
+  tabula_sapiens_100_cells_per_type:
+    - celltype
+    - organ_tissue
+  lung_tissue:
+    - cell_type_annotations
+    - region_type_expert_annotation
+
+llava_eval:
+  question_celltype: "Which cell type is this cell?"
+  response_prefix_celltype: "This cell is a "
+  pre_prompt_topgenes:
+    - from: human
+      value: "Respond to my request regarding a sample of cells characterized by its top-expressed genes being {}"
+    - from: gpt
+      value: "Sure. What's your request?"
+  question_topgenes: "Which are the 50 most strongly expressed genes in this sample of cells?"
+  response_prefix_topgenes: "The 50 most strongly expressed genes are {}"
+
+retrieval_deduplicated_sets:
+  - immgen_deduplicated
+  - human_disease_strictly_deduplicated_dmis-lab_biobert-v1.1_CLS_pooling
+
+model_name_path_map:
+  cellwhisperer: cellwhisperer_clip_v1
+  cellwhisperer_geneformer: cellwhisperer_clip_v1  # wandb run ID t9kkor63
+  cellwhisperer_uce: cellwhisperer_clip_v2_uce  # a57mxh0e (4 epochs)
+  cellwhisperer_scgpt: cellwhisperer_clip_v2_scgpt  #  eejwiodj (4 epochs)
+
+  spatialwhisperer: spatialwhisperer_clip_v1  # zun9upd2 (3 scales?) HEST+ARCHS4+CELLXGENECENSUS?
+  spatialwhisperer2: spatialwhisperer_clip_v1  # ? <- 3 scales
+  spatialwhisperer3: spatialwhisperer_cellxgene_census__archs4_geo__hest1k__quilt1m
+
+  geneformer: resources/geneformer-12L-30M
+  scgpt: resources/scGPT_human
+  # Legacy UCE models (deprecated - use 'uce' which loads KuanP/uce-cosmx-geneset)
+  # uce33: resources/UCE/33layer_model.torch
+  # uce4: resources/UCE/4layer_model.torch
+
+  biogpt: microsoft/biogpt
+  bert: dmis-lab/biobert-v1.1  # Big limitation in our code: `text_model.config.model_type` will always be `bert` because that's the architecture. Thus, the two below are set up for failure -.-. Thus I can only use this one key here
+
+  llava_base_llm: Mistral-7B-Instruct-v0.2  # NOTE: could load from `resources` as well
+
+  mixtral: resources/mixtral-8x7b-instruct-v0.1.Q5_K_M.gguf
+
+  # manually downloaded with `git clone` (requires license agreement)
+  mistral: resources/Mistral-7B-Instruct-v0.2
+  llama33: resources/Llama-3.3-70B-Instruct
+
+  uni2: resources/uni2/
+
+  # Deepspot related model paths
+  deepspot_pretrained: resources/deepspot_pretrained
+  uni: resources/uni
+  hoptimus0: resources/hoptimus
+
+
+uce_paths:
+  gene_names_path: static/UCE/gene_names_full.txt  # 19,656 human gene symbols from all_species_gene_dict.json (broader than the 5,782-gene CosMx subset in gene_names.txt)
+  gene_mapping_path: static/UCE/all_species_gene_dict.json
+  checkpoint: "KuanP/uce-cxg-2025-baseline-8l-512d"  # CELLxGENE 2025 baseline pretrain (broad scRNA atlas). Prior: KuanP/cosmx_cxg_lbcl_gene_subset_assay_token, KuanP/uce-cosmx-geneset.
+  # Insert assay tokens (CosMx=145461 vs non-CosMx=145460) into input sequences.
+  # Set false for checkpoints that lack assay tokens (uce-cxg-2025-baseline, uce-cosmx-geneset).
+  use_assay_token: false
+
+scfms:
+  - "geneformer"
+  - "scgpt"
+  - "uce"
+
+genesets:
+  - "Azimuth_2023"
+  - "GO_Biological_Process_2023"
+  - "GO_Molecular_Function_2023"
+  - "OMIM_Expanded"
+  - "PanglaoDB_Augmented_2021"
+  - "Tabula_Sapiens"
+
+# Created by running this on the full tabula sapiens dataset: list(adata.obs[adata.obs["organ_tissue"].isin(["Liver","Lung","Blood"])]["cell_ontology_class"].value_counts().iloc[:20].index)
+top20_lung_liver_blood_celltypes:
+  - "macrophage"
+  - "erythrocyte"
+  - "monocyte"
+  - "type ii pneumocyte"
+  - "classical monocyte"
+  - "neutrophil"
+  - "cd4-positive, alpha-beta t cell"
+  - "nk cell"
+  - "naive b cell"
+  - "basal cell"
+  - "cd8-positive, alpha-beta t cell"
+  - "hepatocyte"
+  - "cd8-positive, alpha-beta cytokine secreting effector t cell"
+  - "club cell"
+  - "non-classical monocyte"
+  - "capillary endothelial cell"
+  - "cd4-positive, alpha-beta memory t cell"
+  - "memory b cell"
+  - "respiratory goblet cell"
+  - "basophil"
+
+celltype_terms:
+  "erythrocyte": "red blood cells"
+  "erythrocyte": "erythrocyte"
+  "nk cell": "Natural killer cells"
+  "t cell": "T cells"
+  "b cell": "B cells"
+  "platelet": "blood platelets"
+
+llm_apis:
+  gpt4:
+    api_key_env: OPENAI_API_KEY
+    base_url: https://api.openai.com/v1/
+    model_name: gpt-4o-2024-11-20
+  claudesonnet:
+    api_key_env: ANTHROPIC_API_KEY
+    base_url: null
+    model_name: claude-3-5-sonnet-20241022
+  llama33:
+    api_key_env: OLLAMA_API_KEY
+    base_url: http://s0-n02.hpc.meduniwien.ac.at:8080/v1/  # Internal server
+    model_name: llama3.3:70b
+  mistral7b:
+    api_key_env: OLLAMA_API_KEY
+    base_url: http://s0-n02.hpc.meduniwien.ac.at:8080/v1/  # Internal server
+    model_name: mistral:7b-instruct-v0.2-fp16
+

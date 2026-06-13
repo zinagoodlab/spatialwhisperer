@@ -1,0 +1,14 @@
+# Smoke test: UCE encoder, LUL, capped at 20 steps. Uses immgen + quilt1m_8thsub
+# + hest1k_8thsub so prep + training validate end-to-end on small datasets
+# (covers all three modality-pair losses: T↔G via immgen, I↔G via hest1k_8thsub,
+# I↔T via quilt1m_8thsub). The eval rule is NOT triggered for the smoke target.
+trainer:
+  max_epochs: -1
+  max_steps: 20
+  limit_val_batches: 0
+model:
+  model_config:
+    transcriptome_model_type: uce
+data:
+  transcriptome_processor: uce
+  dataset_names: immgen,hest1k_8thsub  # quilt1m_8thsub omitted: images live in old group_scratch; not needed for UCE-smoke validation
