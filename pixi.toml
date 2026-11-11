@@ -13,7 +13,7 @@ anndata = ">=0.10.2"
 langchain = ">=0.0.314"
 ipdb = ">=0.13.13"
 ipykernel = ">=6.25.2"
-transformers = ">=4.57.1"
+transformers = ">=4.57.1,<5"  # 5.x cannot load the checkpoint's pickled 4.x config
 pytorch = ">=2.7"
 torchvision = ">=0.22"
 safetensors = ">=0.5.2"
@@ -86,8 +86,9 @@ platforms = ["linux-64"]
 cuda = "12"
 
 [feature.cuda.dependencies]
-pytorch = { version = ">=2.7", build = "cuda*" }
-torchvision = { version = ">=0.22", build = "cuda*" }
+# Same versions as the default environment, CUDA builds
+pytorch = { version = "2.7.*", build = "cuda*" }
+torchvision = { version = "0.22.*", build = "cuda*" }
 
 [environments]
 cuda = ["cuda"]
