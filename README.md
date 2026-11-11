@@ -49,8 +49,6 @@ huggingface-cli login    # paste your read token
 
 ## Use the model
 
-
-
 ```python
 from spatialwhisperer import load_spatialwhisperer_model
 
@@ -58,9 +56,11 @@ model, tokenizer, transcriptome_processor, image_processor = load_spatialwhisper
 # model: TranscriptomeTextDualEncoderLightning (frozen, eval mode, on CUDA if available)
 ```
 
-The first time this is called with download the checkpoint plus UNI2 and Geneformer weights; subsequent calls load from cache.
+The first call downloads the checkpoint plus the UNI2 and Geneformer weights; later calls load from cache.
 
-Embed text prompts into the shared 512-D space and compute pairwise cosine similarity (verified working — see snippet below). Each `get_<modality>_features` call returns a tuple `(pooled_features, projected_embed_in_shared_space)`; the second element is what you compare across modalities.
+SpatialWhisperer maps text, H&E image patches and gene-expression profiles into one shared 2048-dimensional space (`projection_dim=2048` in the checkpoint), where any two of them are compared by cosine similarity. Each `get_<modality>_features` call returns a tuple `(pooled_features, projected_embed_in_shared_space)`; the second element is the 2048-D embedding you compare across modalities.
+
+**Text prompts**
 
 ```python
 import torch
@@ -70,31 +70,39 @@ text_inputs = tokenizer(prompts, return_tensors="pt", padding=True).to(model.dev
 
 with torch.no_grad():
     _, text_emb = model.model.get_text_features(normalize_embeds=True, **text_inputs)
-print(text_emb.shape)                                                 # (2, 512)
-print(torch.nn.functional.cosine_similarity(text_emb[0:1], text_emb[1:2]).item())
-# ~0.20 — two distinct cell types live in different regions of the embedding space
+print(text_emb.shape)  # torch.Size([2, 2048])
 ```
 
-Image and transcriptome embeddings follow the same pattern:
+**H&E image patches.** The image tower takes 224 × 224 px RGB patches, converted to a tensor and normalized with the ImageNet mean and standard deviation (the transform used in training). Training patches were cropped from Visium H&E slides at their native resolution (median 0.46 µm/px, range 0.17–0.80 µm/px), so patches at a similar scale (around 0.5 µm/px, i.e. 20×) are closest to what the model saw. Tiles of another size can be resized and center-cropped to 224 px first, as `analysis/scripts/score_kriegsmann_skin.py` does for the paper's skin benchmark.
 
 ```python
 from PIL import Image
+from torchvision import transforms
 
-# Image patch (224x224 H&E at ~0.5 um/px; Visium-compatible)
-patch = Image.open("path/to/patch.png").convert("RGB")
-image_inputs = image_processor(images=patch, return_tensors="pt").to(model.device)
-
-# Transcriptome profile (counts dict: {gene_symbol: count})
-counts = {"CD3D": 42, "CD8A": 17, "MS4A1": 0}
-gene_inputs = transcriptome_processor([counts]).to(model.device)
+to_input = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+])
+patch = Image.open("path/to/patch.png").convert("RGB")  # 224 x 224 px
+patches = to_input(patch).unsqueeze(0).to(model.device)
 
 with torch.no_grad():
-    _, image_emb = model.model.get_image_features(normalize_embeds=True, **image_inputs)
-    _, gene_emb  = model.model.get_transcriptome_features(normalize_embeds=True, **gene_inputs)
+    _, image_emb = model.model.get_image_features(patches_ctx=patches, normalize_embeds=True)
+print(image_emb.shape)  # torch.Size([1, 2048])
 
-sim_it = torch.nn.functional.cosine_similarity(image_emb, text_emb[0:1]).item()
-sim_ig = torch.nn.functional.cosine_similarity(image_emb, gene_emb).item()
+# Zero-shot annotation: cosine similarity between the patch and each prompt
+print(image_emb @ text_emb.T)  # shape (1, 2)
 ```
+
+**Gene expression.** `adata_to_embeds` takes an AnnData with raw counts in `.X` (one row per spot or cell) and gene symbols or Ensembl IDs as `var_names`, and returns unit-length embeddings:
+
+```python
+from spatialwhisperer.utils.processing import adata_to_embeds
+
+gene_emb = adata_to_embeds(adata, model.model)  # torch.Size([n_obs, 2048])
+```
+
+With `use_image_data=True`, the same function embeds the image instead: a 224 × 224 px patch centered on each spot of a whole-slide image, given spot centers in `adata.obs["x_pixel"]` / `adata.obs["y_pixel"]` and the slide in `adata.uns["image_path"]` (or as an RGB array in `adata.uns["he_slide"]`).
 
 ## Reproduce paper analyses
 
