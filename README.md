@@ -30,6 +30,8 @@ pixi install                                    # ~10 min first run; ~5 GB env
 pixi shell                                      # activate
 ```
 
+The default environment installs the CPU build of PyTorch, which runs on any machine. On Linux x86_64 with an NVIDIA GPU, use the `cuda` environment instead, which installs the CUDA build: `pixi install -e cuda`, then `pixi shell -e cuda`. There, `python -c "import torch; print(torch.cuda.is_available())"` should print `True`.
+
 ### Downloading the model
 
 While spatialwhisperer's weights don't require approval for download, we use foundation-model weights (UNI2, Geneformer) that do. 
