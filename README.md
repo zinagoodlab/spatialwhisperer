@@ -71,6 +71,7 @@ text_inputs = tokenizer(prompts, return_tensors="pt", padding=True).to(model.dev
 with torch.no_grad():
     _, text_emb = model.model.get_text_features(normalize_embeds=True, **text_inputs)
 print(text_emb.shape)  # torch.Size([2, 2048])
+print(text_emb[0] @ text_emb[1])  # tensor(0.4042): cosine similarity of the two prompts
 ```
 
 **H&E image patches.** The image tower takes 224 × 224 px RGB patches, converted to a tensor and normalized with the ImageNet mean and standard deviation (the transform used in training). Training patches were cropped from Visium H&E slides at their native resolution (median 0.46 µm/px, range 0.17–0.80 µm/px), so patches at a similar scale (around 0.5 µm/px, i.e. 20×) are closest to what the model saw. Tiles of another size can be resized and center-cropped to 224 px first, as `analysis/scripts/score_kriegsmann_skin.py` does for the paper's skin benchmark.
@@ -102,7 +103,7 @@ from spatialwhisperer.utils.processing import adata_to_embeds
 gene_emb = adata_to_embeds(adata, model.model)  # torch.Size([n_obs, 2048])
 ```
 
-With `use_image_data=True`, the same function embeds the image instead: a 224 × 224 px patch centered on each spot of a whole-slide image, given spot centers in `adata.obs["x_pixel"]` / `adata.obs["y_pixel"]` and the slide in `adata.uns["image_path"]` (or as an RGB array in `adata.uns["he_slide"]`).
+With `use_image_data=True`, the same function embeds the image instead: a 224 × 224 px patch centered on each spot of a whole-slide image, given spot centers in `adata.obs["x_pixel"]` / `adata.obs["y_pixel"]` and the slide as an RGB array in `adata.uns["he_slide"]`. A file path in `adata.uns["image_path"]` works too; files other than `.svs` are opened with PIL, which refuses images above about 179 megapixels (most whole slides) unless `PIL.Image.MAX_IMAGE_PIXELS = None` is set first.
 
 ## Reproduce paper analyses
 
